@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+phpunit_config_file=
+preload_script=/workflower/tests/bootstrap.php
+test_file_pattern=
+test_folders=/workflower/tests
+testing_framework=PHPUnit
