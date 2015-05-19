@@ -65,6 +65,7 @@ interface WorkflowInterface
      * @param ActivityInterface    $activity
      * @param ParticipantInterface $participant
      *
+     * @throws AccessDeniedException
      * @throws ActivityAlreadyStartedException
      * @throws UnexpectedActivityException
      */
@@ -74,6 +75,8 @@ interface WorkflowInterface
      * @param ActivityInterface    $activity
      * @param ParticipantInterface $participant
      *
+     * @throws AccessDeniedException
+     * @throws ActivityNotActiveException
      * @throws UnexpectedActivityException
      */
     public function completeActivity(ActivityInterface $activity, ParticipantInterface $participant);

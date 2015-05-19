@@ -239,8 +239,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
     }
 
     /**
-     * @param StartEvent           $event
-     * @param ParticipantInterface $participant
+     * {@inheritDoc}
      */
     public function start(StartEvent $event, ParticipantInterface $participant)
     {
