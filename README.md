@@ -6,7 +6,7 @@ A workflow engine
 
 ## Installation
 
-`Domain Kata` can be installed using [Composer](http://getcomposer.org/).
+`Workflower` can be installed using [Composer](http://getcomposer.org/).
 
 Add the dependency to `phpmentors/workflower` into your `composer.json` file as the following:
 
