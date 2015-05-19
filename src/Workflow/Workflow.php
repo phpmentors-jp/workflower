@@ -306,7 +306,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
     /**
      * @param EndEvent $event
      */
-    public function end(EndEvent $event)
+    private function end(EndEvent $event)
     {
         $this->stateMachine->triggerEvent($event->getId());
         $this->endDate = new \DateTime();
