@@ -302,27 +302,11 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
     }
 
     /**
-     * @param \DateTime $startDate
-     */
-    public function setStartDate(\DateTime $startDate)
-    {
-        $this->startDate = $startDate;
-    }
-
-    /**
      * @return \DateTime
      */
     public function getStartDate()
     {
         return $this->startDate;
-    }
-
-    /**
-     * @param \DateTime $endDate
-     */
-    public function setEndtDate(\DateTime $endDate)
-    {
-        $this->endDate = $endDate;
     }
 
     /**
