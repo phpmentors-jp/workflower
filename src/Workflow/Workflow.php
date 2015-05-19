@@ -249,7 +249,14 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
         }
 
         $this->startDate = new \DateTime();
+        $this->stateMachine->start();
+        $this->stateMachine->triggerEvent($event->getId());
         $this->selectSequenceFlow($event);
+
+        if ($this->getCurrentFlowObject() instanceof EndEvent) {
+            $this->stateMachine->triggerEvent(StateInterface::STATE_FINAL);
+            $this->endDate = new \DateTime();
+        }
     }
 
     /**
@@ -283,6 +290,11 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
 
         $activity->complete($participant);
         $this->selectSequenceFlow($activity);
+
+        if ($this->getCurrentFlowObject() instanceof EndEvent) {
+            $this->stateMachine->triggerEvent(StateInterface::STATE_FINAL);
+            $this->endDate = new \DateTime();
+        }
     }
 
     /**
@@ -381,18 +393,10 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
             throw new SequenceFlowNotSelectedException(sprintf('No sequence flow can be selected on "%s".',  $currentFlowObject->getId()));
         }
 
-        if ($currentFlowObject instanceof StartEvent) {
-            $this->stateMachine->start();
-            $this->stateMachine->triggerEvent($currentFlowObject->getId());
-        }
-
         $this->stateMachine->triggerEvent($selectedSequenceFlow->getDestination()->getId());
 
         if ($this->getCurrentFlowObject() instanceof GatewayInterface) {
             $this->selectSequenceFlow($this->getCurrentFlowObject());
-        } elseif ($this->getCurrentFlowObject() instanceof EndEvent) {
-            $this->stateMachine->triggerEvent(StateInterface::STATE_FINAL);
-            $this->endDate = new \DateTime();
         }
     }
 }
