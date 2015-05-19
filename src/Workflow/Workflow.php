@@ -143,7 +143,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
         } elseif ($flowObject instanceof EndEvent) {
             $this->stateMachine->addTransition(
                 $this->stateMachine->getState($flowObject->getId()),
-                new TransitionEvent(StateInterface::STATE_FINAL),
+                new TransitionEvent($flowObject->getId()),
                 $this->stateMachine->getState(StateInterface::STATE_FINAL),
                 null,
                 null
@@ -254,8 +254,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
         $this->selectSequenceFlow($event);
 
         if ($this->getCurrentFlowObject() instanceof EndEvent) {
-            $this->stateMachine->triggerEvent(StateInterface::STATE_FINAL);
-            $this->endDate = new \DateTime();
+            $this->end($this->getCurrentFlowObject());
         }
     }
 
@@ -292,8 +291,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
         $this->selectSequenceFlow($activity);
 
         if ($this->getCurrentFlowObject() instanceof EndEvent) {
-            $this->stateMachine->triggerEvent(StateInterface::STATE_FINAL);
-            $this->endDate = new \DateTime();
+            $this->end($this->getCurrentFlowObject());
         }
     }
 
@@ -311,6 +309,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
     public function end(EndEvent $event)
     {
         $this->stateMachine->triggerEvent($event->getId());
+        $this->endDate = new \DateTime();
     }
 
     /**
