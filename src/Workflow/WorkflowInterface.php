@@ -22,6 +22,11 @@ use PHPMentors\Workflower\Workflow\Type\FlowObjectInterface;
 interface WorkflowInterface
 {
     /**
+     * @return string|null
+     */
+    public function getName();
+
+    /**
      * @param string $id
      *
      * @return FlowObjectInterface|null

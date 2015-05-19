@@ -13,6 +13,7 @@
 namespace PHPMentors\Workflower\Workflow;
 
 use PHPMentors\DomainKata\Entity\EntityInterface;
+use PHPMentors\DomainKata\Entity\Operation\IdentifiableInterface;
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\UnexpectedActivityException;
 use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
@@ -34,12 +35,17 @@ use Stagehand\FSM\StateMachine\StateMachine;
 use Stagehand\FSM\StateMachine\StateMachineInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
-class Workflow implements EntityInterface, WorkflowInterface
+class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterface
 {
     /**
      * @var string
      */
     private static $STATE_START = '__START__';
+
+    /**
+     * @var string
+     */
+    private $name;
 
     /**
      * @var ConnectingObjectCollection
@@ -77,13 +83,31 @@ class Workflow implements EntityInterface, WorkflowInterface
     private $stateMachine;
 
     /**
-     * @param string $name
+     * @param int|string $id
+     * @param string     $name
      */
-    public function __construct($name)
+    public function __construct($id, $name)
     {
         $this->connectingObjectCollection = new ConnectingObjectCollection();
         $this->flowObjectCollection = new FlowObjectCollection();
-        $this->stateMachine = $this->createStateMachine($name);
+        $this->stateMachine = $this->createStateMachine($id);
+        $this->name = $name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getId()
+    {
+        return $this->stateMachine->getStateMachineId();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**

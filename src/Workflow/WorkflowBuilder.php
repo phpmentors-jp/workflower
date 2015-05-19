@@ -54,13 +54,20 @@ class WorkflowBuilder
     /**
      * @var string
      */
+    private $workflowId;
+
+    /**
+     * @var string
+     */
     private $workflowName;
 
     /**
+     * @param string $workflowId
      * @param string $workflowName
      */
-    public function __construct($workflowName)
+    public function __construct($workflowId, $workflowName = null)
     {
+        $this->workflowId = $workflowId;
         $this->workflowName = $workflowName;
     }
 
@@ -130,7 +137,7 @@ class WorkflowBuilder
      */
     public function build()
     {
-        $workflow = new Workflow($this->workflowName);
+        $workflow = new Workflow($this->workflowId, $this->workflowName);
 
         foreach ($this->roles as $role) {
             $workflow->addRole($role);

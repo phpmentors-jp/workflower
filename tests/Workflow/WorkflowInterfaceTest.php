@@ -26,7 +26,7 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $workflowBuilder = new WorkflowBuilder('Loan Request');
+        $workflowBuilder = new WorkflowBuilder('LoanRequestProcess');
         $workflowBuilder->addRole('Branch');
         $workflowBuilder->addRole('Credit Factory');
         $workflowBuilder->addRole('Back Office');
