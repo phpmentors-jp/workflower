@@ -54,12 +54,9 @@ interface WorkflowInterface
     public function isEnded();
 
     /**
-     * @param StartEvent           $event
-     * @param ParticipantInterface $participant
-     *
-     * @throws AccessDeniedException
+     * @param StartEvent $event
      */
-    public function start(StartEvent $event, ParticipantInterface $participant);
+    public function start(StartEvent $event);
 
     /**
      * @param ActivityInterface    $activity

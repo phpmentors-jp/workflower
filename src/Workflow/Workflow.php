@@ -241,12 +241,8 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
     /**
      * {@inheritDoc}
      */
-    public function start(StartEvent $event, ParticipantInterface $participant)
+    public function start(StartEvent $event)
     {
-        if (!$participant->hasRole($event->getRole())) {
-            throw new AccessDeniedException();
-        }
-
         $this->startDate = new \DateTime();
         $this->stateMachine->start();
         $this->stateMachine->triggerEvent($event->getId());

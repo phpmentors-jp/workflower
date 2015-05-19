@@ -70,7 +70,7 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
         $participant = \Phake::mock('PHPMentors\Workflower\Workflow\Participant\ParticipantInterface');
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
-        $this->workflow->start($this->workflow->getFlowObject('Start'), $participant);
+        $this->workflow->start($this->workflow->getFlowObject('Start'));
 
         $this->assertThat($this->workflow->isActive(), $this->isTrue());
         $this->assertThat($this->workflow->isEnded(), $this->isFalse());
@@ -96,7 +96,7 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
         $participant = \Phake::mock('PHPMentors\Workflower\Workflow\Participant\ParticipantInterface');
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
-        $this->workflow->start($this->workflow->getFlowObject('Start'), $participant);
+        $this->workflow->start($this->workflow->getFlowObject('Start'));
         $this->workflow->assignActivity($this->workflow->getCurrentFlowObject(), $participant);
 
         $currentFlowObject = $this->workflow->getCurrentFlowObject();
@@ -117,7 +117,7 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
         $participant = \Phake::mock('PHPMentors\Workflower\Workflow\Participant\ParticipantInterface');
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
-        $this->workflow->start($this->workflow->getFlowObject('Start'), $participant);
+        $this->workflow->start($this->workflow->getFlowObject('Start'));
         $this->workflow->assignActivity($this->workflow->getCurrentFlowObject(), $participant);
         $this->workflow->completeActivity($this->workflow->getCurrentFlowObject(), $participant);
 
@@ -162,7 +162,7 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
         $this->workflow->setProcessData('rejected', false);
-        $this->workflow->start($this->workflow->getFlowObject('Start'), $participant);
+        $this->workflow->start($this->workflow->getFlowObject('Start'));
         $this->workflow->assignActivity($this->workflow->getCurrentFlowObject(), $participant);
         $this->workflow->completeActivity($this->workflow->getCurrentFlowObject(), $participant);
         $this->workflow->assignActivity($this->workflow->getCurrentFlowObject(), $participant);
@@ -198,7 +198,7 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
         $this->workflow->setProcessData('rejected', false);
-        $this->workflow->start($this->workflow->getFlowObject('Start'), $participant);
+        $this->workflow->start($this->workflow->getFlowObject('Start'));
         $this->workflow->assignActivity($this->workflow->getCurrentFlowObject(), $participant);
         $this->workflow->completeActivity($this->workflow->getCurrentFlowObject(), $participant);
         $this->workflow->assignActivity($this->workflow->getCurrentFlowObject(), $participant);
@@ -221,7 +221,7 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
         $this->workflow->setProcessData('rejected', false);
-        $this->workflow->start($this->workflow->getFlowObject('Start'), $participant);
+        $this->workflow->start($this->workflow->getFlowObject('Start'));
         $this->workflow->assignActivity($this->workflow->getCurrentFlowObject(), $participant);
         $this->workflow->completeActivity($this->workflow->getCurrentFlowObject(), $participant);
         $this->workflow->assignActivity($this->workflow->getCurrentFlowObject(), $participant);
