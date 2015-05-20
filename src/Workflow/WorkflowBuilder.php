@@ -17,6 +17,7 @@ use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
 use PHPMentors\Workflower\Workflow\Event\EndEvent;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
 use PHPMentors\Workflower\Workflow\Gateway\ExclusiveGateway;
+use PHPMentors\Workflower\Workflow\Participant\Role;
 use Symfony\Component\ExpressionLanguage\Expression;
 
 class WorkflowBuilder
@@ -32,7 +33,7 @@ class WorkflowBuilder
     private $exclusiveGateways = array();
 
     /**
-     * @var string[]
+     * @var array
      */
     private $roles = array();
 
@@ -92,11 +93,12 @@ class WorkflowBuilder
     }
 
     /**
-     * @param string $role
+     * @param int|string $id
+     * @param string     $name
      */
-    public function addRole($role)
+    public function addRole($id, $name = null)
     {
-        $this->roles[] = $role;
+        $this->roles[$id] = array($name);
     }
 
     /**
@@ -139,44 +141,45 @@ class WorkflowBuilder
     {
         $workflow = new Workflow($this->workflowId, $this->workflowName);
 
-        foreach ($this->roles as $role) {
-            $workflow->addRole($role);
+        foreach ($this->roles as $id => $role) {
+            list($name) = $role;
+            $workflow->addRole(new Role($id, $name));
         }
 
         foreach ($this->startEvents as $id => $event) {
-            list($role, $name) = $event;
-            if (!$workflow->hasRole($role)) {
+            list($roleId, $name) = $event;
+            if (!$workflow->hasRole($roleId)) {
                 throw new \LogicException();
             }
 
-            $workflow->addFlowObject(new StartEvent($id, $role, $name));
+            $workflow->addFlowObject(new StartEvent($id, $workflow->getRole($roleId), $name));
         }
 
         foreach ($this->endEvents as $id => $event) {
-            list($role, $name) = $event;
-            if (!$workflow->hasRole($role)) {
+            list($roleId, $name) = $event;
+            if (!$workflow->hasRole($roleId)) {
                 throw new \LogicException();
             }
 
-            $workflow->addFlowObject(new EndEvent($id, $role, $name));
+            $workflow->addFlowObject(new EndEvent($id, $workflow->getRole($roleId), $name));
         }
 
         foreach ($this->tasks as $id => $task) {
-            list($role, $name) = $task;
-            if (!$workflow->hasRole($role)) {
+            list($roleId, $name) = $task;
+            if (!$workflow->hasRole($roleId)) {
                 throw new \LogicException();
             }
 
-            $workflow->addFlowObject(new Task($id, $role, $name));
+            $workflow->addFlowObject(new Task($id, $workflow->getRole($roleId), $name));
         }
 
         foreach ($this->exclusiveGateways as $id => $gateway) {
-            list($role, $name) = $gateway;
-            if (!$workflow->hasRole($role)) {
+            list($roleId, $name) = $gateway;
+            if (!$workflow->hasRole($roleId)) {
                 throw new \LogicException();
             }
 
-            $workflow->addFlowObject(new ExclusiveGateway($id, $role, $name));
+            $workflow->addFlowObject(new ExclusiveGateway($id, $workflow->getRole($roleId), $name));
         }
 
         foreach ($this->sequenceFlows as $i => $flow) {

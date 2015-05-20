@@ -13,6 +13,7 @@
 namespace PHPMentors\Workflower\Workflow\Gateway;
 
 use PHPMentors\DomainKata\Entity\EntityInterface;
+use PHPMentors\Workflower\Workflow\Participant\Role;
 
 class ExclusiveGateway implements GatewayInterface
 {
@@ -27,16 +28,16 @@ class ExclusiveGateway implements GatewayInterface
     private $name;
 
     /**
-     * @var string
+     * @var Role
      */
     private $role;
 
     /**
      * @param string $id
-     * @param string $role
+     * @param Role   $role
      * @param string $name
      */
-    public function __construct($id, $role, $name = null)
+    public function __construct($id, Role $role, $name = null)
     {
         $this->id = $id;
         $this->role = $role;

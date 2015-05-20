@@ -21,6 +21,8 @@ use PHPMentors\Workflower\Workflow\Event\EndEvent;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
 use PHPMentors\Workflower\Workflow\Gateway\GatewayInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
+use PHPMentors\Workflower\Workflow\Participant\Role;
+use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
 use PHPMentors\Workflower\Workflow\Type\ConnectingObjectCollection;
 use PHPMentors\Workflower\Workflow\Type\ConnectingObjectInterface;
 use PHPMentors\Workflower\Workflow\Type\FlowObjectCollection;
@@ -58,9 +60,9 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
     private $flowObjectCollection;
 
     /**
-     * @var string[]
+     * @var RoleCollection
      */
-    private $roles = array();
+    private $roleCollection;
 
     /**
      * @var \DateTime
@@ -90,6 +92,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
     {
         $this->connectingObjectCollection = new ConnectingObjectCollection();
         $this->flowObjectCollection = new FlowObjectCollection();
+        $this->roleCollection = new RoleCollection();
         $this->stateMachine = $this->createStateMachine($id);
         $this->name = $name;
     }
@@ -164,25 +167,31 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
     }
 
     /**
-     * @param string $role
+     * @param Role $role
      */
-    public function addRole($role)
+    public function addRole(Role $role)
     {
-        if ($this->hasRole($role)) {
-            return;
-        }
+        $this->roleCollection->add($role);
+    }
 
-        $this->roles[] = $role;
+    /**
+     * @param int|string $id
+     *
+     * @return bool
+     */
+    public function hasRole($id)
+    {
+        return $this->roleCollection->get($id) !== null;
     }
 
     /**
      * @param string $role
      *
-     v     * @return bool
+     * @return Role
      */
-    public function hasRole($role)
+    public function getRole($id)
     {
-        return in_array($role, $this->roles);
+        return $this->roleCollection->get($id);
     }
 
     /**
@@ -258,7 +267,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
      */
     public function assignActivity(ActivityInterface $activity, ParticipantInterface $participant)
     {
-        if (!$participant->hasRole($activity->getRole())) {
+        if (!$participant->hasRole($activity->getRole()->getId())) {
             throw new AccessDeniedException();
         }
 
@@ -274,7 +283,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
      */
     public function completeActivity(ActivityInterface $activity, ParticipantInterface $participant)
     {
-        if (!$participant->hasRole($activity->getRole())) {
+        if (!$participant->hasRole($activity->getRole()->getId())) {
             throw new AccessDeniedException();
         }
 

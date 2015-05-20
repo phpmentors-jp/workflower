@@ -25,7 +25,7 @@ class Task implements ActivityInterface
     private $id;
 
     /**
-     * @var string
+     * @var Role
      */
     private $role;
 
@@ -66,10 +66,10 @@ class Task implements ActivityInterface
 
     /**
      * @param string $id
-     * @param string $role
+     * @param Role   $role
      * @param string $name
      */
-    public function __construct($id, $role, $name = null)
+    public function __construct($id, Role $role, $name = null)
     {
         $this->id = $id;
         $this->role = $role;

@@ -27,17 +27,17 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $workflowBuilder = new WorkflowBuilder('LoanRequestProcess');
-        $workflowBuilder->addRole('Branch');
-        $workflowBuilder->addRole('Credit Factory');
-        $workflowBuilder->addRole('Back Office');
-        $workflowBuilder->addStartEvent('Start', 'Branch');
-        $workflowBuilder->addTask('Record Loan Application Information', 'Branch');
-        $workflowBuilder->addTask('Check Applicant Information', 'Branch');
-        $workflowBuilder->addTask('Loan Study', 'Credit Factory');
-        $workflowBuilder->addTask('Inform Rejection', 'Credit Factory');
-        $workflowBuilder->addTask('Disbursement', 'Back Office');
-        $workflowBuilder->addExclusiveGateway('Applicaion Approved?', 'Credit Factory');
-        $workflowBuilder->addEndEvent('End', 'Credit Factory');
+        $workflowBuilder->addRole('ROLE_BRANCH', 'Branch');
+        $workflowBuilder->addRole('ROLE_CREDIT_FACTORY', 'Credit Factory');
+        $workflowBuilder->addRole('ROLE_BACK_OFFICE', 'Back Office');
+        $workflowBuilder->addStartEvent('Start', 'ROLE_BRANCH');
+        $workflowBuilder->addTask('Record Loan Application Information', 'ROLE_BRANCH');
+        $workflowBuilder->addTask('Check Applicant Information', 'ROLE_BRANCH');
+        $workflowBuilder->addTask('Loan Study', 'ROLE_CREDIT_FACTORY');
+        $workflowBuilder->addTask('Inform Rejection', 'ROLE_CREDIT_FACTORY');
+        $workflowBuilder->addTask('Disbursement', 'ROLE_BACK_OFFICE');
+        $workflowBuilder->addExclusiveGateway('Applicaion Approved?', 'ROLE_CREDIT_FACTORY');
+        $workflowBuilder->addEndEvent('End', 'ROLE_CREDIT_FACTORY');
         $workflowBuilder->addSequenceFlow('Start', 'Record Loan Application Information');
         $workflowBuilder->addSequenceFlow('Record Loan Application Information', 'Check Applicant Information');
         $workflowBuilder->addSequenceFlow('Check Applicant Information', 'Loan Study', null, 'Ok', true);

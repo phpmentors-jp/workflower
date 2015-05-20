@@ -15,7 +15,7 @@ namespace PHPMentors\Workflower\Workflow\Participant;
 interface RoleAwareInterface
 {
     /**
-     * @return string
+     * @return Role
      */
     public function getRole();
 }
