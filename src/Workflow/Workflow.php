@@ -187,7 +187,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
     }
 
     /**
-     * @param int|string $role
+     * @param int|string $id
      *
      * @return Role
      */

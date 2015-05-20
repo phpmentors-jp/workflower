@@ -63,8 +63,8 @@ class WorkflowBuilder
     private $workflowName;
 
     /**
-     * @param string $workflowId
-     * @param string $workflowName
+     * @param int|string $workflowId
+     * @param int|string $workflowName
      */
     public function __construct($workflowId, $workflowName = null)
     {
