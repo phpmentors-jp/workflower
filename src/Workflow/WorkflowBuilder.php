@@ -66,10 +66,26 @@ class WorkflowBuilder
      * @param int|string $workflowId
      * @param int|string $workflowName
      */
-    public function __construct($workflowId, $workflowName = null)
+    public function __construct($workflowId = null, $workflowName = null)
     {
         $this->workflowId = $workflowId;
         $this->workflowName = $workflowName;
+    }
+
+    /**
+     * @param int|string $id
+     */
+    public function setWorkflowId($id)
+    {
+        $this->workflowId = $id;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setWorkflowName($name)
+    {
+        $this->workflowName = $name;
     }
 
     /**
