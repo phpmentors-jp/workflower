@@ -18,7 +18,7 @@ use PHPMentors\Workflower\Workflow\Participant\Role;
 class Event implements EventInterface
 {
     /**
-     * @var string
+     * @var int|string
      */
     private $id;
 
@@ -33,9 +33,9 @@ class Event implements EventInterface
     private $role;
 
     /**
-     * @param string $id
-     * @param Role   $role
-     * @param string $name
+     * @param int|string $id
+     * @param Role       $role
+     * @param string     $name
      */
     public function __construct($id, Role $role, $name = null)
     {

@@ -18,7 +18,7 @@ use PHPMentors\DomainKata\Entity\Operation\IdentifiableInterface;
 class Role implements EntityInterface, IdentifiableInterface
 {
     /**
-     * @var string
+     * @var int|string
      */
     private $id;
 
@@ -40,7 +40,7 @@ class Role implements EntityInterface, IdentifiableInterface
     /**
      * {@inheritDoc}
      *
-     * @return string
+     * @return int|string
      */
     public function getId()
     {

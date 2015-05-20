@@ -18,7 +18,7 @@ use PHPMentors\Workflower\Workflow\Participant\Role;
 class ExclusiveGateway implements GatewayInterface
 {
     /**
-     * @var string
+     * @var int|string
      */
     private $id;
 
@@ -33,9 +33,9 @@ class ExclusiveGateway implements GatewayInterface
     private $role;
 
     /**
-     * @param string $id
-     * @param Role   $role
-     * @param string $name
+     * @param int|string $id
+     * @param Role       $role
+     * @param string     $name
      */
     public function __construct($id, Role $role, $name = null)
     {
@@ -47,7 +47,7 @@ class ExclusiveGateway implements GatewayInterface
     /**
      * {@inheritDoc}
      *
-     * @return string
+     * @return int|string
      */
     public function getId()
     {

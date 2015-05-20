@@ -20,7 +20,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class Task implements ActivityInterface
 {
     /**
-     * @var string
+     * @var int|string
      */
     private $id;
 
@@ -65,9 +65,9 @@ class Task implements ActivityInterface
     private $eventDispatcher;
 
     /**
-     * @param string $id
-     * @param Role   $role
-     * @param string $name
+     * @param int|string $id
+     * @param Role       $role
+     * @param string     $name
      */
     public function __construct($id, Role $role, $name = null)
     {
@@ -79,7 +79,7 @@ class Task implements ActivityInterface
     /**
      * {@inheritDoc}
      *
-     * @return string
+     * @return int|string
      */
     public function getId()
     {

@@ -99,6 +99,8 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
 
     /**
      * {@inheritDoc}
+     *
+     * @return int|string
      */
     public function getId()
     {
@@ -157,7 +159,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
     }
 
     /**
-     * @param string $id
+     * @param int|string $id
      *
      * @return FlowObjectInterface|null
      */
@@ -185,7 +187,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
     }
 
     /**
-     * @param string $role
+     * @param int|string $role
      *
      * @return Role
      */
