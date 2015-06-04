@@ -18,6 +18,7 @@ interface WorkflowRepositoryInterface extends RepositoryInterface
 {
     /**
      * @param int|string $id
+     *
      * @return Workflow
      */
     public function findById($id);

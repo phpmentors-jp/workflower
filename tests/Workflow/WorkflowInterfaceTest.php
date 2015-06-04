@@ -12,7 +12,6 @@
 
 namespace PHPMentors\Workflower\Workflow;
 
-use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\WorkItem;
 
 abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
