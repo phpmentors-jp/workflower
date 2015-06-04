@@ -40,11 +40,6 @@ class SequenceFlow implements ConnectionInterface
     private $destination;
 
     /**
-     * @var bool
-     */
-    private $default;
-
-    /**
      * @var Expression
      */
     private $condition;
@@ -54,16 +49,14 @@ class SequenceFlow implements ConnectionInterface
      * @param TransitionalFlowObjectInterface $source
      * @param FlowObjectInterface             $destination
      * @param string                          $name
-     * @param bool                            $default
      * @param Expression                      $condition
      */
-    public function __construct($id, TransitionalFlowObjectInterface $source, FlowObjectInterface $destination, $name = null, $default = false, Expression $condition = null)
+    public function __construct($id, TransitionalFlowObjectInterface $source, FlowObjectInterface $destination, $name = null, Expression $condition = null)
     {
         $this->id = $id;
         $this->source = $source;
         $this->destination = $destination;
         $this->name = $name;
-        $this->default = $default;
         $this->condition = $condition;
     }
 
@@ -99,14 +92,6 @@ class SequenceFlow implements ConnectionInterface
     public function getDestination()
     {
         return $this->destination;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isDefault()
-    {
-        return $this->default;
     }
 
     /**

@@ -18,7 +18,7 @@ use PHPMentors\DomainKata\Entity\EntityInterface;
 class ConnectingObjectCollection implements EntityCollectionInterface
 {
     /**
-     * @var ConnectingObjectInterface[]
+     * @var array
      */
     private $connectingObjects = array();
 
@@ -29,7 +29,7 @@ class ConnectingObjectCollection implements EntityCollectionInterface
     {
         assert($entity instanceof ConnectingObjectInterface);
 
-        $this->connectingObjects[] = $entity;
+        $this->connectingObjects[$entity->getId()] = $entity;
     }
 
     /**

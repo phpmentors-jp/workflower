@@ -12,6 +12,17 @@
 
 namespace PHPMentors\Workflower\Workflow\Type;
 
+use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
+
 interface TransitionalFlowObjectInterface extends FlowObjectInterface
 {
+    /**
+     * @param SequenceFlow $sequenceFlow
+     */
+    public function setDefaultSequenceFlow(SequenceFlow $sequenceFlow);
+
+    /**
+     * @return SequenceFlow
+     */
+    public function getDefaultSequenceFlow();
 }

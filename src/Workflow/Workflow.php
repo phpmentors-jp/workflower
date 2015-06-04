@@ -161,6 +161,16 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
     /**
      * @param int|string $id
      *
+     * @return ConnectingObjectInterface|null
+     */
+    public function getConnectingObject($id)
+    {
+        return $this->connectingObjectCollection->get($id);
+    }
+
+    /**
+     * @param int|string $id
+     *
      * @return FlowObjectInterface|null
      */
     public function getFlowObject($id)
@@ -363,39 +373,30 @@ class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterf
      */
     private function selectSequenceFlow(TransitionalFlowObjectInterface $currentFlowObject)
     {
-        $nonDefaultSequenceFlows = array();
-        $defaultSequenceFlow = null;
         foreach ($this->connectingObjectCollection->filterBySource($currentFlowObject) as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
             if ($connectingObject instanceof SequenceFlow) {
-                if ($connectingObject->isDefault()) {
-                    $defaultSequenceFlow = $connectingObject;
-                } else {
-                    $nonDefaultSequenceFlows[] = $connectingObject;
+                if ($connectingObject !== $currentFlowObject->getDefaultSequenceFlow()) {
+                    $condition = $connectingObject->getCondition();
+                    if ($condition === null) {
+                        $selectedSequenceFlow = $connectingObject;
+                        break;
+                    } else {
+                        $expressionLanguage = new ExpressionLanguage();
+                        if ($expressionLanguage->evaluate($condition, $this->processData)) {
+                            $selectedSequenceFlow = $connectingObject;
+                            break;
+                        }
+                    }
                 }
             }
         }
 
-        $selectedSequenceFlow = null;
-        foreach ($nonDefaultSequenceFlows as $sequenceFlow) { /* @var $sequenceFlow SequenceFlow */
-            $condition = $sequenceFlow->getCondition();
-            if ($condition === null) {
-                $selectedSequenceFlow = $sequenceFlow;
-                break;
-            } else {
-                $expressionLanguage = new ExpressionLanguage();
-                if ($expressionLanguage->evaluate($condition, $this->processData)) {
-                    $selectedSequenceFlow = $sequenceFlow;
-                    break;
-                }
+        if (!isset($selectedSequenceFlow)) {
+            if ($currentFlowObject->getDefaultSequenceFlow() === null) {
+                throw new SequenceFlowNotSelectedException(sprintf('No sequence flow can be selected on "%s".',  $currentFlowObject->getId()));
             }
-        }
 
-        if ($selectedSequenceFlow === null && $defaultSequenceFlow !== null) {
-            $selectedSequenceFlow = $defaultSequenceFlow;
-        }
-
-        if ($selectedSequenceFlow === null) {
-            throw new SequenceFlowNotSelectedException(sprintf('No sequence flow can be selected on "%s".',  $currentFlowObject->getId()));
+            $selectedSequenceFlow = $currentFlowObject->getDefaultSequenceFlow();
         }
 
         $this->stateMachine->triggerEvent($selectedSequenceFlow->getDestination()->getId());

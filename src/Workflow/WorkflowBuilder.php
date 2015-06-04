@@ -63,6 +63,11 @@ class WorkflowBuilder
     private $workflowName;
 
     /**
+     * @var array
+     */
+    private $defaultableFlowObjects = array();
+
+    /**
      * @param int|string $workflowId
      * @param int|string $workflowName
      */
@@ -99,13 +104,18 @@ class WorkflowBuilder
     }
 
     /**
-     * @param string $id
-     * @param string $participant
-     * @param string $name
+     * @param int|string $id
+     * @param string     $participant
+     * @param string     $name
+     * @param int|string $defaultSequenceFlow
      */
-    public function addExclusiveGateway($id, $participant, $name = null)
+    public function addExclusiveGateway($id, $participant, $name = null, $defaultSequenceFlow = null)
     {
         $this->exclusiveGateways[$id] = array($participant, $name);
+
+        if ($defaultSequenceFlow !== null) {
+            $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
+        }
     }
 
     /**
@@ -118,36 +128,52 @@ class WorkflowBuilder
     }
 
     /**
-     * @param string $source
-     * @param string $destination
-     * @param string $id
-     * @param string $name
-     * @param bool   $default
-     * @param string $condition
+     * @param string     $source
+     * @param string     $destination
+     * @param int|string $id
+     * @param string     $name
+     * @param string     $condition
      */
-    public function addSequenceFlow($source, $destination, $id = null, $name = null, $default = false, $condition = null)
+    public function addSequenceFlow($source, $destination, $id = null, $name = null, $condition = null)
     {
-        $this->sequenceFlows[] = array($source, $destination, $id, $name, $default, $condition);
+        static $i = 0;
+
+        if ($id === null) {
+            $id = $source.'.'.$destination.$i;
+            ++$i;
+        }
+
+        $this->sequenceFlows[$id] = array($source, $destination, $name, $condition);
     }
 
     /**
-     * @param string $id
-     * @param string $participant
-     * @param string $name
+     * @param int|string $id
+     * @param string     $participant
+     * @param string     $name
+     * @param int|string $defaultSequenceFlow
      */
-    public function addStartEvent($id, $participant, $name = null)
+    public function addStartEvent($id, $participant, $name = null, $defaultSequenceFlow = null)
     {
-        $this->startEvents[$id] = array($participant, $name);
+        $this->startEvents[$id] = array($participant, $name, $defaultSequenceFlow);
+
+        if ($defaultSequenceFlow !== null) {
+            $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
+        }
     }
 
     /**
-     * @param string $id
-     * @param string $participant
-     * @param string $name
+     * @param string     $id
+     * @param string     $participant
+     * @param string     $name
+     * @param int|string $defaultSequenceFlow
      */
-    public function addTask($id, $participant, $name = null)
+    public function addTask($id, $participant, $name = null, $defaultSequenceFlow = null)
     {
-        $this->tasks[$id] = array($participant, $name);
+        $this->tasks[$id] = array($participant, $name, $defaultSequenceFlow);
+
+        if ($defaultSequenceFlow !== null) {
+            $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
+        }
     }
 
     /**
@@ -198,13 +224,13 @@ class WorkflowBuilder
             $workflow->addFlowObject(new ExclusiveGateway($id, $workflow->getRole($roleId), $name));
         }
 
-        foreach ($this->sequenceFlows as $i => $flow) {
-            list($source, $destination, $id, $name, $default, $condition) = $flow;
-            if ($id === null) {
-                $id = $source.'.'.$destination.$i;
-            }
+        foreach ($this->sequenceFlows as $id => $flow) {
+            list($source, $destination, $name, $condition) = $flow;
+            $workflow->addConnectingObject(new SequenceFlow($id, $workflow->getFlowObject($source), $workflow->getFlowObject($destination), $name, $condition === null ? null : new Expression($condition)));
 
-            $workflow->addConnectingObject(new SequenceFlow($id, $workflow->getFlowObject($source), $workflow->getFlowObject($destination), $name, $default, $condition === null ? null : new Expression($condition)));
+            if (array_key_exists($id, $this->defaultableFlowObjects)) {
+                $workflow->getFlowObject($this->defaultableFlowObjects[$id])->setDefaultSequenceFlow($workflow->getConnectingObject($id));
+            }
         }
 
         return $workflow;
