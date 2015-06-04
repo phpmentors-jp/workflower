@@ -35,29 +35,14 @@ class Task implements ActivityInterface
     private $name;
 
     /**
-     * @var bool
+     * @var WorkItem[]
      */
-    private $active = false;
-
-    /**
-     * @var \DateTime
-     */
-    private $startDate;
+    private $workItems = array();
 
     /**
      * @var ParticipantInterface
      */
     private $participant;
-
-    /**
-     * @var \DateTime
-     */
-    private $endDate;
-
-    /**
-     * @var string
-     */
-    private $endedWith;
 
     /**
      * @var EventDispatcherInterface
@@ -117,7 +102,23 @@ class Task implements ActivityInterface
      */
     public function getStartDate()
     {
-        return $this->startDate;
+        if (count($this->workItems) == 0) {
+            return null;
+        }
+
+        return $this->workItems[count($this->workItems) - 1]->getStartDate();
+    }
+
+    /**
+     * @return ParticipantInterface
+     */
+    public function getStartedBy()
+    {
+        if (count($this->workItems) == 0) {
+            return null;
+        }
+
+        return $this->workItems[count($this->workItems) - 1]->getStartedBy();
     }
 
     /**
@@ -133,7 +134,11 @@ class Task implements ActivityInterface
      */
     public function isActive()
     {
-        return $this->active;
+        if (count($this->workItems) == 0) {
+            return false;
+        }
+
+        return !$this->workItems[count($this->workItems) - 1]->isEnded();
     }
 
     /**
@@ -141,15 +146,11 @@ class Task implements ActivityInterface
      */
     public function start(ParticipantInterface $assignee)
     {
-        if ($this->active) {
+        if ($this->isActive()) {
             throw new ActivityAlreadyStartedException(sprintf('The activity "%s" is already started.', $this->getId()));
         }
 
-        $this->startDate = new \DateTime();
-        $this->endDate = null;
-        $this->endedWith = null;
-        $this->participant = $assignee;
-        $this->active = true;
+        $this->workItems[] = new WorkItem($assignee);
     }
 
     /**
@@ -157,13 +158,11 @@ class Task implements ActivityInterface
      */
     public function complete(ParticipantInterface $participant)
     {
-        if (!$this->active) {
+        if (!$this->isActive()) {
             throw new ActivityNotActiveException(sprintf('The activity "%s" is not active.', $this->getId()));
         }
 
-        $this->endDate = new \DateTime();
-        $this->endedWith = self::ENDED_WITH_COMPLETION;
-        $this->active = false;
+        $this->workItems[count($this->workItems) - 1]->end($participant, WorkItem::ENDED_WITH_COMPLETION);
     }
 
     /**
@@ -171,7 +170,11 @@ class Task implements ActivityInterface
      */
     public function isEnded()
     {
-        return $this->endDate !== null;
+        if (count($this->workItems) == 0) {
+            return false;
+        }
+
+        return $this->workItems[count($this->workItems) - 1]->isEnded();
     }
 
     /**
@@ -179,7 +182,23 @@ class Task implements ActivityInterface
      */
     public function getEndDate()
     {
-        return $this->endDate;
+        if (count($this->workItems) == 0) {
+            return null;
+        }
+
+        return $this->workItems[count($this->workItems) - 1]->getEndDate();
+    }
+
+    /**
+     * @return ParticipantInterface
+     */
+    public function getEndedBy()
+    {
+        if (count($this->workItems) == 0) {
+            return null;
+        }
+
+        return $this->workItems[count($this->workItems) - 1]->getEndedBy();
     }
 
     /**
@@ -187,6 +206,10 @@ class Task implements ActivityInterface
      */
     public function getEndedWith()
     {
-        return $this->endedWith;
+        if (count($this->workItems) == 0) {
+            return null;
+        }
+
+        return $this->workItems[count($this->workItems) - 1]->getEndedWith();
     }
 }

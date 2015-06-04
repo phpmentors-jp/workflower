@@ -13,6 +13,7 @@
 namespace PHPMentors\Workflower\Workflow;
 
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
+use PHPMentors\Workflower\Workflow\Activity\WorkItem;
 
 abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
 {
@@ -87,7 +88,7 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
         $this->assertThat($currentFlowObject->getId(), $this->equalTo('Record Loan Application Information'));
         $this->assertThat($currentFlowObject->isActive(), $this->isTrue());
         $this->assertThat($currentFlowObject->isEnded(), $this->isFalse());
-        $this->assertThat($currentFlowObject->getParticipant(), $this->identicalTo($participant));
+        $this->assertThat($currentFlowObject->getStartedBy(), $this->identicalTo($participant));
         $this->assertThat($currentFlowObject->getStartDate(), $this->isInstanceOf('DateTime'));
     }
 
@@ -118,7 +119,8 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
         $this->assertThat($previousFlowObject->isActive(), $this->isFalse());
         $this->assertThat($previousFlowObject->isEnded(), $this->isTrue());
         $this->assertThat($previousFlowObject->getEndDate(), $this->isInstanceOf('DateTime'));
-        $this->assertThat($previousFlowObject->getEndedWith(), $this->equalTo(ActivityInterface::ENDED_WITH_COMPLETION));
+        $this->assertThat($previousFlowObject->getEndedBy(), $this->identicalTo($participant));
+        $this->assertThat($previousFlowObject->getEndedWith(), $this->equalTo(WorkItem::ENDED_WITH_COMPLETION));
     }
 
     /**

@@ -17,12 +17,15 @@ use PHPMentors\Workflower\Workflow\Type\TransitionalFlowObjectInterface;
 
 interface ActivityInterface extends TransitionalFlowObjectInterface
 {
-    const ENDED_WITH_COMPLETION = 'completion';
-
     /**
      * @return \DateTime
      */
     public function getStartDate();
+
+    /**
+     * @return ParticipantInterface
+     */
+    public function getStartedBy();
 
     /**
      * @return ParticipantInterface
@@ -55,6 +58,11 @@ interface ActivityInterface extends TransitionalFlowObjectInterface
      * @return \DateTime
      */
     public function getEndDate();
+
+    /**
+     * @return ParticipantInterface
+     */
+    public function getEndedBy();
 
     /**
      * @return string
