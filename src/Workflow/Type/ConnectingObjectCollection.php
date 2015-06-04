@@ -87,4 +87,12 @@ class ConnectingObjectCollection implements EntityCollectionInterface
 
         return $collection;
     }
+
+    /*
+     * {@inheritDoc}
+     */
+    public function toArray()
+    {
+        return $this->connectingObjects;
+    }
 }

@@ -69,4 +69,12 @@ class RoleCollection implements EntityCollectionInterface
     {
         return new \ArrayIterator($this->roles);
     }
+
+    /*
+     * {@inheritDoc}
+     */
+    public function toArray()
+    {
+        return $this->roles;
+    }
 }

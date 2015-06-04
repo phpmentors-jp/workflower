@@ -69,4 +69,12 @@ class FlowObjectCollection implements EntityCollectionInterface
     {
         return new \ArrayIterator($this->flowObjects);
     }
+
+    /*
+     * {@inheritDoc}
+     */
+    public function toArray()
+    {
+        return $this->flowObjects;
+    }
 }
