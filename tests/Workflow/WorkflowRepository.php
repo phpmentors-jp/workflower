@@ -67,22 +67,22 @@ class WorkflowRepository implements WorkflowRepositoryInterface
         $workflowBuilder->addRole('ROLE_CREDIT_FACTORY', 'Credit Factory');
         $workflowBuilder->addRole('ROLE_BACK_OFFICE', 'Back Office');
         $workflowBuilder->addStartEvent('Start', 'ROLE_BRANCH');
-        $workflowBuilder->addTask('Record Loan Application Information', 'ROLE_BRANCH');
-        $workflowBuilder->addTask('Check Applicant Information', 'ROLE_BRANCH', null, 'Check Applicant Information.Loan Study');
-        $workflowBuilder->addTask('Loan Study', 'ROLE_CREDIT_FACTORY');
-        $workflowBuilder->addTask('Inform Rejection', 'ROLE_CREDIT_FACTORY');
-        $workflowBuilder->addTask('Disbursement', 'ROLE_BACK_OFFICE');
-        $workflowBuilder->addExclusiveGateway('Applicaion Approved?', 'ROLE_CREDIT_FACTORY', null, 'Applicaion Approved?.Disbursement');
+        $workflowBuilder->addTask('RecordLoanApplicationInformation', 'ROLE_BRANCH', 'Record Loan Application Information');
+        $workflowBuilder->addTask('CheckApplicantInformation', 'ROLE_BRANCH', 'Check Applicant Information', 'CheckApplicantInformation.LoanStudy');
+        $workflowBuilder->addTask('LoanStudy', 'ROLE_CREDIT_FACTORY', 'Loan Study');
+        $workflowBuilder->addTask('InformRejection', 'ROLE_CREDIT_FACTORY', 'Inform Rejection');
+        $workflowBuilder->addTask('Disbursement', 'ROLE_BACK_OFFICE', 'Disbursement');
+        $workflowBuilder->addExclusiveGateway('ApplicaionApproved', 'ROLE_CREDIT_FACTORY', 'Applicaion Approved?', 'ApplicaionApproved.Disbursement');
         $workflowBuilder->addEndEvent('End', 'ROLE_CREDIT_FACTORY');
-        $workflowBuilder->addSequenceFlow('Start', 'Record Loan Application Information');
-        $workflowBuilder->addSequenceFlow('Record Loan Application Information', 'Check Applicant Information');
-        $workflowBuilder->addSequenceFlow('Check Applicant Information', 'Loan Study', 'Check Applicant Information.Loan Study', 'Ok');
-        $workflowBuilder->addSequenceFlow('Check Applicant Information', 'End', null, 'Rejected', 'rejected === true');
-        $workflowBuilder->addSequenceFlow('Loan Study', 'Applicaion Approved?');
-        $workflowBuilder->addSequenceFlow('Applicaion Approved?', 'Disbursement', 'Applicaion Approved?.Disbursement', 'Ok');
-        $workflowBuilder->addSequenceFlow('Applicaion Approved?', 'Inform Rejection', null, 'Rejected', 'rejected === true');
-        $workflowBuilder->addSequenceFlow('Inform Rejection', 'End');
-        $workflowBuilder->addSequenceFlow('Disbursement', 'End');
+        $workflowBuilder->addSequenceFlow('Start', 'RecordLoanApplicationInformation', 'Start.RecordLoanApplicationInformation');
+        $workflowBuilder->addSequenceFlow('RecordLoanApplicationInformation', 'CheckApplicantInformation', 'RecordLoanApplicationInformation.CheckApplicantInformation');
+        $workflowBuilder->addSequenceFlow('CheckApplicantInformation', 'LoanStudy', 'CheckApplicantInformation.LoanStudy', 'Ok');
+        $workflowBuilder->addSequenceFlow('CheckApplicantInformation', 'End', 'CheckApplicantInformation.End', 'Rejected', 'rejected === true');
+        $workflowBuilder->addSequenceFlow('LoanStudy', 'ApplicaionApproved', 'LoanStudy.ApplicaionApproved');
+        $workflowBuilder->addSequenceFlow('ApplicaionApproved', 'Disbursement', 'ApplicaionApproved.Disbursement', 'Ok');
+        $workflowBuilder->addSequenceFlow('ApplicaionApproved', 'InformRejection', 'ApplicaionApproved.InformRejection', 'Rejected', 'rejected === true');
+        $workflowBuilder->addSequenceFlow('InformRejection', 'End', 'InformRejection.End');
+        $workflowBuilder->addSequenceFlow('Disbursement', 'End', 'Disbursement.End');
 
         return $workflowBuilder->build();
     }

@@ -59,7 +59,7 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
         $currentFlowObject = $workflow->getCurrentFlowObject();
 
         $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\Task'));
-        $this->assertThat($currentFlowObject->getId(), $this->equalTo('Record Loan Application Information'));
+        $this->assertThat($currentFlowObject->getId(), $this->equalTo('RecordLoanApplicationInformation'));
         $this->assertThat($currentFlowObject->isActive(), $this->isFalse());
         $this->assertThat($currentFlowObject->isEnded(), $this->isFalse());
 
@@ -84,7 +84,7 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
         $currentFlowObject = $workflow->getCurrentFlowObject();
 
         $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\Task'));
-        $this->assertThat($currentFlowObject->getId(), $this->equalTo('Record Loan Application Information'));
+        $this->assertThat($currentFlowObject->getId(), $this->equalTo('RecordLoanApplicationInformation'));
         $this->assertThat($currentFlowObject->isActive(), $this->isTrue());
         $this->assertThat($currentFlowObject->isEnded(), $this->isFalse());
         $this->assertThat($currentFlowObject->getStartedBy(), $this->identicalTo($participant));
@@ -107,14 +107,14 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
         $currentFlowObject = $workflow->getCurrentFlowObject();
 
         $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\Task'));
-        $this->assertThat($currentFlowObject->getId(), $this->equalTo('Check Applicant Information'));
+        $this->assertThat($currentFlowObject->getId(), $this->equalTo('CheckApplicantInformation'));
         $this->assertThat($currentFlowObject->isActive(), $this->isFalse());
         $this->assertThat($currentFlowObject->isEnded(), $this->isFalse());
 
         $previousFlowObject = $workflow->getPreviousFlowObject();
 
         $this->assertThat($previousFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\Task'));
-        $this->assertThat($previousFlowObject->getId(), $this->equalTo('Record Loan Application Information'));
+        $this->assertThat($previousFlowObject->getId(), $this->equalTo('RecordLoanApplicationInformation'));
         $this->assertThat($previousFlowObject->isActive(), $this->isFalse());
         $this->assertThat($previousFlowObject->isEnded(), $this->isTrue());
         $this->assertThat($previousFlowObject->getEndDate(), $this->isInstanceOf('DateTime'));
@@ -129,7 +129,7 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array(true, 'End'),
-            array(false, 'Loan Study'),
+            array(false, 'LoanStudy'),
         );
     }
 
@@ -165,7 +165,7 @@ abstract class WorkflowInterfaceTest extends \PHPUnit_Framework_TestCase
     public function selectSequenceFlowOnExclusiveGatewayData()
     {
         return array(
-            array(true, 'Inform Rejection'),
+            array(true, 'InformRejection'),
             array(false, 'Disbursement'),
         );
     }
