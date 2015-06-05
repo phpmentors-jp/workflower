@@ -43,19 +43,8 @@ class Bpmn2Reader implements ServiceInterface
         $document = new \DOMDocument();
         $schema = $this->schema;
         $errorToExceptionContext = new ErrorToExceptionContext(E_WARNING, function () use ($file, $document, $schema) {
-            try {
-                $result = $document->load($file);
-                if (!$result) {
-                    throw new \LogicException('foo');
-                }
-
-                $result = $document->schemaValidate($schema);
-                if (!$result) {
-                    throw new \LogicException('bar');
-                }
-            } catch (\Exception $e) {
-                throw $e;
-            }
+            $document->load($file);
+            $document->schemaValidate($schema);
         });
         $errorToExceptionContext->invoke();
 
