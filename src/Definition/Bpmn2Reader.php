@@ -32,17 +32,13 @@ class Bpmn2Reader implements ServiceInterface
     }
 
     /**
-     * @param string     $file
-     * @param int|string $workflowId
-     * @param string     $workflowName
+     * @param string $file
      *
      * @return Workflow
      */
-    public function read($file, $workflowId = null, $workflowName = null)
+    public function read($file)
     {
-        $workflowBuilder = new WorkflowBuilder($workflowId, $workflowName);
         $document = new \DOMDocument();
-
         $schema = $this->schema;
         $errorToExceptionContext = new ErrorToExceptionContext(E_WARNING, function () use ($file, $document, $schema) {
             try {
@@ -60,6 +56,22 @@ class Bpmn2Reader implements ServiceInterface
             }
         });
         $errorToExceptionContext->invoke();
+
+        $workflowBuilder = new WorkflowBuilder();
+
+        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'process') as $element) {
+            if ($element->hasAttribute('id')) {
+                $workflowId = $element->getAttribute('id');
+            }
+
+            if ($element->hasAttribute('name')) {
+                $workflowBuilder->setWorkflowName($element->getAttribute('name'));
+            }
+        }
+        if (!isset($workflowId)) {
+            $workflowId = pathinfo($file, PATHINFO_FILENAME);
+        }
+        $workflowBuilder->setWorkflowId($workflowId);
 
         $flowObjectRoles = array();
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'lane') as $element) {

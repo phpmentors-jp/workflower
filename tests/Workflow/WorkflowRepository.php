@@ -63,6 +63,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     {
         $workflowBuilder = new WorkflowBuilder();
         $workflowBuilder->setWorkflowId('LoanRequestProcess');
+        $workflowBuilder->setWorkflowName('Loan Request Process');
         $workflowBuilder->addRole('ROLE_BRANCH', 'Branch');
         $workflowBuilder->addRole('ROLE_CREDIT_FACTORY', 'Credit Factory');
         $workflowBuilder->addRole('ROLE_BACK_OFFICE', 'Back Office');
