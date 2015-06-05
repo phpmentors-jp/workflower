@@ -12,6 +12,6 @@
 
 namespace PHPMentors\Workflower\Definition;
 
-class Bpmn2ReaderException extends \UnexpectedValueException
+class IdAttributeNotFoundException extends \UnexpectedValueException
 {
 }

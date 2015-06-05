@@ -36,7 +36,7 @@ class Bpmn2Reader implements ServiceInterface
      *
      * @return Workflow
      *
-     * @throws Bpmn2ReaderException
+     * @throws IdAttributeNotFoundException
      */
     public function read($file)
     {
@@ -78,7 +78,7 @@ class Bpmn2Reader implements ServiceInterface
         $flowObjectRoles = array();
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'lane') as $element) {
             if (!$element->hasAttribute('id')) {
-                throw $this->createBpmn2ReaderException($element, $file);
+                throw $this->createIdAttributeNotFoundException($element, $file);
             }
 
             $workflowBuilder->addRole(
@@ -93,7 +93,7 @@ class Bpmn2Reader implements ServiceInterface
 
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'startEvent') as $element) {
             if (!$element->hasAttribute('id')) {
-                throw $this->createBpmn2ReaderException($element, $file);
+                throw $this->createIdAttributeNotFoundException($element, $file);
             }
 
             $workflowBuilder->addStartEvent(
@@ -106,7 +106,7 @@ class Bpmn2Reader implements ServiceInterface
 
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'task') as $element) {
             if (!$element->hasAttribute('id')) {
-                throw $this->createBpmn2ReaderException($element, $file);
+                throw $this->createIdAttributeNotFoundException($element, $file);
             }
 
             $workflowBuilder->addTask(
@@ -119,7 +119,7 @@ class Bpmn2Reader implements ServiceInterface
 
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'exclusiveGateway') as $element) {
             if (!$element->hasAttribute('id')) {
-                throw $this->createBpmn2ReaderException($element, $file);
+                throw $this->createIdAttributeNotFoundException($element, $file);
             }
 
             $workflowBuilder->addExclusiveGateway(
@@ -132,7 +132,7 @@ class Bpmn2Reader implements ServiceInterface
 
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'endEvent') as $element) {
             if (!$element->hasAttribute('id')) {
-                throw $this->createBpmn2ReaderException($element, $file);
+                throw $this->createIdAttributeNotFoundException($element, $file);
             }
 
             $workflowBuilder->addEndEvent($element->getAttribute('id'), $flowObjectRoles[$element->getAttribute('id')], $element->hasAttribute('name') ? $element->getAttribute('name') : null);
@@ -140,7 +140,7 @@ class Bpmn2Reader implements ServiceInterface
 
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'sequenceFlow') as $element) {
             if (!$element->hasAttribute('id')) {
-                throw $this->createBpmn2ReaderException($element, $file);
+                throw $this->createIdAttributeNotFoundException($element, $file);
             }
 
             $condition = null;
@@ -165,10 +165,10 @@ class Bpmn2Reader implements ServiceInterface
      * @param \DOMElement $element
      * @param string      $file
      *
-     * @return Bpmn2ReaderException
+     * @return IdAttributeNotFoundException
      */
-    private function createBpmn2ReaderException(\DOMElement $element, $file)
+    private function createIdAttributeNotFoundException(\DOMElement $element, $file)
     {
-        return new Bpmn2ReaderException(sprintf('The id attribute of the "%s" element is not found in "%s" on line %d', $element->tagName, $file, $element->getLineNo()));
+        return new IdAttributeNotFoundException(sprintf('The id attribute of the "%s" element is not found in "%s" on line %d', $element->tagName, $file, $element->getLineNo()));
     }
 }
