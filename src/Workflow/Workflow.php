@@ -37,7 +37,7 @@ use Stagehand\FSM\StateMachine\StateMachine;
 use Stagehand\FSM\StateMachine\StateMachineInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
-class Workflow implements EntityInterface, IdentifiableInterface, WorkflowInterface
+class Workflow implements EntityInterface, IdentifiableInterface
 {
     /**
      * @var string
