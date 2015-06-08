@@ -23,7 +23,7 @@ use PHPMentors\Workflower\Workflow\Gateway\GatewayInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
-use PHPMentors\Workflower\Workflow\Type\ConditionalFlowObjectInterface;
+use PHPMentors\Workflower\Workflow\Type\ConditionalInterface;
 use PHPMentors\Workflower\Workflow\Type\ConnectingObjectCollection;
 use PHPMentors\Workflower\Workflow\Type\ConnectingObjectInterface;
 use PHPMentors\Workflower\Workflow\Type\FlowObjectCollection;
@@ -376,7 +376,7 @@ class Workflow implements EntityInterface, IdentifiableInterface
     {
         foreach ($this->connectingObjectCollection->filterBySource($currentFlowObject) as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
             if ($connectingObject instanceof SequenceFlow) {
-                if (!($currentFlowObject instanceof ConditionalFlowObjectInterface) || $connectingObject->getId() !== $currentFlowObject->getDefaultSequenceFlowId()) {
+                if (!($currentFlowObject instanceof ConditionalInterface) || $connectingObject->getId() !== $currentFlowObject->getDefaultSequenceFlowId()) {
                     $condition = $connectingObject->getCondition();
                     if ($condition === null) {
                         $selectedSequenceFlow = $connectingObject;
@@ -393,7 +393,7 @@ class Workflow implements EntityInterface, IdentifiableInterface
         }
 
         if (!isset($selectedSequenceFlow)) {
-            if (!($currentFlowObject instanceof ConditionalFlowObjectInterface) || $currentFlowObject->getDefaultSequenceFlowId() === null) {
+            if (!($currentFlowObject instanceof ConditionalInterface) || $currentFlowObject->getDefaultSequenceFlowId() === null) {
                 throw new SequenceFlowNotSelectedException(sprintf('No sequence flow can be selected on "%s".',  $currentFlowObject->getId()));
             }
 
