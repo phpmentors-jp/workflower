@@ -15,7 +15,7 @@ namespace PHPMentors\Workflower\Workflow\Event;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
-class Event implements EventInterface
+abstract class Event implements EventInterface
 {
     /**
      * @var int|string
