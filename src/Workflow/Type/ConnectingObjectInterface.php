@@ -15,12 +15,12 @@ namespace PHPMentors\Workflower\Workflow\Type;
 interface ConnectingObjectInterface extends TypeInterface
 {
     /**
-     * @return TransitionalNodeInterface
+     * @return TransitionalFlowObjectInterface
      */
     public function getSource();
 
     /**
-     * @return NodeInterface
+     * @return FlowObjectInterface
      */
     public function getDestination();
 }
