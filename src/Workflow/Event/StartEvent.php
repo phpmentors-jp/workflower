@@ -12,29 +12,8 @@
 
 namespace PHPMentors\Workflower\Workflow\Event;
 
-use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
 use PHPMentors\Workflower\Workflow\Type\TransitionalFlowObjectInterface;
 
 class StartEvent extends Event implements TransitionalFlowObjectInterface
 {
-    /**
-     * @var SequenceFlow
-     */
-    private $defaultSequenceFlow;
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setDefaultSequenceFlow(SequenceFlow $sequenceFlow)
-    {
-        $this->defaultSequenceFlow = $sequenceFlow;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getDefaultSequenceFlow()
-    {
-        return $this->defaultSequenceFlow;
-    }
 }
