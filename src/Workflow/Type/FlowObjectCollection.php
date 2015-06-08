@@ -15,12 +15,34 @@ namespace PHPMentors\Workflower\Workflow\Type;
 use PHPMentors\DomainKata\Entity\EntityCollectionInterface;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 
-class FlowObjectCollection implements EntityCollectionInterface
+class FlowObjectCollection implements EntityCollectionInterface, \Serializable
 {
     /**
      * @var array
      */
     private $flowObjects = array();
+
+    /**
+     * {@inheritDoc}
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            'flowObjects' => $this->flowObjects,
+        ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
+    }
 
     /**
      * {@inheritDoc}

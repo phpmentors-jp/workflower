@@ -15,12 +15,34 @@ namespace PHPMentors\Workflower\Workflow\Participant;
 use PHPMentors\DomainKata\Entity\EntityCollectionInterface;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 
-class RoleCollection implements EntityCollectionInterface
+class RoleCollection implements EntityCollectionInterface, \Serializable
 {
     /**
      * @var array
      */
     private $roles = array();
+
+    /**
+     * {@inheritDoc}
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            'roles' => $this->roles,
+        ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
+    }
 
     /**
      * {@inheritDoc}

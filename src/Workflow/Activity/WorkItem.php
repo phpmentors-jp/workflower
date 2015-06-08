@@ -4,7 +4,7 @@ namespace PHPMentors\Workflower\Workflow\Activity;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 
-class WorkItem implements EntityInterface
+class WorkItem implements EntityInterface, \Serializable
 {
     const ENDED_WITH_COMPLETION = 'completion';
 
@@ -40,6 +40,32 @@ class WorkItem implements EntityInterface
     {
         $this->startDate = new \DateTime();
         $this->startedBy = $assignee;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            'startDate' => $this->startDate,
+            'startedBy' => $this->startedBy,
+            'endDate' => $this->endDate,
+            'endedBy' => $this->endedBy,
+            'endedWith' => $this->endedWith,
+        ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
     }
 
     /**

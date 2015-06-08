@@ -15,12 +15,34 @@ namespace PHPMentors\Workflower\Workflow\Type;
 use PHPMentors\DomainKata\Entity\EntityCollectionInterface;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 
-class ConnectingObjectCollection implements EntityCollectionInterface
+class ConnectingObjectCollection implements EntityCollectionInterface, \Serializable
 {
     /**
      * @var array
      */
     private $connectingObjects = array();
+
+    /**
+     * {@inheritDoc}
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            'connectingObjects' => $this->connectingObjects,
+        ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
+    }
 
     /**
      * {@inheritDoc}

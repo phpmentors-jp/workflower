@@ -15,7 +15,7 @@ namespace PHPMentors\Workflower\Workflow\Event;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
-abstract class Event implements EventInterface
+abstract class Event implements EventInterface, \Serializable
 {
     /**
      * @var int|string
@@ -42,6 +42,30 @@ abstract class Event implements EventInterface
         $this->id = $id;
         $this->role = $role;
         $this->name = $name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            'id' => $this->id,
+            'name' => $this->name,
+            'role' => $this->role,
+        ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
     }
 
     /**

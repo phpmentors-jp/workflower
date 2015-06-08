@@ -15,7 +15,7 @@ namespace PHPMentors\Workflower\Workflow\Gateway;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
-class ExclusiveGateway implements GatewayInterface
+class ExclusiveGateway implements GatewayInterface, \Serializable
 {
     /**
      * @var int|string
@@ -47,6 +47,31 @@ class ExclusiveGateway implements GatewayInterface
         $this->id = $id;
         $this->role = $role;
         $this->name = $name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            'id' => $this->id,
+            'name' => $this->name,
+            'role' => $this->role,
+            'defaultSequenceFlow' => $this->defaultSequenceFlowId,
+        ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
     }
 
     /**

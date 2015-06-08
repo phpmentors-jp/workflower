@@ -17,7 +17,7 @@ use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class Task implements ActivityInterface
+class Task implements ActivityInterface, \Serializable
 {
     /**
      * @var int|string
@@ -59,6 +59,32 @@ class Task implements ActivityInterface
         $this->id = $id;
         $this->role = $role;
         $this->name = $name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            'id' => $this->id,
+            'role' => $this->role,
+            'name' => $this->name,
+            'workItems' => $this->workItems,
+            'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
+        ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
     }
 
     /**

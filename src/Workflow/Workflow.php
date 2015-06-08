@@ -38,7 +38,7 @@ use Stagehand\FSM\StateMachine\StateMachine;
 use Stagehand\FSM\StateMachine\StateMachineInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
-class Workflow implements EntityInterface, IdentifiableInterface
+class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
 {
     /**
      * @var string
@@ -96,6 +96,34 @@ class Workflow implements EntityInterface, IdentifiableInterface
         $this->roleCollection = new RoleCollection();
         $this->stateMachine = $this->createStateMachine($id);
         $this->name = $name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            'name' => $this->name,
+            'connectingObjectCollection' => $this->connectingObjectCollection,
+            'flowObjectCollection' => $this->flowObjectCollection,
+            'roleCollection' => $this->roleCollection,
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
+            'stateMachine' => $this->stateMachine,
+        ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
     }
 
     /**

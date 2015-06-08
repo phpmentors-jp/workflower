@@ -17,7 +17,7 @@ use PHPMentors\Workflower\Workflow\Type\FlowObjectInterface;
 use PHPMentors\Workflower\Workflow\Type\TransitionalInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
 
-class SequenceFlow implements ConnectionInterface
+class SequenceFlow implements ConnectionInterface, \Serializable
 {
     /**
      * @var int|string
@@ -58,6 +58,32 @@ class SequenceFlow implements ConnectionInterface
         $this->destination = $destination;
         $this->name = $name;
         $this->condition = $condition;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            'id' => $this->id,
+            'name' => $this->name,
+            'source' => $this->source,
+            'destination' => $this->destination,
+            'condition' => $this->condition,
+        ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
     }
 
     /**
