@@ -15,9 +15,9 @@ namespace PHPMentors\Workflower\Workflow\Activity;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Type\ConditionalFlowObjectInterface;
 use PHPMentors\Workflower\Workflow\Type\FlowObjectInterface;
-use PHPMentors\Workflower\Workflow\Type\TransitionalFlowObjectInterface;
+use PHPMentors\Workflower\Workflow\Type\TransitionalInterface;
 
-interface ActivityInterface extends FlowObjectInterface, TransitionalFlowObjectInterface, ConditionalFlowObjectInterface
+interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, ConditionalFlowObjectInterface
 {
     /**
      * @return \DateTime

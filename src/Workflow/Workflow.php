@@ -28,7 +28,7 @@ use PHPMentors\Workflower\Workflow\Type\ConnectingObjectCollection;
 use PHPMentors\Workflower\Workflow\Type\ConnectingObjectInterface;
 use PHPMentors\Workflower\Workflow\Type\FlowObjectCollection;
 use PHPMentors\Workflower\Workflow\Type\FlowObjectInterface;
-use PHPMentors\Workflower\Workflow\Type\TransitionalFlowObjectInterface;
+use PHPMentors\Workflower\Workflow\Type\TransitionalInterface;
 use Stagehand\FSM\Event\TransitionEvent;
 use Stagehand\FSM\State\FinalState;
 use Stagehand\FSM\State\InitialState;
@@ -368,11 +368,11 @@ class Workflow implements EntityInterface, IdentifiableInterface
     }
 
     /**
-     * @param TransitionalFlowObjectInterface $currentFlowObject
+     * @param TransitionalInterface $currentFlowObject
      *
      * @throws SequenceFlowNotSelectedException
      */
-    private function selectSequenceFlow(TransitionalFlowObjectInterface $currentFlowObject)
+    private function selectSequenceFlow(TransitionalInterface $currentFlowObject)
     {
         foreach ($this->connectingObjectCollection->filterBySource($currentFlowObject) as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
             if ($connectingObject instanceof SequenceFlow) {

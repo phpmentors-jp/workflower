@@ -14,7 +14,7 @@ namespace PHPMentors\Workflower\Workflow\Connection;
 
 use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Type\FlowObjectInterface;
-use PHPMentors\Workflower\Workflow\Type\TransitionalFlowObjectInterface;
+use PHPMentors\Workflower\Workflow\Type\TransitionalInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
 
 class SequenceFlow implements ConnectionInterface
@@ -30,7 +30,7 @@ class SequenceFlow implements ConnectionInterface
     private $name;
 
     /**
-     * @var TransitionalFlowObjectInterface
+     * @var TransitionalInterface
      */
     private $source;
 
@@ -46,12 +46,12 @@ class SequenceFlow implements ConnectionInterface
 
     /**
      * @param int|string
-     * @param TransitionalFlowObjectInterface $source
-     * @param FlowObjectInterface             $destination
-     * @param string                          $name
-     * @param Expression                      $condition
+     * @param TransitionalInterface $source
+     * @param FlowObjectInterface   $destination
+     * @param string                $name
+     * @param Expression            $condition
      */
-    public function __construct($id, TransitionalFlowObjectInterface $source, FlowObjectInterface $destination, $name = null, Expression $condition = null)
+    public function __construct($id, TransitionalInterface $source, FlowObjectInterface $destination, $name = null, Expression $condition = null)
     {
         $this->id = $id;
         $this->source = $source;

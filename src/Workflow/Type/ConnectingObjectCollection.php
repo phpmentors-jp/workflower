@@ -71,11 +71,11 @@ class ConnectingObjectCollection implements EntityCollectionInterface
     }
 
     /**
-     * @param TransitionalFlowObjectInterface $flowObject
+     * @param TransitionalInterface $flowObject
      *
      * @return ConnectingObjectCollection
      */
-    public function filterBySource(TransitionalFlowObjectInterface $flowObject)
+    public function filterBySource(TransitionalInterface $flowObject)
     {
         $collection = new static();
 

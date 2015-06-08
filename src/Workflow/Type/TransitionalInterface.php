@@ -14,6 +14,6 @@ namespace PHPMentors\Workflower\Workflow\Type;
 
 use PHPMentors\DomainKata\Entity\Operation\IdentifiableInterface;
 
-interface TransitionalFlowObjectInterface extends OperationInterface, IdentifiableInterface
+interface TransitionalInterface extends OperationInterface, IdentifiableInterface
 {
 }
