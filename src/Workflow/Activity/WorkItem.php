@@ -1,9 +1,10 @@
 <?php
 namespace PHPMentors\Workflower\Workflow\Activity;
 
+use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 
-class WorkItem
+class WorkItem implements EntityInterface
 {
     const ENDED_WITH_COMPLETION = 'completion';
 
