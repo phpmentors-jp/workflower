@@ -145,12 +145,12 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
-        $workflow->setProcessData('rejected', false);
+        $workflow->setProcessData(array('rejected' => false));
         $workflow->start($workflow->getFlowObject('Start'));
         $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
         $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
         $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->setProcessData('rejected', $rejected);
+        $workflow->setProcessData(array('rejected' => $rejected));
         $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
@@ -182,14 +182,14 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
-        $workflow->setProcessData('rejected', false);
+        $workflow->setProcessData(array('rejected' => false));
         $workflow->start($workflow->getFlowObject('Start'));
         $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
         $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
         $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
         $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
         $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->setProcessData('rejected', $rejected);
+        $workflow->setProcessData(array('rejected' => $rejected));
         $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
@@ -206,7 +206,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
-        $workflow->setProcessData('rejected', false);
+        $workflow->setProcessData(array('rejected' => false));
         $workflow->start($workflow->getFlowObject('Start'));
         $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
         $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);

@@ -77,7 +77,7 @@ class Workflow implements EntityInterface, IdentifiableInterface
     /**
      * @var array
      */
-    private $processData = array();
+    private $processData;
 
     /**
      * @var StateMachineInterface
@@ -312,11 +312,11 @@ class Workflow implements EntityInterface, IdentifiableInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param array $processData
      */
-    public function setProcessData($key, $value)
+    public function setProcessData(array $processData)
     {
-        $this->processData[$key] = $value;
+        $this->processData = $processData;
     }
 
     /**
