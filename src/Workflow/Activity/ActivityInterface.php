@@ -30,11 +30,6 @@ interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, 
     public function getStartedBy();
 
     /**
-     * @return ParticipantInterface
-     */
-    public function getParticipant();
-
-    /**
      * @return bool
      */
     public function isActive();

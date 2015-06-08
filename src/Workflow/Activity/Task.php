@@ -40,11 +40,6 @@ class Task implements ActivityInterface
     private $workItems = array();
 
     /**
-     * @var ParticipantInterface
-     */
-    private $participant;
-
-    /**
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
@@ -124,14 +119,6 @@ class Task implements ActivityInterface
         }
 
         return $this->workItems[count($this->workItems) - 1]->getStartedBy();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getParticipant()
-    {
-        return $this->participant;
     }
 
     /**
