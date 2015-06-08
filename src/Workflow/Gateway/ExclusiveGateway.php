@@ -13,7 +13,6 @@
 namespace PHPMentors\Workflower\Workflow\Gateway;
 
 use PHPMentors\DomainKata\Entity\EntityInterface;
-use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
 class ExclusiveGateway implements GatewayInterface
@@ -34,9 +33,9 @@ class ExclusiveGateway implements GatewayInterface
     private $role;
 
     /**
-     * @var SequenceFlow
+     * @var int|string
      */
-    private $defaultSequenceFlow;
+    private $defaultSequenceFlowId;
 
     /**
      * @param int|string $id
@@ -89,16 +88,16 @@ class ExclusiveGateway implements GatewayInterface
     /**
      * {@inheritDoc}
      */
-    public function setDefaultSequenceFlow(SequenceFlow $sequenceFlow)
+    public function setDefaultSequenceFlowId($sequenceFlowId)
     {
-        $this->defaultSequenceFlow = $sequenceFlow;
+        $this->defaultSequenceFlowId = $sequenceFlowId;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getDefaultSequenceFlow()
+    public function getDefaultSequenceFlowId()
     {
-        return $this->defaultSequenceFlow;
+        return $this->defaultSequenceFlowId;
     }
 }

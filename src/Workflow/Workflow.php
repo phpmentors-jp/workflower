@@ -23,6 +23,7 @@ use PHPMentors\Workflower\Workflow\Gateway\GatewayInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
+use PHPMentors\Workflower\Workflow\Type\ConditionalFlowObjectInterface;
 use PHPMentors\Workflower\Workflow\Type\ConnectingObjectCollection;
 use PHPMentors\Workflower\Workflow\Type\ConnectingObjectInterface;
 use PHPMentors\Workflower\Workflow\Type\FlowObjectCollection;
@@ -375,7 +376,7 @@ class Workflow implements EntityInterface, IdentifiableInterface
     {
         foreach ($this->connectingObjectCollection->filterBySource($currentFlowObject) as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
             if ($connectingObject instanceof SequenceFlow) {
-                if ($connectingObject !== $currentFlowObject->getDefaultSequenceFlow()) {
+                if (!($currentFlowObject instanceof ConditionalFlowObjectInterface) || $connectingObject->getId() !== $currentFlowObject->getDefaultSequenceFlowId()) {
                     $condition = $connectingObject->getCondition();
                     if ($condition === null) {
                         $selectedSequenceFlow = $connectingObject;
@@ -392,11 +393,11 @@ class Workflow implements EntityInterface, IdentifiableInterface
         }
 
         if (!isset($selectedSequenceFlow)) {
-            if ($currentFlowObject->getDefaultSequenceFlow() === null) {
+            if (!($currentFlowObject instanceof ConditionalFlowObjectInterface) || $currentFlowObject->getDefaultSequenceFlowId() === null) {
                 throw new SequenceFlowNotSelectedException(sprintf('No sequence flow can be selected on "%s".',  $currentFlowObject->getId()));
             }
 
-            $selectedSequenceFlow = $currentFlowObject->getDefaultSequenceFlow();
+            $selectedSequenceFlow = $this->connectingObjectCollection->get($currentFlowObject->getDefaultSequenceFlowId());
         }
 
         $this->stateMachine->triggerEvent($selectedSequenceFlow->getDestination()->getId());

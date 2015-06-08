@@ -10,10 +10,17 @@
  * distribution, and is available at http://opensource.org/licenses/BSD-2-Clause
  */
 
-namespace PHPMentors\Workflower\Workflow\Gateway;
+namespace PHPMentors\Workflower\Workflow\Type;
 
-use PHPMentors\Workflower\Workflow\Type\ConditionalFlowObjectInterface;
-
-interface GatewayInterface extends ConditionalFlowObjectInterface
+interface ConditionalFlowObjectInterface extends TransitionalFlowObjectInterface
 {
+    /**
+     * @param int|string $sequenceFlowId
+     */
+    public function setDefaultSequenceFlowId($sequenceFlowId);
+
+    /**
+     * @return int|string
+     */
+    public function getDefaultSequenceFlowId();
 }

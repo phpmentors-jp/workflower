@@ -13,7 +13,6 @@
 namespace PHPMentors\Workflower\Workflow\Activity;
 
 use PHPMentors\DomainKata\Entity\EntityInterface;
-use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -51,9 +50,9 @@ class Task implements ActivityInterface
     private $eventDispatcher;
 
     /**
-     * @var SequenceFlow
+     * @var int|string
      */
-    private $defaultSequenceFlow;
+    private $defaultSequenceFlowId;
 
     /**
      * @param int|string $id
@@ -222,16 +221,16 @@ class Task implements ActivityInterface
     /**
      * {@inheritDoc}
      */
-    public function setDefaultSequenceFlow(SequenceFlow $sequenceFlow)
+    public function setDefaultSequenceFlowId($sequenceFlowId)
     {
-        $this->defaultSequenceFlow = $sequenceFlow;
+        $this->defaultSequenceFlowId = $sequenceFlowId;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getDefaultSequenceFlow()
+    public function getDefaultSequenceFlowId()
     {
-        return $this->defaultSequenceFlow;
+        return $this->defaultSequenceFlowId;
     }
 }

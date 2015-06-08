@@ -229,7 +229,7 @@ class WorkflowBuilder
             $workflow->addConnectingObject(new SequenceFlow($id, $workflow->getFlowObject($source), $workflow->getFlowObject($destination), $name, $condition === null ? null : new Expression($condition)));
 
             if (array_key_exists($id, $this->defaultableFlowObjects)) {
-                $workflow->getFlowObject($this->defaultableFlowObjects[$id])->setDefaultSequenceFlow($workflow->getConnectingObject($id));
+                $workflow->getFlowObject($this->defaultableFlowObjects[$id])->setDefaultSequenceFlowId($id);
             }
         }
 
