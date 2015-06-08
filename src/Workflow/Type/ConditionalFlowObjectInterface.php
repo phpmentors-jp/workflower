@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Type;
 
-interface ConditionalFlowObjectInterface extends TransitionalFlowObjectInterface
+interface ConditionalFlowObjectInterface extends OperationInterface
 {
     /**
      * @param int|string $sequenceFlowId

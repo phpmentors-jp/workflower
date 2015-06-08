@@ -13,7 +13,9 @@
 namespace PHPMentors\Workflower\Workflow\Gateway;
 
 use PHPMentors\Workflower\Workflow\Type\ConditionalFlowObjectInterface;
+use PHPMentors\Workflower\Workflow\Type\FlowObjectInterface;
+use PHPMentors\Workflower\Workflow\Type\TransitionalFlowObjectInterface;
 
-interface GatewayInterface extends ConditionalFlowObjectInterface
+interface GatewayInterface extends FlowObjectInterface, TransitionalFlowObjectInterface, ConditionalFlowObjectInterface
 {
 }
