@@ -13,6 +13,7 @@
 namespace PHPMentors\Workflower\Workflow;
 
 use PHPMentors\Workflower\Workflow\Activity\WorkItem;
+
 class WorkflowTest extends \PHPUnit_Framework_TestCase
 {
     /**
