@@ -22,7 +22,7 @@ class Bpmn2ReaderTest extends \PHPUnit_Framework_TestCase
     public function read()
     {
         $workflowRepository = new WorkflowRepository();
-        $bpmn2Reader = new Bpmn2Reader(dirname(dirname(__DIR__)).'/src/Resources/config/workflower/schema/BPMN20.xsd');
+        $bpmn2Reader = new Bpmn2Reader();
         $workflow = $bpmn2Reader->read(dirname(__DIR__).'/Resources/config/workflower/LoanRequestProcess.bpmn');
 
         $this->assertThat($workflow, $this->equalTo($workflowRepository->findById('LoanRequestProcess')));

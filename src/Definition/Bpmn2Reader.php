@@ -19,19 +19,6 @@ use PHPMentors\Workflower\Workflow\WorkflowBuilder;
 class Bpmn2Reader implements ServiceInterface
 {
     /**
-     * @var string
-     */
-    private $schema;
-
-    /**
-     * @param string $schema
-     */
-    public function __construct($schema)
-    {
-        $this->schema = $schema;
-    }
-
-    /**
      * @param string $file
      *
      * @return Workflow
@@ -41,10 +28,9 @@ class Bpmn2Reader implements ServiceInterface
     public function read($file)
     {
         $document = new \DOMDocument();
-        $schema = $this->schema;
-        $errorToExceptionContext = new ErrorToExceptionContext(E_WARNING, function () use ($file, $document, $schema) {
+        $errorToExceptionContext = new ErrorToExceptionContext(E_WARNING, function () use ($file, $document) {
             $document->load($file);
-            $document->schemaValidate($schema);
+            $document->schemaValidate(dirname(__DIR__).'/Resources/config/workflower/schema/BPMN20.xsd');
         });
         $errorToExceptionContext->invoke();
 
