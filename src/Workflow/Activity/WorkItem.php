@@ -16,7 +16,7 @@ class WorkItem implements EntityInterface, \Serializable
     /**
      * @var ParticipantInterface
      */
-    private $startedBy;
+    private $startParticipant;
 
     /**
      * @var \DateTime
@@ -34,12 +34,12 @@ class WorkItem implements EntityInterface, \Serializable
     private $endedWith;
 
     /**
-     * @param ParticipantInterface $assignee
+     * @param ParticipantInterface $startParticipant
      */
-    public function __construct(ParticipantInterface $assignee)
+    public function __construct(ParticipantInterface $startParticipant)
     {
         $this->startDate = new \DateTime();
-        $this->startedBy = $assignee;
+        $this->startParticipant = $startParticipant;
     }
 
     /**
@@ -49,7 +49,7 @@ class WorkItem implements EntityInterface, \Serializable
     {
         return serialize(array(
             'startDate' => $this->startDate,
-            'startedBy' => $this->startedBy,
+            'startParticipant' => $this->startParticipant,
             'endDate' => $this->endDate,
             'endedBy' => $this->endedBy,
             'endedWith' => $this->endedWith,
@@ -79,9 +79,9 @@ class WorkItem implements EntityInterface, \Serializable
     /**
      * @return ParticipantInterface
      */
-    public function getStartedBy()
+    public function getStartParticipant()
     {
-        return $this->startedBy;
+        return $this->startParticipant;
     }
 
     /**

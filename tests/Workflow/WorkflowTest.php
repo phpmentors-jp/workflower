@@ -87,7 +87,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertThat($currentFlowObject->getId(), $this->equalTo('RecordLoanApplicationInformation'));
         $this->assertThat($currentFlowObject->isActive(), $this->isTrue());
         $this->assertThat($currentFlowObject->isEnded(), $this->isFalse());
-        $this->assertThat($currentFlowObject->getStartedBy(), $this->identicalTo($participant));
+        $this->assertThat($currentFlowObject->getStartParticipant(), $this->identicalTo($participant));
         $this->assertThat($currentFlowObject->getStartDate(), $this->isInstanceOf('DateTime'));
     }
 

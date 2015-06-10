@@ -27,7 +27,7 @@ interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, 
     /**
      * @return ParticipantInterface
      */
-    public function getStartedBy();
+    public function getStartParticipant();
 
     /**
      * @return bool
@@ -35,11 +35,11 @@ interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, 
     public function isActive();
 
     /**
-     * @param ParticipantInterface $assignee
+     * @param ParticipantInterface $startParticipant
      *
      * @throws ActivityAlreadyStartedException
      */
-    public function start(ParticipantInterface $assignee);
+    public function start(ParticipantInterface $startParticipant);
 
     /**
      * @param ParticipantInterface $participant

@@ -138,13 +138,13 @@ class Task implements ActivityInterface, \Serializable
     /**
      * @return ParticipantInterface
      */
-    public function getStartedBy()
+    public function getStartParticipant()
     {
         if (count($this->workItems) == 0) {
             return null;
         }
 
-        return $this->workItems[count($this->workItems) - 1]->getStartedBy();
+        return $this->workItems[count($this->workItems) - 1]->getStartParticipant();
     }
 
     /**
@@ -162,13 +162,13 @@ class Task implements ActivityInterface, \Serializable
     /**
      * {@inheritDoc}
      */
-    public function start(ParticipantInterface $assignee)
+    public function start(ParticipantInterface $startParticipant)
     {
         if ($this->isActive()) {
             throw new ActivityAlreadyStartedException(sprintf('The activity "%s" is already started.', $this->getId()));
         }
 
-        $this->workItems[] = new WorkItem($assignee);
+        $this->workItems[] = new WorkItem($startParticipant);
     }
 
     /**
