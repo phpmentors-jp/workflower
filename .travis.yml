@@ -1,9 +1,6 @@
 language: php
 
-sudo: required
-
 php:
-  - 5.3.9
   - 5.3
   - 5.4
   - 5.5
