@@ -12,6 +12,6 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-class ActivityNotActiveException extends \LogicException
+class UnexpectedActivityStateException extends \UnexpectedValueException
 {
 }

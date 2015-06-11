@@ -124,7 +124,47 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * @return \DateTime
+     * {@inheritDoc}
+     */
+    public function setDefaultSequenceFlowId($sequenceFlowId)
+    {
+        $this->defaultSequenceFlowId = $sequenceFlowId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDefaultSequenceFlowId()
+    {
+        return $this->defaultSequenceFlowId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCurrentState()
+    {
+        if (count($this->workItems) == 0) {
+            return null;
+        }
+
+        return $this->workItems[count($this->workItems) - 1]->getCurrentState();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getParticipant()
+    {
+        if (count($this->workItems) == 0) {
+            return null;
+        }
+
+        return $this->workItems[count($this->workItems) - 1]->getParticipant();
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function getStartDate()
     {
@@ -133,66 +173,6 @@ class Task implements ActivityInterface, \Serializable
         }
 
         return $this->workItems[count($this->workItems) - 1]->getStartDate();
-    }
-
-    /**
-     * @return ParticipantInterface
-     */
-    public function getStartParticipant()
-    {
-        if (count($this->workItems) == 0) {
-            return null;
-        }
-
-        return $this->workItems[count($this->workItems) - 1]->getStartParticipant();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isActive()
-    {
-        if (count($this->workItems) == 0) {
-            return false;
-        }
-
-        return !$this->workItems[count($this->workItems) - 1]->isEnded();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function start(ParticipantInterface $startParticipant)
-    {
-        if ($this->isActive()) {
-            throw new ActivityAlreadyStartedException(sprintf('The activity "%s" is already started.', $this->getId()));
-        }
-
-        $this->workItems[] = new WorkItem($startParticipant);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function complete(ParticipantInterface $participant)
-    {
-        if (!$this->isActive()) {
-            throw new ActivityNotActiveException(sprintf('The activity "%s" is not active.', $this->getId()));
-        }
-
-        $this->workItems[count($this->workItems) - 1]->end($participant, WorkItem::END_RESULT_COMPLETION);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isEnded()
-    {
-        if (count($this->workItems) == 0) {
-            return false;
-        }
-
-        return $this->workItems[count($this->workItems) - 1]->isEnded();
     }
 
     /**
@@ -208,7 +188,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * @return ParticipantInterface
+     * {@inheritDoc}
      */
     public function getEndParticipant()
     {
@@ -234,16 +214,48 @@ class Task implements ActivityInterface, \Serializable
     /**
      * {@inheritDoc}
      */
-    public function setDefaultSequenceFlowId($sequenceFlowId)
+    public function createWorkItem()
     {
-        $this->defaultSequenceFlowId = $sequenceFlowId;
+        if (!(count($this->workItems) == 0 || $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_ENDED)) {
+            throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not ended.', $this->getId()));
+        }
+
+        $this->workItems[] = new WorkItem();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getDefaultSequenceFlowId()
+    public function allocate(ParticipantInterface $participant)
     {
-        return $this->defaultSequenceFlowId;
+        if (!(count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_CREATED)) {
+            throw new UnexpectedActivityStateException(sprintf('There is no work item to be allocated.', $this->getId()));
+        }
+
+        $this->workItems[count($this->workItems) - 1]->allocate($participant);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function start()
+    {
+        if (!(count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_ALLOCATED)) {
+            throw new UnexpectedActivityStateException(sprintf('There is no work item to be started.', $this->getId()));
+        }
+
+        $this->workItems[count($this->workItems) - 1]->start();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function complete(ParticipantInterface $participant)
+    {
+        if (!(count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_STARTED)) {
+            throw new UnexpectedActivityStateException(sprintf('There is no work item to be completed.', $this->getId()));
+        }
+
+        $this->workItems[count($this->workItems) - 1]->complete($participant);
     }
 }
