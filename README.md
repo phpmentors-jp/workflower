@@ -1,6 +1,6 @@
 # Workflower
 
-A workflow engine
+A BPMN2 compliant workflow engine
 
 [![Total Downloads](https://poser.pugx.org/phpmentors/workflower/downloads)](https://packagist.org/packages/phpmentors/workflower)
 [![Latest Stable Version](https://poser.pugx.org/phpmentors/workflower/v/stable)](https://packagist.org/packages/phpmentors/workflower)
