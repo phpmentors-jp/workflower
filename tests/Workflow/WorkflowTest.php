@@ -119,7 +119,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertThat($previousFlowObject->isEnded(), $this->isTrue());
         $this->assertThat($previousFlowObject->getEndDate(), $this->isInstanceOf('DateTime'));
         $this->assertThat($previousFlowObject->getEndParticipant(), $this->identicalTo($participant));
-        $this->assertThat($previousFlowObject->getEndedWith(), $this->equalTo(WorkItem::ENDED_WITH_COMPLETION));
+        $this->assertThat($previousFlowObject->getEndResult(), $this->equalTo(WorkItem::END_RESULT_COMPLETION));
     }
 
     /**

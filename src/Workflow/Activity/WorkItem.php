@@ -6,7 +6,7 @@ use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 
 class WorkItem implements EntityInterface, \Serializable
 {
-    const ENDED_WITH_COMPLETION = 'completion';
+    const END_RESULT_COMPLETION = 'completion';
 
     /**
      * @var \DateTime
@@ -31,7 +31,7 @@ class WorkItem implements EntityInterface, \Serializable
     /**
      * @var string
      */
-    private $endedWith;
+    private $endResult;
 
     /**
      * @param ParticipantInterface $startParticipant
@@ -52,7 +52,7 @@ class WorkItem implements EntityInterface, \Serializable
             'startParticipant' => $this->startParticipant,
             'endDate' => $this->endDate,
             'endParticipant' => $this->endParticipant,
-            'endedWith' => $this->endedWith,
+            'endResult' => $this->endResult,
         ));
     }
 
@@ -103,9 +103,9 @@ class WorkItem implements EntityInterface, \Serializable
     /**
      * @return string
      */
-    public function getEndedWith()
+    public function getEndResult()
     {
-        return $this->endedWith;
+        return $this->endResult;
     }
 
     /**
@@ -118,12 +118,12 @@ class WorkItem implements EntityInterface, \Serializable
 
     /**
      * @param ParticipantInterface $participant
-     * @param string               $endedWith
+     * @param string               $endResult
      */
-    public function end(ParticipantInterface $participant, $endedWith)
+    public function end(ParticipantInterface $participant, $endResult)
     {
         $this->endDate = new \DateTime();
         $this->endParticipant = $participant;
-        $this->endedWith = $endedWith;
+        $this->endResult = $endResult;
     }
 }

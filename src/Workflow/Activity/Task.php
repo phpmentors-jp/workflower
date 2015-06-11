@@ -180,7 +180,7 @@ class Task implements ActivityInterface, \Serializable
             throw new ActivityNotActiveException(sprintf('The activity "%s" is not active.', $this->getId()));
         }
 
-        $this->workItems[count($this->workItems) - 1]->end($participant, WorkItem::ENDED_WITH_COMPLETION);
+        $this->workItems[count($this->workItems) - 1]->end($participant, WorkItem::END_RESULT_COMPLETION);
     }
 
     /**
@@ -222,13 +222,13 @@ class Task implements ActivityInterface, \Serializable
     /**
      * {@inheritDoc}
      */
-    public function getEndedWith()
+    public function getEndResult()
     {
         if (count($this->workItems) == 0) {
             return null;
         }
 
-        return $this->workItems[count($this->workItems) - 1]->getEndedWith();
+        return $this->workItems[count($this->workItems) - 1]->getEndResult();
     }
 
     /**
