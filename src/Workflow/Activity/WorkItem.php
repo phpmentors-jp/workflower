@@ -1,22 +1,24 @@
 <?php
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 
-class WorkItem implements EntityInterface, \Serializable
+class WorkItem implements WorkItemInterface, \Serializable
 {
-    const END_RESULT_COMPLETION = 'completion';
+    /**
+     * @var string
+     */
+    private $currentState = self::STATE_CREATED;
+
+    /**
+     * @var ParticipantInterface
+     */
+    private $participant;
 
     /**
      * @var \DateTime
      */
     private $startDate;
-
-    /**
-     * @var ParticipantInterface
-     */
-    private $startParticipant;
 
     /**
      * @var \DateTime
@@ -33,13 +35,8 @@ class WorkItem implements EntityInterface, \Serializable
      */
     private $endResult;
 
-    /**
-     * @param ParticipantInterface $startParticipant
-     */
-    public function __construct(ParticipantInterface $startParticipant)
+    public function __construct()
     {
-        $this->startDate = new \DateTime();
-        $this->startParticipant = $startParticipant;
     }
 
     /**
@@ -48,8 +45,9 @@ class WorkItem implements EntityInterface, \Serializable
     public function serialize()
     {
         return serialize(array(
+            'currentState' => $this->currentState,
+            'participant' => $this->participant,
             'startDate' => $this->startDate,
-            'startParticipant' => $this->startParticipant,
             'endDate' => $this->endDate,
             'endParticipant' => $this->endParticipant,
             'endResult' => $this->endResult,
@@ -69,7 +67,23 @@ class WorkItem implements EntityInterface, \Serializable
     }
 
     /**
-     * @return \DateTime
+     * {@inheritDoc}
+     */
+    public function getCurrentState()
+    {
+        return $this->currentState;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getParticipant()
+    {
+        return $this->participant;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function getStartDate()
     {
@@ -77,15 +91,7 @@ class WorkItem implements EntityInterface, \Serializable
     }
 
     /**
-     * @return ParticipantInterface
-     */
-    public function getStartParticipant()
-    {
-        return $this->startParticipant;
-    }
-
-    /**
-     * @return \DateTime
+     * {@inheritDoc}
      */
     public function getEndDate()
     {
@@ -93,7 +99,7 @@ class WorkItem implements EntityInterface, \Serializable
     }
 
     /**
-     * @return ParticipantInterface
+     * {@inheritDoc}
      */
     public function getEndParticipant()
     {
@@ -101,7 +107,7 @@ class WorkItem implements EntityInterface, \Serializable
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getEndResult()
     {
@@ -109,21 +115,31 @@ class WorkItem implements EntityInterface, \Serializable
     }
 
     /**
-     * @return bool
+     * {@inheritDoc}
      */
-    public function isEnded()
+    public function allocate(ParticipantInterface $participant)
     {
-        return $this->endDate !== null;
+        $this->currentState = self::STATE_ALLOCATED;
+        $this->participant = $participant;
     }
 
     /**
-     * @param ParticipantInterface $participant
-     * @param string               $endResult
+     * {@inheritDoc}
      */
-    public function end(ParticipantInterface $participant, $endResult)
+    public function start()
     {
+        $this->currentState = self::STATE_STARTED;
+        $this->startDate = new \DateTime();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function complete(ParticipantInterface $participant = null)
+    {
+        $this->currentState = self::STATE_ENDED;
         $this->endDate = new \DateTime();
-        $this->endParticipant = $participant;
-        $this->endResult = $endResult;
+        $this->endParticipant = $participant === null ? $this->participant : $participant;
+        $this->endResult = self::END_RESULT_COMPLETION;
     }
 }

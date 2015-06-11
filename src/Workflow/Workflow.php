@@ -298,15 +298,21 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
         $this->stateMachine->triggerEvent($event->getId());
         $this->selectSequenceFlow($event);
 
-        if ($this->getCurrentFlowObject() instanceof EndEvent) {
+        if ($this->getCurrentFlowObject() instanceof ActivityInterface) {
+            $this->createWorkItem($this->getCurrentFlowObject());
+        } elseif ($this->getCurrentFlowObject() instanceof EndEvent) {
             $this->end($this->getCurrentFlowObject());
         }
     }
 
     /**
-     * {@inheritDoc}
+     * @param ActivityInterface    $activity
+     * @param ParticipantInterface $participant
+     *
+     * @throws AccessDeniedException
+     * @throws UnexpectedActivityException
      */
-    public function assignActivity(ActivityInterface $activity, ParticipantInterface $participant)
+    public function allocateWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
     {
         if (!$participant->hasRole($activity->getRole()->getId())) {
             throw new AccessDeniedException();
@@ -316,13 +322,37 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
             throw new UnexpectedActivityException();
         }
 
-        $activity->start($participant);
+        $activity->allocate($participant);
     }
 
     /**
-     * {@inheritDoc}
+     * @param ActivityInterface    $activity
+     * @param ParticipantInterface $participant
+     *
+     * @throws AccessDeniedException
+     * @throws UnexpectedActivityException
      */
-    public function completeActivity(ActivityInterface $activity, ParticipantInterface $participant)
+    public function startWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
+    {
+        if (!$participant->hasRole($activity->getRole()->getId())) {
+            throw new AccessDeniedException();
+        }
+
+        if (!$activity->equals($this->getCurrentFlowObject())) {
+            throw new UnexpectedActivityException();
+        }
+
+        $activity->start();
+    }
+
+    /**
+     * @param ActivityInterface    $activity
+     * @param ParticipantInterface $participant
+     *
+     * @throws AccessDeniedException
+     * @throws UnexpectedActivityException
+     */
+    public function completeWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
     {
         if (!$participant->hasRole($activity->getRole()->getId())) {
             throw new AccessDeniedException();
@@ -335,7 +365,9 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
         $activity->complete($participant);
         $this->selectSequenceFlow($activity);
 
-        if ($this->getCurrentFlowObject() instanceof EndEvent) {
+        if ($this->getCurrentFlowObject() instanceof ActivityInterface) {
+            $this->createWorkItem($this->getCurrentFlowObject());
+        } elseif ($this->getCurrentFlowObject() instanceof EndEvent) {
             $this->end($this->getCurrentFlowObject());
         }
     }
@@ -433,5 +465,19 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
         if ($this->getCurrentFlowObject() instanceof GatewayInterface) {
             $this->selectSequenceFlow($this->getCurrentFlowObject());
         }
+    }
+
+    /**
+     * @param ActivityInterface $activity
+     *
+     * @throws UnexpectedActivityException
+     */
+    private function createWorkItem(ActivityInterface $activity)
+    {
+        if (!$activity->equals($this->getCurrentFlowObject())) {
+            throw new UnexpectedActivityException();
+        }
+
+        $activity->createWorkItem();
     }
 }

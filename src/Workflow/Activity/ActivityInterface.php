@@ -12,57 +12,11 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Type\ConditionalInterface;
 use PHPMentors\Workflower\Workflow\Type\FlowObjectInterface;
 use PHPMentors\Workflower\Workflow\Type\TransitionalInterface;
 
-interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, ConditionalInterface
+interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, ConditionalInterface, WorkItemInterface
 {
-    /**
-     * @return \DateTime
-     */
-    public function getStartDate();
-
-    /**
-     * @return ParticipantInterface
-     */
-    public function getStartParticipant();
-
-    /**
-     * @return bool
-     */
-    public function isActive();
-
-    /**
-     * @param ParticipantInterface $startParticipant
-     *
-     * @throws ActivityAlreadyStartedException
-     */
-    public function start(ParticipantInterface $startParticipant);
-
-    /**
-     * @param ParticipantInterface $participant
-     */
-    public function complete(ParticipantInterface $participant);
-
-    /**
-     * @return bool
-     */
-    public function isEnded();
-
-    /**
-     * @return \DateTime
-     */
-    public function getEndDate();
-
-    /**
-     * @return ParticipantInterface
-     */
-    public function getEndParticipant();
-
-    /**
-     * @return string
-     */
-    public function getEndResult();
+    public function createWorkItem();
 }

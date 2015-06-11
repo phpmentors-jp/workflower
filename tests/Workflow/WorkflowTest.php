@@ -12,7 +12,9 @@
 
 namespace PHPMentors\Workflower\Workflow;
 
+use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\WorkItem;
+use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
 
 class WorkflowTest extends \PHPUnit_Framework_TestCase
 {
@@ -56,12 +58,11 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertThat($workflow->isActive(), $this->isTrue());
         $this->assertThat($workflow->isEnded(), $this->isFalse());
 
-        $currentFlowObject = $workflow->getCurrentFlowObject();
+        $currentFlowObject = $workflow->getCurrentFlowObject(); /* @var $currentFlowObject ActivityInterface */
 
-        $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\Task'));
+        $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
         $this->assertThat($currentFlowObject->getId(), $this->equalTo('RecordLoanApplicationInformation'));
-        $this->assertThat($currentFlowObject->isActive(), $this->isFalse());
-        $this->assertThat($currentFlowObject->isEnded(), $this->isFalse());
+        $this->assertThat($currentFlowObject->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_CREATED));
 
         $previousFlowObject = $workflow->getPreviousFlowObject();
 
@@ -72,51 +73,69 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function assignActivity()
+    public function allocateWorkItem()
     {
         $participant = \Phake::mock('PHPMentors\Workflower\Workflow\Participant\ParticipantInterface');
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
         $workflow->start($workflow->getFlowObject('Start'));
-        $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
 
-        $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\Task'));
+        $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
         $this->assertThat($currentFlowObject->getId(), $this->equalTo('RecordLoanApplicationInformation'));
-        $this->assertThat($currentFlowObject->isActive(), $this->isTrue());
-        $this->assertThat($currentFlowObject->isEnded(), $this->isFalse());
-        $this->assertThat($currentFlowObject->getStartParticipant(), $this->identicalTo($participant));
+        $this->assertThat($currentFlowObject->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_ALLOCATED));
+        $this->assertThat($currentFlowObject->getParticipant(), $this->identicalTo($participant));
+    }
+
+    /**
+     * @test
+     */
+    public function startWorkItem()
+    {
+        $participant = \Phake::mock('PHPMentors\Workflower\Workflow\Participant\ParticipantInterface');
+        \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
+
+        $workflow = $this->workflowRepository->findById('LoanRequestProcess');
+        $workflow->start($workflow->getFlowObject('Start'));
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $currentFlowObject = $workflow->getCurrentFlowObject();
+
+        $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
+        $this->assertThat($currentFlowObject->getId(), $this->equalTo('RecordLoanApplicationInformation'));
+        $this->assertThat($currentFlowObject->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_STARTED));
         $this->assertThat($currentFlowObject->getStartDate(), $this->isInstanceOf('DateTime'));
     }
 
     /**
      * @test
      */
-    public function completeActivity()
+    public function completeWorkItem()
     {
         $participant = \Phake::mock('PHPMentors\Workflower\Workflow\Participant\ParticipantInterface');
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
         $workflow->start($workflow->getFlowObject('Start'));
-        $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
 
-        $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\Task'));
+        $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
         $this->assertThat($currentFlowObject->getId(), $this->equalTo('CheckApplicantInformation'));
-        $this->assertThat($currentFlowObject->isActive(), $this->isFalse());
-        $this->assertThat($currentFlowObject->isEnded(), $this->isFalse());
+        $this->assertThat($currentFlowObject->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_CREATED));
 
         $previousFlowObject = $workflow->getPreviousFlowObject();
 
-        $this->assertThat($previousFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\Task'));
+        $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
         $this->assertThat($previousFlowObject->getId(), $this->equalTo('RecordLoanApplicationInformation'));
-        $this->assertThat($previousFlowObject->isActive(), $this->isFalse());
-        $this->assertThat($previousFlowObject->isEnded(), $this->isTrue());
+        $this->assertThat($previousFlowObject->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_ENDED));
         $this->assertThat($previousFlowObject->getEndDate(), $this->isInstanceOf('DateTime'));
         $this->assertThat($previousFlowObject->getEndParticipant(), $this->identicalTo($participant));
         $this->assertThat($previousFlowObject->getEndResult(), $this->equalTo(WorkItem::END_RESULT_COMPLETION));
@@ -148,11 +167,15 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
         $workflow->setProcessData(array('rejected' => false));
         $workflow->start($workflow->getFlowObject('Start'));
-        $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
         $workflow->setProcessData(array('rejected' => $rejected));
-        $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
 
@@ -185,13 +208,19 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
         $workflow->setProcessData(array('rejected' => false));
         $workflow->start($workflow->getFlowObject('Start'));
-        $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
         $workflow->setProcessData(array('rejected' => $rejected));
-        $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
 
@@ -209,14 +238,22 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
         $workflow->setProcessData(array('rejected' => false));
         $workflow->start($workflow->getFlowObject('Start'));
-        $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->assignActivity($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeActivity($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
 
         $this->assertThat($workflow->isActive(), $this->isFalse());
         $this->assertThat($workflow->isEnded(), $this->isTrue());
@@ -230,7 +267,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         $previousFlowObject = $workflow->getPreviousFlowObject();
 
-        $this->assertThat($previousFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\Task'));
+        $this->assertThat($previousFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
         $this->assertThat($previousFlowObject->getId(), $this->equalTo('Disbursement'));
     }
 }
