@@ -26,7 +26,7 @@ class WorkItem implements EntityInterface, \Serializable
     /**
      * @var ParticipantInterface
      */
-    private $endedBy;
+    private $endParticipant;
 
     /**
      * @var string
@@ -51,7 +51,7 @@ class WorkItem implements EntityInterface, \Serializable
             'startDate' => $this->startDate,
             'startParticipant' => $this->startParticipant,
             'endDate' => $this->endDate,
-            'endedBy' => $this->endedBy,
+            'endParticipant' => $this->endParticipant,
             'endedWith' => $this->endedWith,
         ));
     }
@@ -95,9 +95,9 @@ class WorkItem implements EntityInterface, \Serializable
     /**
      * @return ParticipantInterface
      */
-    public function getEndedBy()
+    public function getEndParticipant()
     {
-        return $this->endedBy;
+        return $this->endParticipant;
     }
 
     /**
@@ -123,7 +123,7 @@ class WorkItem implements EntityInterface, \Serializable
     public function end(ParticipantInterface $participant, $endedWith)
     {
         $this->endDate = new \DateTime();
-        $this->endedBy = $participant;
+        $this->endParticipant = $participant;
         $this->endedWith = $endedWith;
     }
 }

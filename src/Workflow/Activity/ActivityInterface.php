@@ -59,7 +59,7 @@ interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, 
     /**
      * @return ParticipantInterface
      */
-    public function getEndedBy();
+    public function getEndParticipant();
 
     /**
      * @return string

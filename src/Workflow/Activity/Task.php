@@ -210,13 +210,13 @@ class Task implements ActivityInterface, \Serializable
     /**
      * @return ParticipantInterface
      */
-    public function getEndedBy()
+    public function getEndParticipant()
     {
         if (count($this->workItems) == 0) {
             return null;
         }
 
-        return $this->workItems[count($this->workItems) - 1]->getEndedBy();
+        return $this->workItems[count($this->workItems) - 1]->getEndParticipant();
     }
 
     /**
