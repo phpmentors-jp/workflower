@@ -12,7 +12,7 @@
     ],
     "require": {
         "php": ">=5.3.9",
-        "phpmentors/domain-kata": "~1.4@dev",
+        "phpmentors/domain-kata": "~1.4",
         "piece/stagehand-fsm": "~2.4@dev",
         "symfony/expression-language": "~2.7"
     },
