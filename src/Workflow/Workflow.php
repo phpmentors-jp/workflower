@@ -252,7 +252,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * @return FlowObjectInterface|null
      */
     public function getCurrentFlowObject()
     {
@@ -269,7 +269,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * @return FlowObjectInterface|null
      */
     public function getPreviousFlowObject()
     {
