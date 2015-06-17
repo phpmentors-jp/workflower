@@ -55,15 +55,17 @@ class Process implements ServiceInterface
     }
 
     /**
-     * @param int|string $startEventId
+     * @param EventContextInterface $eventContext
      */
-    public function start($startEventId)
+    public function start(EventContextInterface $eventContext)
     {
-        assert($this->processContext !== null);
-        assert($this->processContext->getWorkflow() !== null);
+        assert($eventContext->getProcessContext() !== null);
+        assert($eventContext->getProcessContext()->getWorkflow() === null);
+        assert($eventContext->getEventId() !== null);
 
-        $this->processContext->getWorkflow()->setProcessData($this->processContext->getProcessData());
-        $this->processContext->getWorkflow()->start($this->processContext->getWorkflow()->getFlowObject($startEventId));
+        $eventContext->getProcessContext()->setWorkflow($this->createWorkflow());
+        $eventContext->getProcessContext()->getWorkflow()->setProcessData($eventContext->getProcessContext()->getProcessData());
+        $eventContext->getProcessContext()->getWorkflow()->start($eventContext->getProcessContext()->getWorkflow()->getFlowObject($eventContext->getEventId()));
     }
 
     /**
