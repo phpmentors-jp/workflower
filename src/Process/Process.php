@@ -67,6 +67,49 @@ class Process implements ServiceInterface
     }
 
     /**
+     * @param WorkItemContextInterface $workItemContext
+     */
+    public function allocateWorkItem(WorkItemContextInterface $workItemContext)
+    {
+        assert($this->processContext !== null);
+        assert($this->processContext->getWorkflow() !== null);
+
+        $this->processContext->getWorkflow()->allocateWorkItem(
+            $this->processContext->getWorkflow()->getFlowObject($workItemContext->getActivityId()),
+            $workItemContext->getParticipant()
+        );
+    }
+
+    /**
+     * @param WorkItemContextInterface $workItemContext
+     */
+    public function startWorkItem(WorkItemContextInterface $workItemContext)
+    {
+        assert($this->processContext !== null);
+        assert($this->processContext->getWorkflow() !== null);
+
+        $this->processContext->getWorkflow()->startWorkItem(
+            $this->processContext->getWorkflow()->getFlowObject($workItemContext->getActivityId()),
+            $workItemContext->getParticipant()
+        );
+    }
+
+    /**
+     * @param WorkItemContextInterface $workItemContext
+     */
+    public function completeWorkItem(WorkItemContextInterface $workItemContext)
+    {
+        assert($this->processContext !== null);
+        assert($this->processContext->getWorkflow() !== null);
+
+        $this->processContext->getWorkflow()->setProcessData($this->processContext->getProcessData());
+        $this->processContext->getWorkflow()->completeWorkItem(
+            $this->processContext->getWorkflow()->getFlowObject($workItemContext->getActivityId()),
+            $workItemContext->getParticipant()
+        );
+    }
+
+    /**
      * @return Workflow
      *
      * @throws WorkflowNotFoundException
