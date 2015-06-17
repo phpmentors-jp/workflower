@@ -104,11 +104,12 @@ class Process implements ServiceInterface
      */
     public function allocateWorkItem(WorkItemContextInterface $workItemContext)
     {
-        assert($this->processContext !== null);
-        assert($this->processContext->getWorkflow() !== null);
+        assert($workItemContext->getProcessContext() !== null);
+        assert($workItemContext->getProcessContext()->getWorkflow() !== null);
+        assert($workItemContext->getActivityId() !== null);
 
-        $this->processContext->getWorkflow()->allocateWorkItem(
-            $this->processContext->getWorkflow()->getFlowObject($workItemContext->getActivityId()),
+        $workItemContext->getProcessContext()->getWorkflow()->allocateWorkItem(
+            $workItemContext->getProcessContext()->getWorkflow()->getFlowObject($workItemContext->getActivityId()),
             $workItemContext->getParticipant()
         );
     }
@@ -118,11 +119,12 @@ class Process implements ServiceInterface
      */
     public function startWorkItem(WorkItemContextInterface $workItemContext)
     {
-        assert($this->processContext !== null);
-        assert($this->processContext->getWorkflow() !== null);
+        assert($workItemContext->getProcessContext() !== null);
+        assert($workItemContext->getProcessContext()->getWorkflow() !== null);
+        assert($workItemContext->getActivityId() !== null);
 
-        $this->processContext->getWorkflow()->startWorkItem(
-            $this->processContext->getWorkflow()->getFlowObject($workItemContext->getActivityId()),
+        $workItemContext->getProcessContext()->getWorkflow()->startWorkItem(
+            $workItemContext->getProcessContext()->getWorkflow()->getFlowObject($workItemContext->getActivityId()),
             $workItemContext->getParticipant()
         );
     }
@@ -132,12 +134,13 @@ class Process implements ServiceInterface
      */
     public function completeWorkItem(WorkItemContextInterface $workItemContext)
     {
-        assert($this->processContext !== null);
-        assert($this->processContext->getWorkflow() !== null);
+        assert($workItemContext->getProcessContext() !== null);
+        assert($workItemContext->getProcessContext()->getWorkflow() !== null);
+        assert($workItemContext->getActivityId() !== null);
 
-        $this->processContext->getWorkflow()->setProcessData($this->processContext->getProcessData());
-        $this->processContext->getWorkflow()->completeWorkItem(
-            $this->processContext->getWorkflow()->getFlowObject($workItemContext->getActivityId()),
+        $workItemContext->getProcessContext()->getWorkflow()->setProcessData($workItemContext->getProcessContext()->getProcessData());
+        $workItemContext->getProcessContext()->getWorkflow()->completeWorkItem(
+            $workItemContext->getProcessContext()->getWorkflow()->getFlowObject($workItemContext->getActivityId()),
             $workItemContext->getParticipant()
         );
     }
