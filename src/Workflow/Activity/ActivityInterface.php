@@ -19,4 +19,19 @@ use PHPMentors\Workflower\Workflow\Type\TransitionalInterface;
 interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, ConditionalInterface, WorkItemInterface
 {
     public function createWorkItem();
+
+    /**
+     * @return bool
+     */
+    public function isAllocatable();
+
+    /**
+     * @return bool
+     */
+    public function isStartable();
+
+    /**
+     * @return bool
+     */
+    public function isCompletable();
 }

@@ -228,7 +228,7 @@ class Task implements ActivityInterface, \Serializable
      */
     public function allocate(ParticipantInterface $participant)
     {
-        if (!(count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_CREATED)) {
+        if (!$this->isAllocatable()) {
             throw new UnexpectedActivityStateException(sprintf('There is no work item to be allocated.', $this->getId()));
         }
 
@@ -240,7 +240,7 @@ class Task implements ActivityInterface, \Serializable
      */
     public function start()
     {
-        if (!(count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_ALLOCATED)) {
+        if (!$this->isStartable()) {
             throw new UnexpectedActivityStateException(sprintf('There is no work item to be started.', $this->getId()));
         }
 
@@ -252,10 +252,34 @@ class Task implements ActivityInterface, \Serializable
      */
     public function complete(ParticipantInterface $participant)
     {
-        if (!(count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_STARTED)) {
+        if (!$this->isCompletable()) {
             throw new UnexpectedActivityStateException(sprintf('There is no work item to be completed.', $this->getId()));
         }
 
         $this->workItems[count($this->workItems) - 1]->complete($participant);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAllocatable()
+    {
+        return count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_CREATED;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStartable()
+    {
+        return count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_ALLOCATED;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCompletable()
+    {
+        return count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_STARTED;
     }
 }
