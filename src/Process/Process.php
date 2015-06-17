@@ -18,11 +18,6 @@ use PHPMentors\Workflower\Workflow\WorkflowRepositoryInterface;
 class Process implements ServiceInterface
 {
     /**
-     * @var ProcessContextInterface
-     */
-    private $processContext;
-
-    /**
      * @var int|string
      */
     private $workflowId;
@@ -40,18 +35,6 @@ class Process implements ServiceInterface
     {
         $this->workflowId = $workflowId;
         $this->workflowRepository = $workflowRepository;
-    }
-
-    /**
-     * @param ProcessContextInterface $processContext
-     */
-    public function setProcessContext(ProcessContextInterface $processContext)
-    {
-        $this->processContext = $processContext;
-
-        if ($this->processContext->getWorkflow() === null) {
-            $this->processContext->setWorkflow($this->createWorkflow());
-        }
     }
 
     /**
