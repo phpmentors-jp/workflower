@@ -1,6 +1,7 @@
 <?php
 namespace PHPMentors\Workflower\Workflow\Activity;
 
+use PHPMentors\Workflower\Workflow\Participant\LoggedParticipant;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 
 class WorkItem implements WorkItemInterface, \Serializable
@@ -46,10 +47,10 @@ class WorkItem implements WorkItemInterface, \Serializable
     {
         return serialize(array(
             'currentState' => $this->currentState,
-            'participant' => $this->participant,
+            'participant' => $this->participant === null ? null : new LoggedParticipant($this->participant),
             'startDate' => $this->startDate,
             'endDate' => $this->endDate,
-            'endParticipant' => $this->endParticipant,
+            'endParticipant' => $this->endParticipant === null ? null : new LoggedParticipant($this->endParticipant),
             'endResult' => $this->endResult,
         ));
     }
