@@ -12,7 +12,10 @@
 
 namespace PHPMentors\Workflower\Workflow\Participant;
 
-interface ParticipantInterface
+use PHPMentors\DomainKata\Entity\Operation\IdentifiableInterface;
+use PHPMentors\Workflower\Workflow\Resource\ResourceInterface;
+
+interface ParticipantInterface extends OperationInterface, IdentifiableInterface
 {
     /**
      * @param string $role
@@ -20,4 +23,19 @@ interface ParticipantInterface
      * @return bool
      */
     public function hasRole($role);
+
+    /**
+     * @param ResourceInterface $resource
+     */
+    public function setResource(ResourceInterface $resource);
+
+    /**
+     * @return ResourceInterface
+     */
+    public function getResource();
+
+    /**
+     * @return string
+     */
+    public function getName();
 }
