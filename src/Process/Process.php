@@ -55,6 +55,39 @@ class Process implements ServiceInterface
     }
 
     /**
+     * @return FlowObjectInterface|null
+     */
+    public function getCurrentFlowObject()
+    {
+        assert($this->processContext !== null);
+        assert($this->processContext->getWorkflow() !== null);
+
+        return $this->processContext->getWorkflow()->getCurrentFlowObject();
+    }
+
+    /**
+     * @return FlowObjectInterface|null
+     */
+    public function getPreviousFlowObject()
+    {
+        assert($this->processContext !== null);
+        assert($this->processContext->getWorkflow() !== null);
+
+        return $this->processContext->getWorkflow()->getPreviousFlowObject();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnded()
+    {
+        assert($this->processContext !== null);
+        assert($this->processContext->getWorkflow() !== null);
+
+        return $this->processContext->getWorkflow()->isEnded();
+    }
+
+    /**
      * @param int|string $startEventId
      */
     public function start($startEventId)
