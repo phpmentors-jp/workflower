@@ -260,7 +260,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * @return bool
+     * {@inheritDoc}
      */
     public function isAllocatable()
     {
@@ -268,7 +268,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * @return bool
+     * {@inheritDoc}
      */
     public function isStartable()
     {
