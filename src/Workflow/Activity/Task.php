@@ -276,10 +276,18 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * @return bool
+     * {@inheritDoc}
      */
     public function isCompletable()
     {
         return count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_STARTED;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isEnded()
+    {
+        return count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_ENDED;
     }
 }

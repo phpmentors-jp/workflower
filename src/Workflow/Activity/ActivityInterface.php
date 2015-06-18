@@ -34,4 +34,9 @@ interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, 
      * @return bool
      */
     public function isCompletable();
+
+    /**
+     * @return bool
+     */
+    public function isEnded();
 }
