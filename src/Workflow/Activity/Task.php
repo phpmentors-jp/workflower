@@ -229,7 +229,7 @@ class Task implements ActivityInterface, \Serializable
     public function allocate(ParticipantInterface $participant)
     {
         if (!$this->isAllocatable()) {
-            throw new UnexpectedActivityStateException(sprintf('There is no work item to be allocated.', $this->getId()));
+            throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not allocatable.', $this->getId()));
         }
 
         $this->workItems[count($this->workItems) - 1]->allocate($participant);
@@ -241,7 +241,7 @@ class Task implements ActivityInterface, \Serializable
     public function start()
     {
         if (!$this->isStartable()) {
-            throw new UnexpectedActivityStateException(sprintf('There is no work item to be started.', $this->getId()));
+            throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not startable.', $this->getId()));
         }
 
         $this->workItems[count($this->workItems) - 1]->start();
@@ -253,7 +253,7 @@ class Task implements ActivityInterface, \Serializable
     public function complete(ParticipantInterface $participant)
     {
         if (!$this->isCompletable()) {
-            throw new UnexpectedActivityStateException(sprintf('There is no work item to be completed.', $this->getId()));
+            throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not completable.', $this->getId()));
         }
 
         $this->workItems[count($this->workItems) - 1]->complete($participant);
