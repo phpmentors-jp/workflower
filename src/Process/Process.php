@@ -13,6 +13,7 @@
 namespace PHPMentors\Workflower\Process;
 
 use PHPMentors\DomainKata\Service\ServiceInterface;
+use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\WorkflowRepositoryInterface;
 
 class Process implements ServiceInterface
@@ -95,6 +96,40 @@ class Process implements ServiceInterface
             $workItemContext->getProcessContext()->getWorkflow()->getFlowObject($workItemContext->getActivityId()),
             $workItemContext->getParticipant()
         );
+    }
+
+    /**
+     * @param WorkItemContextInterface $workItemContext
+     *
+     * @throws UnexpectedActivityStateException
+     */
+    public function executeWorkItem(WorkItemContextInterface $workItemContext)
+    {
+        assert($workItemContext->getProcessContext() !== null);
+        assert($workItemContext->getProcessContext()->getWorkflow() !== null);
+        assert($workItemContext->getActivityId() !== null);
+        assert($workItemContext->getProcessContext()->getWorkflow()->getFlowObject($workItemContext->getActivityId()) instanceof ActivityInterface);
+
+        $activity = $workItemContext->getProcessContext()->getWorkflow()->getFlowObject($workItemContext->getActivityId()); /* @var $activity ActivityInterface */
+        if ($activity->isAllocatable()) {
+            $this->allocateWorkItem($workItemContext);
+            $nextWorkItemContext = new WorkItemContext($workItemContext->getParticipant());
+            $nextWorkItemContext->setActivityId($workItemContext->getProcessContext()->getWorkflow()->getCurrentFlowObject()->getId());
+            $nextWorkItemContext->setProcessContext($workItemContext->getProcessContext());
+
+            return $this->executeWorkItem($nextWorkItemContext);
+        } elseif ($activity->isStartable()) {
+            $this->startWorkItem($workItemContext);
+            $nextWorkItemContext = new WorkItemContext($workItemContext->getParticipant());
+            $nextWorkItemContext->setActivityId($workItemContext->getProcessContext()->getWorkflow()->getCurrentFlowObject()->getId());
+            $nextWorkItemContext->setProcessContext($workItemContext->getProcessContext());
+
+            return $this->executeWorkItem($nextWorkItemContext);
+        } elseif ($activity->isCompletable()) {
+            $this->completeWorkItem($workItemContext);
+        } else {
+            throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not completable.', $activity->getId()));
+        }
     }
 
     /**
