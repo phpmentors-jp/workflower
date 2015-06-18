@@ -216,7 +216,7 @@ class Task implements ActivityInterface, \Serializable
      */
     public function createWorkItem()
     {
-        if (!(count($this->workItems) == 0 || $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_ENDED)) {
+        if (!(count($this->workItems) == 0 || $this->isEnded())) {
             throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not ended.', $this->getId()));
         }
 
