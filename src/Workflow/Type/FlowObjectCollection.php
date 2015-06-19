@@ -61,11 +61,11 @@ class FlowObjectCollection implements EntityCollectionInterface, \Serializable
      */
     public function get($key)
     {
-        if (array_key_exists($key, $this->flowObjects)) {
-            return $this->flowObjects[$key];
-        } else {
+        if (!array_key_exists($key, $this->flowObjects)) {
             return null;
         }
+
+        return $this->flowObjects[$key];
     }
 
     /**
