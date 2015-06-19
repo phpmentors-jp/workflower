@@ -129,7 +129,7 @@ class Process implements ServiceInterface
         } elseif ($activity->isCompletable()) {
             $this->completeWorkItem($workItemContext);
         } else {
-            throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not completable.', $activity->getId()));
+            throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not executable.', $activity->getId()));
         }
     }
 
