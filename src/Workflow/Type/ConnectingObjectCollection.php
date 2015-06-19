@@ -61,11 +61,11 @@ class ConnectingObjectCollection implements EntityCollectionInterface, \Serializ
      */
     public function get($key)
     {
-        if (array_key_exists($key, $this->connectingObjects)) {
-            return $this->connectingObjects[$key];
-        } else {
+        if (!array_key_exists($key, $this->connectingObjects)) {
             return null;
         }
+
+        return $this->connectingObjects[$key];
     }
 
     /**
