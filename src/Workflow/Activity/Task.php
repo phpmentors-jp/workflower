@@ -15,7 +15,6 @@ namespace PHPMentors\Workflower\Workflow\Activity;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Task implements ActivityInterface, \Serializable
 {
@@ -38,11 +37,6 @@ class Task implements ActivityInterface, \Serializable
      * @var WorkItem[]
      */
     private $workItems = array();
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
 
     /**
      * @var int|string
