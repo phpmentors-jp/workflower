@@ -63,7 +63,7 @@ class LoggedParticipant implements ParticipantInterface, \Serializable
      */
     public function hasRole($role)
     {
-        throw $this->createException(__FUNCTION__);
+        throw $this->createOperationNotFoundException(__FUNCTION__);
     }
 
     /**
@@ -71,7 +71,7 @@ class LoggedParticipant implements ParticipantInterface, \Serializable
      */
     public function setResource(ResourceInterface $resource)
     {
-        throw $this->createException(__FUNCTION__);
+        throw $this->createOperationNotFoundException(__FUNCTION__);
     }
 
     /**
@@ -79,7 +79,7 @@ class LoggedParticipant implements ParticipantInterface, \Serializable
      */
     public function getResource()
     {
-        throw $this->createException(__FUNCTION__);
+        throw $this->createOperationNotFoundException(__FUNCTION__);
     }
 
     /**
@@ -103,7 +103,7 @@ class LoggedParticipant implements ParticipantInterface, \Serializable
      *
      * @throws OperationNotSupportedException
      */
-    private function createException($method)
+    private function createOperationNotFoundException($method)
     {
         return new OperationNotSupportedException(sprintf(
             'The method "%s" is not supported by "%s". Use your ParticipantInterface object instead.',
