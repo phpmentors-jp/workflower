@@ -16,7 +16,7 @@ use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\DomainKata\Entity\Operation\EquatableInterface;
 use PHPMentors\DomainKata\Entity\Operation\IdentifiableInterface;
 
-interface TypeInterface extends EntityInterface, EquatableInterface, IdentifiableInterface
+interface WorkflowElementInterface extends EntityInterface, EquatableInterface, IdentifiableInterface
 {
     /**
      * @return string

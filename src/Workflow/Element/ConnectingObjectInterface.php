@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Element;
 
-interface ConnectingObjectInterface extends TypeInterface
+interface ConnectingObjectInterface extends WorkflowElementInterface
 {
     /**
      * @return TransitionalInterface

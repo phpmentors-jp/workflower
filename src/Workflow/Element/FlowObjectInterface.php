@@ -14,6 +14,6 @@ namespace PHPMentors\Workflower\Workflow\Element;
 
 use PHPMentors\Workflower\Workflow\Participant\RoleAwareInterface;
 
-interface FlowObjectInterface extends RoleAwareInterface, TypeInterface
+interface FlowObjectInterface extends RoleAwareInterface, WorkflowElementInterface
 {
 }
