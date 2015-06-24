@@ -13,8 +13,8 @@
 namespace PHPMentors\Workflower\Workflow\Connection;
 
 use PHPMentors\DomainKata\Entity\EntityInterface;
-use PHPMentors\Workflower\Workflow\Type\FlowObjectInterface;
-use PHPMentors\Workflower\Workflow\Type\TransitionalInterface;
+use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
+use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
 
 class SequenceFlow implements ConnectionInterface, \Serializable

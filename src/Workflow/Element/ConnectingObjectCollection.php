@@ -10,17 +10,17 @@
  * distribution, and is available at http://opensource.org/licenses/BSD-2-Clause
  */
 
-namespace PHPMentors\Workflower\Workflow\Type;
+namespace PHPMentors\Workflower\Workflow\Element;
 
 use PHPMentors\DomainKata\Entity\EntityCollectionInterface;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 
-class FlowObjectCollection implements EntityCollectionInterface, \Serializable
+class ConnectingObjectCollection implements EntityCollectionInterface, \Serializable
 {
     /**
      * @var array
      */
-    private $flowObjects = array();
+    private $connectingObjects = array();
 
     /**
      * {@inheritDoc}
@@ -28,7 +28,7 @@ class FlowObjectCollection implements EntityCollectionInterface, \Serializable
     public function serialize()
     {
         return serialize(array(
-            'flowObjects' => $this->flowObjects,
+            'connectingObjects' => $this->connectingObjects,
         ));
     }
 
@@ -49,23 +49,23 @@ class FlowObjectCollection implements EntityCollectionInterface, \Serializable
      */
     public function add(EntityInterface $entity)
     {
-        assert($entity instanceof FlowObjectInterface);
+        assert($entity instanceof ConnectingObjectInterface);
 
-        $this->flowObjects[$entity->getId()] = $entity;
+        $this->connectingObjects[$entity->getId()] = $entity;
     }
 
     /**
      * {@inheritDoc}
      *
-     * @return FlowObjectInterface|null
+     * @return ConnectingObjectInterface|null
      */
     public function get($key)
     {
-        if (!array_key_exists($key, $this->flowObjects)) {
+        if (!array_key_exists($key, $this->connectingObjects)) {
             return null;
         }
 
-        return $this->flowObjects[$key];
+        return $this->connectingObjects[$key];
     }
 
     /**
@@ -73,7 +73,7 @@ class FlowObjectCollection implements EntityCollectionInterface, \Serializable
      */
     public function remove(EntityInterface $entity)
     {
-        assert($entity instanceof FlowObjectInterface);
+        assert($entity instanceof ConnectingObjectInterface);
     }
 
     /**
@@ -81,7 +81,7 @@ class FlowObjectCollection implements EntityCollectionInterface, \Serializable
      */
     public function count()
     {
-        return count($this->flowObjects);
+        return count($this->connectingObjects);
     }
 
     /**
@@ -89,7 +89,25 @@ class FlowObjectCollection implements EntityCollectionInterface, \Serializable
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->flowObjects);
+        return new \ArrayIterator($this->connectingObjects);
+    }
+
+    /**
+     * @param TransitionalInterface $flowObject
+     *
+     * @return ConnectingObjectCollection
+     */
+    public function filterBySource(TransitionalInterface $flowObject)
+    {
+        $collection = new static();
+
+        foreach ($this as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
+            if ($connectingObject->getSource()->getId() === $flowObject->getId()) {
+                $collection->add($connectingObject);
+            }
+        }
+
+        return $collection;
     }
 
     /*
@@ -97,6 +115,6 @@ class FlowObjectCollection implements EntityCollectionInterface, \Serializable
      */
     public function toArray()
     {
-        return $this->flowObjects;
+        return $this->connectingObjects;
     }
 }

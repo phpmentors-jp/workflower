@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Event;
 
-use PHPMentors\Workflower\Workflow\Type\TransitionalInterface;
+use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 
 class StartEvent extends Event implements TransitionalInterface
 {

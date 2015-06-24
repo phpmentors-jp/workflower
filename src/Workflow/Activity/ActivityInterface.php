@@ -12,9 +12,9 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-use PHPMentors\Workflower\Workflow\Type\ConditionalInterface;
-use PHPMentors\Workflower\Workflow\Type\FlowObjectInterface;
-use PHPMentors\Workflower\Workflow\Type\TransitionalInterface;
+use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
+use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
+use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 
 interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, ConditionalInterface, WorkItemInterface
 {

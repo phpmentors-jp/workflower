@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Connection;
 
-use PHPMentors\Workflower\Workflow\Type\ConnectingObjectInterface;
+use PHPMentors\Workflower\Workflow\Element\ConnectingObjectInterface;
 
 interface ConnectionInterface extends ConnectingObjectInterface
 {

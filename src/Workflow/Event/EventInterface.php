@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Event;
 
-use PHPMentors\Workflower\Workflow\Type\FlowObjectInterface;
+use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
 
 interface EventInterface extends FlowObjectInterface
 {
