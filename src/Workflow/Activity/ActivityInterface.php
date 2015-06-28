@@ -39,4 +39,13 @@ interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, 
      * @return bool
      */
     public function isEnded();
+
+    /**
+     * @param int $index
+     *
+     * @return WorkItemInterface
+     *
+     * @throws \OutOfBoundsException
+     */
+    public function getWorkItem($index);
 }

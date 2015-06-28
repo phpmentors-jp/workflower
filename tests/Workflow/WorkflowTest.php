@@ -270,4 +270,55 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertThat($previousFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
         $this->assertThat($previousFlowObject->getId(), $this->equalTo('Disbursement'));
     }
+
+    /**
+     * @test
+     */
+    public function getActivityLog()
+    {
+        $participant = \Phake::mock('PHPMentors\Workflower\Workflow\Participant\ParticipantInterface');
+        \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
+
+        $workflow = $this->workflowRepository->findById('LoanRequestProcess');
+        $workflow->setProcessData(array('rejected' => false));
+        $workflow->start($workflow->getFlowObject('Start'));
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $activityLog = $workflow->getActivityLog();
+
+        $this->assertThat($activityLog, $this->isInstanceOf('PHPMentors\Workflower\Workflow\ActivityLogCollection'));
+        $this->assertThat(count($activityLog), $this->equalTo(4));
+
+        $activityIds = array(
+            'RecordLoanApplicationInformation',
+            'CheckApplicantInformation',
+            'LoanStudy',
+            'Disbursement',
+        );
+
+        foreach ($activityLog as $i => $activityLogEntry) { /* @var $activityLogEntry ActivityLog */
+            $this->assertThat($activityLogEntry->getActivity()->getId(), $this->equalTo($activityIds[$i]));
+            $this->assertThat($activityLogEntry->getWorkItem()->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_ENDED));
+            $this->assertThat($activityLogEntry->getWorkItem()->getParticipant(), $this->identicalTo($participant));
+            $this->assertThat($activityLogEntry->getWorkItem()->getStartDate(), $this->isInstanceOf('DateTime'));
+            $this->assertThat($activityLogEntry->getWorkItem()->getEndDate(), $this->isInstanceOf('DateTime'));
+            $this->assertThat($activityLogEntry->getWorkItem()->getEndParticipant(), $this->identicalTo($participant));
+            $this->assertThat($activityLogEntry->getWorkItem()->getEndResult(), $this->equalTo(WorkItemInterface::END_RESULT_COMPLETION));
+        }
+    }
 }
