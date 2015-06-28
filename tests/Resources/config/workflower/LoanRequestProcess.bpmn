@@ -6,12 +6,13 @@
         <bpmn2:flowNodeRef>Start</bpmn2:flowNodeRef>
         <bpmn2:flowNodeRef>RecordLoanApplicationInformation</bpmn2:flowNodeRef>
         <bpmn2:flowNodeRef>CheckApplicantInformation</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>ResultOfVerification</bpmn2:flowNodeRef>
       </bpmn2:lane>
       <bpmn2:lane id="ROLE_CREDIT_FACTORY" name="Credit Factory">
-        <bpmn2:flowNodeRef>LoanStudy</bpmn2:flowNodeRef>
-        <bpmn2:flowNodeRef>End</bpmn2:flowNodeRef>
         <bpmn2:flowNodeRef>InformRejection</bpmn2:flowNodeRef>
         <bpmn2:flowNodeRef>ApplicaionApproved</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>LoanStudy</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>End</bpmn2:flowNodeRef>
       </bpmn2:lane>
       <bpmn2:lane id="ROLE_BACK_OFFICE" name="Back Office">
         <bpmn2:flowNodeRef>Disbursement</bpmn2:flowNodeRef>
@@ -25,25 +26,7 @@
       <bpmn2:incoming>Start.RecordLoanApplicationInformation</bpmn2:incoming>
       <bpmn2:outgoing>RecordLoanApplicationInformation.CheckApplicantInformation</bpmn2:outgoing>
     </bpmn2:task>
-    <bpmn2:task id="CheckApplicantInformation" name="Check Applicant Information" default="CheckApplicantInformation.LoanStudy">
-      <bpmn2:incoming>RecordLoanApplicationInformation.CheckApplicantInformation</bpmn2:incoming>
-      <bpmn2:outgoing>CheckApplicantInformation.LoanStudy</bpmn2:outgoing>
-      <bpmn2:outgoing>CheckApplicantInformation.End</bpmn2:outgoing>
-    </bpmn2:task>
     <bpmn2:sequenceFlow id="RecordLoanApplicationInformation.CheckApplicantInformation" sourceRef="RecordLoanApplicationInformation" targetRef="CheckApplicantInformation"/>
-    <bpmn2:sequenceFlow id="CheckApplicantInformation.LoanStudy" name="Ok" sourceRef="CheckApplicantInformation" targetRef="LoanStudy"/>
-    <bpmn2:sequenceFlow id="CheckApplicantInformation.End" name="Rejected" sourceRef="CheckApplicantInformation" targetRef="End">
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" id="FormalExpression_1">rejected === true</bpmn2:conditionExpression>
-    </bpmn2:sequenceFlow>
-    <bpmn2:task id="LoanStudy" name="Loan Study">
-      <bpmn2:incoming>CheckApplicantInformation.LoanStudy</bpmn2:incoming>
-      <bpmn2:outgoing>LoanStudy.ApplicaionApproved</bpmn2:outgoing>
-    </bpmn2:task>
-    <bpmn2:endEvent id="End">
-      <bpmn2:incoming>CheckApplicantInformation.End</bpmn2:incoming>
-      <bpmn2:incoming>Disbursement.End</bpmn2:incoming>
-      <bpmn2:incoming>InformRejection.End</bpmn2:incoming>
-    </bpmn2:endEvent>
     <bpmn2:task id="InformRejection" name="Inform Rejection">
       <bpmn2:incoming>ApplicaionApproved.InformRejection</bpmn2:incoming>
       <bpmn2:outgoing>InformRejection.End</bpmn2:outgoing>
@@ -54,7 +37,6 @@
       <bpmn2:outgoing>Disbursement.End</bpmn2:outgoing>
     </bpmn2:task>
     <bpmn2:sequenceFlow id="Disbursement.End" sourceRef="Disbursement" targetRef="End"/>
-    <bpmn2:sequenceFlow id="LoanStudy.ApplicaionApproved" sourceRef="LoanStudy" targetRef="ApplicaionApproved"/>
     <bpmn2:exclusiveGateway id="ApplicaionApproved" name="Applicaion Approved?" gatewayDirection="Diverging" default="ApplicaionApproved.Disbursement">
       <bpmn2:incoming>LoanStudy.ApplicaionApproved</bpmn2:incoming>
       <bpmn2:outgoing>ApplicaionApproved.InformRejection</bpmn2:outgoing>
@@ -64,32 +46,50 @@
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" id="FormalExpression_3">rejected === true</bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="ApplicaionApproved.Disbursement" name="Ok" sourceRef="ApplicaionApproved" targetRef="Disbursement"/>
+    <bpmn2:task id="CheckApplicantInformation" name="Check Applicant Information" default="ResultOfVerification.LoanStudy">
+      <bpmn2:incoming>RecordLoanApplicationInformation.CheckApplicantInformation</bpmn2:incoming>
+      <bpmn2:outgoing>CheckApplicantInformation.ResultOfVerification</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:sequenceFlow id="CheckApplicantInformation.ResultOfVerification" sourceRef="CheckApplicantInformation" targetRef="ResultOfVerification"/>
+    <bpmn2:exclusiveGateway id="ResultOfVerification" name="Result of Verification" default="ResultOfVerification.LoanStudy">
+      <bpmn2:incoming>CheckApplicantInformation.ResultOfVerification</bpmn2:incoming>
+      <bpmn2:outgoing>ResultOfVerification.End</bpmn2:outgoing>
+      <bpmn2:outgoing>ResultOfVerification.LoanStudy</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="ResultOfVerification.End" name="Rejected" sourceRef="ResultOfVerification" targetRef="End">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" id="FormalExpression_1">rejected === true</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="ResultOfVerification.LoanStudy" name="Ok" sourceRef="ResultOfVerification" targetRef="LoanStudy"/>
+    <bpmn2:task id="LoanStudy" name="Loan Study">
+      <bpmn2:incoming>ResultOfVerification.LoanStudy</bpmn2:incoming>
+      <bpmn2:outgoing>LoanStudy.ApplicaionApproved</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:sequenceFlow id="LoanStudy.ApplicaionApproved" sourceRef="LoanStudy" targetRef="ApplicaionApproved"/>
+    <bpmn2:endEvent id="End">
+      <bpmn2:incoming>ResultOfVerification.End</bpmn2:incoming>
+      <bpmn2:incoming>Disbursement.End</bpmn2:incoming>
+      <bpmn2:incoming>InformRejection.End</bpmn2:incoming>
+    </bpmn2:endEvent>
   </bpmn2:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Loan Request Process">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="LoanRequestProcess">
       <bpmndi:BPMNShape id="BPMNShape_Lane_1" bpmnElement="ROLE_BRANCH" isHorizontal="true">
-        <dc:Bounds height="160.0" width="1171.0" x="80.0" y="200.0"/>
+        <dc:Bounds height="160.0" width="1221.0" x="80.0" y="200.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_Lane_2" bpmnElement="ROLE_CREDIT_FACTORY" isHorizontal="true">
-        <dc:Bounds height="142.0" width="1171.0" x="80.0" y="379.0"/>
+        <dc:Bounds height="142.0" width="1221.0" x="80.0" y="379.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_Lane_3" bpmnElement="ROLE_BACK_OFFICE" isHorizontal="true">
-        <dc:Bounds height="121.0" width="1171.0" x="80.0" y="540.0"/>
+        <dc:Bounds height="121.0" width="1221.0" x="80.0" y="540.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1" bpmnElement="Start">
         <dc:Bounds height="36.0" width="36.0" x="140.0" y="233.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_2" bpmnElement="End">
-        <dc:Bounds height="36.0" width="36.0" x="1180.0" y="433.0"/>
+        <dc:Bounds height="36.0" width="36.0" x="1215.0" y="433.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_Task_1" bpmnElement="RecordLoanApplicationInformation">
         <dc:Bounds height="74.0" width="171.0" x="240.0" y="214.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_Task_2" bpmnElement="CheckApplicantInformation">
-        <dc:Bounds height="74.0" width="141.0" x="450.0" y="214.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_Task_3" bpmnElement="LoanStudy">
-        <dc:Bounds height="50.0" width="136.0" x="640.0" y="426.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_Task_4" bpmnElement="InformRejection">
         <dc:Bounds height="50.0" width="110.0" x="1020.0" y="426.0"/>
@@ -100,6 +100,15 @@
       <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_1" bpmnElement="ApplicaionApproved" isMarkerVisible="true">
         <dc:Bounds height="50.0" width="50.0" x="870.0" y="426.0"/>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_2" bpmnElement="ResultOfVerification" isMarkerVisible="true">
+        <dc:Bounds height="50.0" width="50.0" x="690.0" y="226.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_Task_2" bpmnElement="CheckApplicantInformation">
+        <dc:Bounds height="74.0" width="141.0" x="476.0" y="214.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_Task_3" bpmnElement="LoanStudy">
+        <dc:Bounds height="50.0" width="136.0" x="650.0" y="426.0"/>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="Start.RecordLoanApplicationInformation" sourceElement="BPMNShape_1" targetElement="BPMNShape_Task_1">
         <di:waypoint xsi:type="dc:Point" x="176.0" y="251.0"/>
         <di:waypoint xsi:type="dc:Point" x="204.0" y="251.0"/>
@@ -108,36 +117,36 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="RecordLoanApplicationInformation.CheckApplicantInformation" sourceElement="BPMNShape_Task_1" targetElement="BPMNShape_Task_2">
         <di:waypoint xsi:type="dc:Point" x="411.0" y="251.0"/>
-        <di:waypoint xsi:type="dc:Point" x="428.0" y="251.0"/>
-        <di:waypoint xsi:type="dc:Point" x="428.0" y="251.0"/>
-        <di:waypoint xsi:type="dc:Point" x="450.0" y="251.0"/>
+        <di:waypoint xsi:type="dc:Point" x="440.0" y="251.0"/>
+        <di:waypoint xsi:type="dc:Point" x="440.0" y="251.0"/>
+        <di:waypoint xsi:type="dc:Point" x="476.0" y="251.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_9" bpmnElement="InformRejection.End" sourceElement="BPMNShape_Task_4" targetElement="BPMNShape_2">
         <di:waypoint xsi:type="dc:Point" x="1130.0" y="451.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1152.0" y="451.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1152.0" y="451.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1180.0" y="451.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1168.0" y="451.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1168.0" y="451.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1215.0" y="451.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_11" bpmnElement="Disbursement.End" sourceElement="BPMNShape_Task_5" targetElement="BPMNShape_2">
         <di:waypoint xsi:type="dc:Point" x="1161.0" y="601.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1198.0" y="601.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1198.0" y="469.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1233.0" y="601.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1233.0" y="469.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="CheckApplicantInformation.LoanStudy" sourceElement="BPMNShape_Task_2" targetElement="BPMNShape_Task_3">
-        <di:waypoint xsi:type="dc:Point" x="591.0" y="251.0"/>
-        <di:waypoint xsi:type="dc:Point" x="613.0" y="251.0"/>
-        <di:waypoint xsi:type="dc:Point" x="613.0" y="451.0"/>
-        <di:waypoint xsi:type="dc:Point" x="640.0" y="451.0"/>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="ResultOfVerification.LoanStudy" sourceElement="BPMNShape_ExclusiveGateway_2" targetElement="BPMNShape_Task_3">
+        <di:waypoint xsi:type="dc:Point" x="715.0" y="277.0"/>
+        <di:waypoint xsi:type="dc:Point" x="715.0" y="344.0"/>
+        <di:waypoint xsi:type="dc:Point" x="718.0" y="344.0"/>
+        <di:waypoint xsi:type="dc:Point" x="718.0" y="426.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_12" bpmnElement="CheckApplicantInformation.End" sourceElement="BPMNShape_Task_2" targetElement="BPMNShape_2">
-        <di:waypoint xsi:type="dc:Point" x="591.0" y="251.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1018.0" y="251.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1198.0" y="433.0"/>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_12" bpmnElement="ResultOfVerification.End" sourceElement="BPMNShape_ExclusiveGateway_2" targetElement="BPMNShape_2">
+        <di:waypoint xsi:type="dc:Point" x="741.0" y="251.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1233.0" y="251.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1233.0" y="433.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="LoanStudy.ApplicaionApproved" sourceElement="BPMNShape_Task_3" targetElement="BPMNShape_ExclusiveGateway_1">
-        <di:waypoint xsi:type="dc:Point" x="776.0" y="451.0"/>
-        <di:waypoint xsi:type="dc:Point" x="818.0" y="451.0"/>
-        <di:waypoint xsi:type="dc:Point" x="818.0" y="451.0"/>
+        <di:waypoint xsi:type="dc:Point" x="786.0" y="451.0"/>
+        <di:waypoint xsi:type="dc:Point" x="823.0" y="451.0"/>
+        <di:waypoint xsi:type="dc:Point" x="823.0" y="451.0"/>
         <di:waypoint xsi:type="dc:Point" x="870.0" y="451.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="ApplicaionApproved.InformRejection" sourceElement="BPMNShape_ExclusiveGateway_1" targetElement="BPMNShape_Task_4">
@@ -150,6 +159,12 @@
         <di:waypoint xsi:type="dc:Point" x="895.0" y="477.0"/>
         <di:waypoint xsi:type="dc:Point" x="895.0" y="601.0"/>
         <di:waypoint xsi:type="dc:Point" x="1020.0" y="601.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_7" bpmnElement="CheckApplicantInformation.ResultOfVerification" sourceElement="BPMNShape_Task_2" targetElement="BPMNShape_ExclusiveGateway_2">
+        <di:waypoint xsi:type="dc:Point" x="617.0" y="251.0"/>
+        <di:waypoint xsi:type="dc:Point" x="649.0" y="251.0"/>
+        <di:waypoint xsi:type="dc:Point" x="649.0" y="251.0"/>
+        <di:waypoint xsi:type="dc:Point" x="690.0" y="251.0"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
