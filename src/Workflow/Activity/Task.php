@@ -284,4 +284,16 @@ class Task implements ActivityInterface, \Serializable
     {
         return count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_ENDED;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getWorkItem($index)
+    {
+        if (!array_key_exists($index, $this->workItems)) {
+            throw new \OutOfBoundsException(sprintf('The index "%d" is not in the range [0, %d].', $index, count($this->workItems) - 1));
+        }
+
+        return $this->workItems[$index];
+    }
 }

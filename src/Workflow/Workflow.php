@@ -17,18 +17,18 @@ use PHPMentors\DomainKata\Entity\Operation\IdentifiableInterface;
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\UnexpectedActivityException;
 use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
-use PHPMentors\Workflower\Workflow\Event\EndEvent;
-use PHPMentors\Workflower\Workflow\Event\StartEvent;
-use PHPMentors\Workflower\Workflow\Gateway\GatewayInterface;
-use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
-use PHPMentors\Workflower\Workflow\Participant\Role;
-use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
 use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
 use PHPMentors\Workflower\Workflow\Element\ConnectingObjectCollection;
 use PHPMentors\Workflower\Workflow\Element\ConnectingObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\FlowObjectCollection;
 use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
+use PHPMentors\Workflower\Workflow\Event\EndEvent;
+use PHPMentors\Workflower\Workflow\Event\StartEvent;
+use PHPMentors\Workflower\Workflow\Gateway\GatewayInterface;
+use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
+use PHPMentors\Workflower\Workflow\Participant\Role;
+use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
 use Stagehand\FSM\Event\TransitionEvent;
 use Stagehand\FSM\State\FinalState;
 use Stagehand\FSM\State\InitialState;
@@ -403,6 +403,22 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     public function getEndDate()
     {
         return $this->endDate;
+    }
+
+    /**
+     * @return ActivityLogCollection
+     */
+    public function getActivityLog()
+    {
+        $activityLogCollection = new ActivityLogCollection();
+        foreach ($this->stateMachine->getTransitionLog() as $transitionLog) {
+            $flowObject = $this->getFlowObject($transitionLog->getToState()->getStateId());
+            if ($flowObject instanceof ActivityInterface) {
+                $activityLogCollection->add(new ActivityLog($flowObject));
+            }
+        }
+
+        return $activityLogCollection;
     }
 
     /**
