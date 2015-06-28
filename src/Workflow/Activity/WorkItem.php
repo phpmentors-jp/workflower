@@ -59,6 +59,8 @@ class WorkItem implements WorkItemInterface, \Serializable
         return serialize(array(
             'currentState' => $this->currentState,
             'participant' => $this->participant === null ? null : new LoggedParticipant($this->participant),
+            'creationDate' => $this->creationDate,
+            'allocationDate' => $this->allocationDate,
             'startDate' => $this->startDate,
             'endDate' => $this->endDate,
             'endParticipant' => $this->endParticipant === null ? null : new LoggedParticipant($this->endParticipant),
