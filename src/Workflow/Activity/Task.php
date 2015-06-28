@@ -160,6 +160,30 @@ class Task implements ActivityInterface, \Serializable
     /**
      * {@inheritDoc}
      */
+    public function getCreationDate()
+    {
+        if (count($this->workItems) == 0) {
+            return null;
+        }
+
+        return $this->workItems[count($this->workItems) - 1]->getCreationDate();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAllocationDate()
+    {
+        if (count($this->workItems) == 0) {
+            return null;
+        }
+
+        return $this->workItems[count($this->workItems) - 1]->getAllocationDate();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getStartDate()
     {
         if (count($this->workItems) == 0) {
