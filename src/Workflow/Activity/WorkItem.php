@@ -19,6 +19,16 @@ class WorkItem implements WorkItemInterface, \Serializable
     /**
      * @var \DateTime
      */
+    private $creationDate;
+
+    /**
+     * @var \DateTime
+     */
+    private $allocationDate;
+
+    /**
+     * @var \DateTime
+     */
     private $startDate;
 
     /**
@@ -38,6 +48,7 @@ class WorkItem implements WorkItemInterface, \Serializable
 
     public function __construct()
     {
+        $this->creationDate = new \DateTime();
     }
 
     /**
@@ -86,6 +97,22 @@ class WorkItem implements WorkItemInterface, \Serializable
     /**
      * {@inheritDoc}
      */
+    public function getCreationDate()
+    {
+        return $this->creationDate;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAllocationDate()
+    {
+        return $this->allocationDate;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getStartDate()
     {
         return $this->startDate;
@@ -121,6 +148,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     public function allocate(ParticipantInterface $participant)
     {
         $this->currentState = self::STATE_ALLOCATED;
+        $this->allocationDate = new \DateTime();
         $this->participant = $participant;
     }
 

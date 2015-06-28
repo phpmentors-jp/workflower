@@ -36,6 +36,16 @@ interface WorkItemInterface extends EntityInterface
     /**
      * @return \DateTime
      */
+    public function getCreationDate();
+
+    /**
+     * @return \DateTime
+     */
+    public function getAllocationDate();
+
+    /**
+     * @return \DateTime
+     */
     public function getStartDate();
 
     /**

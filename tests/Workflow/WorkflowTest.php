@@ -108,6 +108,8 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
         $this->assertThat($currentFlowObject->getId(), $this->equalTo('RecordLoanApplicationInformation'));
         $this->assertThat($currentFlowObject->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_STARTED));
+        $this->assertThat($currentFlowObject->getCreationDate(), $this->isInstanceOf('DateTime'));
+        $this->assertThat($currentFlowObject->getAllocationDate(), $this->isInstanceOf('DateTime'));
         $this->assertThat($currentFlowObject->getStartDate(), $this->isInstanceOf('DateTime'));
     }
 
@@ -315,6 +317,8 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
             $this->assertThat($activityLogEntry->getActivity()->getId(), $this->equalTo($activityIds[$i]));
             $this->assertThat($activityLogEntry->getWorkItem()->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_ENDED));
             $this->assertThat($activityLogEntry->getWorkItem()->getParticipant(), $this->identicalTo($participant));
+            $this->assertThat($activityLogEntry->getWorkItem()->getCreationDate(), $this->isInstanceOf('DateTime'));
+            $this->assertThat($activityLogEntry->getWorkItem()->getAllocationDate(), $this->isInstanceOf('DateTime'));
             $this->assertThat($activityLogEntry->getWorkItem()->getStartDate(), $this->isInstanceOf('DateTime'));
             $this->assertThat($activityLogEntry->getWorkItem()->getEndDate(), $this->isInstanceOf('DateTime'));
             $this->assertThat($activityLogEntry->getWorkItem()->getEndParticipant(), $this->identicalTo($participant));
