@@ -321,4 +321,50 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
             $this->assertThat($activityLogEntry->getWorkItem()->getEndResult(), $this->equalTo(WorkItemInterface::END_RESULT_COMPLETION));
         }
     }
+
+    /**
+     * @test
+     */
+    public function getActivityLogWithMultipleExecutionsOfSameActivity()
+    {
+        $participant = \Phake::mock('PHPMentors\Workflower\Workflow\Participant\ParticipantInterface');
+        \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
+
+        $workflow = $this->workflowRepository->findById('MultipleWorkItemsProcess');
+        $workflow->setProcessData(array('satisfied' => false));
+        $workflow->start($workflow->getFlowObject('Start'));
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->setProcessData(array('satisfied' => true));
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $activityLog = $workflow->getActivityLog();
+
+        $this->assertThat($activityLog, $this->isInstanceOf('PHPMentors\Workflower\Workflow\ActivityLogCollection'));
+        $this->assertThat(count($activityLog), $this->equalTo(4));
+
+        $this->assertThat($activityLog->get(0)->getActivity()->getId(), $this->equalTo('Task1'));
+        $this->assertThat($activityLog->get(1)->getActivity()->getId(), $this->equalTo('Task2'));
+        $this->assertThat($activityLog->get(2)->getActivity()->getId(), $this->equalTo('Task1'));
+        $this->assertThat($activityLog->get(3)->getActivity()->getId(), $this->equalTo('Task2'));
+
+        $this->assertThat($activityLog->get(0)->getActivity(), $this->identicalTo($activityLog->get(2)->getActivity()));
+        $this->assertThat($activityLog->get(0)->getWorkItem(), $this->logicalNot($this->identicalTo($activityLog->get(2)->getWorkItem())));
+
+        $this->assertThat($activityLog->get(1)->getActivity(), $this->identicalTo($activityLog->get(3)->getActivity()));
+        $this->assertThat($activityLog->get(1)->getWorkItem(), $this->logicalNot($this->identicalTo($activityLog->get(3)->getWorkItem())));
+    }
 }

@@ -24,6 +24,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     public function __construct()
     {
         $this->add($this->createLoanRequestProcess());
+        $this->add($this->createMultipleWorkItemsProcess());
     }
 
     /**
@@ -84,6 +85,26 @@ class WorkflowRepository implements WorkflowRepositoryInterface
         $workflowBuilder->addSequenceFlow('ApplicaionApproved', 'InformRejection', 'ApplicaionApproved.InformRejection', 'Rejected', 'rejected === true');
         $workflowBuilder->addSequenceFlow('InformRejection', 'End', 'InformRejection.End');
         $workflowBuilder->addSequenceFlow('Disbursement', 'End', 'Disbursement.End');
+
+        return $workflowBuilder->build();
+    }
+
+    /**
+     * @return Workflow
+     */
+    private function createMultipleWorkItemsProcess()
+    {
+        $workflowBuilder = new WorkflowBuilder();
+        $workflowBuilder->setWorkflowId('MultipleWorkItemsProcess');
+        $workflowBuilder->addRole('ROLE_USER', 'User');
+        $workflowBuilder->addStartEvent('Start', 'ROLE_USER');
+        $workflowBuilder->addTask('Task1', 'ROLE_USER');
+        $workflowBuilder->addTask('Task2', 'ROLE_USER', null, 'Task2.End');
+        $workflowBuilder->addEndEvent('End', 'ROLE_USER');
+        $workflowBuilder->addSequenceFlow('Start', 'Task1', 'Start.Task1');
+        $workflowBuilder->addSequenceFlow('Task1', 'Task2', 'Task1.Task2');
+        $workflowBuilder->addSequenceFlow('Task2', 'End', 'Task2.End');
+        $workflowBuilder->addSequenceFlow('Task2', 'Task1', 'Task2.Task1', null, 'satisfied !== true');
 
         return $workflowBuilder->build();
     }
