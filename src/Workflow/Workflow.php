@@ -198,6 +198,16 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
+     * @param TransitionalInterface $flowObject
+     *
+     * @return ConnectingObjectCollection
+     */
+    public function getConnectingObjectCollectionBySource(TransitionalInterface $flowObject)
+    {
+        return $this->connectingObjectCollection->filterBySource($flowObject);
+    }
+
+    /**
      * @param int|string $id
      *
      * @return FlowObjectInterface|null
