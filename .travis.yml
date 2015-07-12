@@ -1,5 +1,11 @@
 language: php
 
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
 php:
   - 5.3
   - 5.4
@@ -10,10 +16,12 @@ php:
 matrix:
   allow_failures:
     - php: hhvm
+  fast_finish: true
 
 before_script:
+  - rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
   - composer self-update
-  - composer install --no-interaction --prefer-source --dev
+  - composer install
   - ./vendor/bin/testrunner compile
 
 script:
