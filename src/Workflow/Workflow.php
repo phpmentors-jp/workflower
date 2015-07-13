@@ -309,7 +309,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
         $this->selectSequenceFlow($event);
 
         if ($this->getCurrentFlowObject() instanceof ActivityInterface) {
-            $this->createWorkItem($this->getCurrentFlowObject());
+            $this->getCurrentFlowObject()->createWorkItem();
         } elseif ($this->getCurrentFlowObject() instanceof EndEvent) {
             $this->end($this->getCurrentFlowObject());
         }
@@ -376,7 +376,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
         $this->selectSequenceFlow($activity);
 
         if ($this->getCurrentFlowObject() instanceof ActivityInterface) {
-            $this->createWorkItem($this->getCurrentFlowObject());
+            $this->getCurrentFlowObject()->createWorkItem();
         } elseif ($this->getCurrentFlowObject() instanceof EndEvent) {
             $this->end($this->getCurrentFlowObject());
         }
@@ -491,19 +491,5 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
         if ($this->getCurrentFlowObject() instanceof GatewayInterface) {
             $this->selectSequenceFlow($this->getCurrentFlowObject());
         }
-    }
-
-    /**
-     * @param ActivityInterface $activity
-     *
-     * @throws UnexpectedActivityException
-     */
-    private function createWorkItem(ActivityInterface $activity)
-    {
-        if (!$activity->equals($this->getCurrentFlowObject())) {
-            throw new UnexpectedActivityException();
-        }
-
-        $activity->createWorkItem();
     }
 }
