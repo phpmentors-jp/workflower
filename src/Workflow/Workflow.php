@@ -318,15 +318,10 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     /**
      * @param ActivityInterface    $activity
      * @param ParticipantInterface $participant
-     *
-     * @throws AccessDeniedException
      */
     public function allocateWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
     {
-        if (!$participant->hasRole($activity->getRole()->getId())) {
-            throw new AccessDeniedException();
-        }
-
+        $this->assertParticipantHasRole($activity, $participant);
         $this->assertCurrentFlowObjectIsExpectedActivity($activity);
 
         $activity->allocate($participant);
@@ -335,15 +330,10 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     /**
      * @param ActivityInterface    $activity
      * @param ParticipantInterface $participant
-     *
-     * @throws AccessDeniedException
      */
     public function startWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
     {
-        if (!$participant->hasRole($activity->getRole()->getId())) {
-            throw new AccessDeniedException();
-        }
-
+        $this->assertParticipantHasRole($activity, $participant);
         $this->assertCurrentFlowObjectIsExpectedActivity($activity);
 
         $activity->start();
@@ -352,15 +342,10 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     /**
      * @param ActivityInterface    $activity
      * @param ParticipantInterface $participant
-     *
-     * @throws AccessDeniedException
      */
     public function completeWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
     {
-        if (!$participant->hasRole($activity->getRole()->getId())) {
-            throw new AccessDeniedException();
-        }
-
+        $this->assertParticipantHasRole($activity, $participant);
         $this->assertCurrentFlowObjectIsExpectedActivity($activity);
 
         $activity->complete($participant);
@@ -481,6 +466,19 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
 
         if ($this->getCurrentFlowObject() instanceof GatewayInterface) {
             $this->selectSequenceFlow($this->getCurrentFlowObject());
+        }
+    }
+
+    /**
+     * @param ActivityInterface    $activity
+     * @param ParticipantInterface $participant
+     *
+     * @throws AccessDeniedException
+     */
+    private function assertParticipantHasRole(ActivityInterface $activity, ParticipantInterface $participant)
+    {
+        if (!$participant->hasRole($activity->getRole()->getId())) {
+            throw new AccessDeniedException();
         }
     }
 
