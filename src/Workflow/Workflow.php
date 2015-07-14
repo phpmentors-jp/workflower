@@ -320,7 +320,6 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
      * @param ParticipantInterface $participant
      *
      * @throws AccessDeniedException
-     * @throws UnexpectedActivityException
      */
     public function allocateWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
     {
@@ -328,9 +327,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
             throw new AccessDeniedException();
         }
 
-        if (!$activity->equals($this->getCurrentFlowObject())) {
-            throw new UnexpectedActivityException();
-        }
+        $this->assertCurrentFlowObjectIsExpectedActivity($activity);
 
         $activity->allocate($participant);
     }
@@ -340,7 +337,6 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
      * @param ParticipantInterface $participant
      *
      * @throws AccessDeniedException
-     * @throws UnexpectedActivityException
      */
     public function startWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
     {
@@ -348,9 +344,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
             throw new AccessDeniedException();
         }
 
-        if (!$activity->equals($this->getCurrentFlowObject())) {
-            throw new UnexpectedActivityException();
-        }
+        $this->assertCurrentFlowObjectIsExpectedActivity($activity);
 
         $activity->start();
     }
@@ -360,7 +354,6 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
      * @param ParticipantInterface $participant
      *
      * @throws AccessDeniedException
-     * @throws UnexpectedActivityException
      */
     public function completeWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
     {
@@ -368,9 +361,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
             throw new AccessDeniedException();
         }
 
-        if (!$activity->equals($this->getCurrentFlowObject())) {
-            throw new UnexpectedActivityException();
-        }
+        $this->assertCurrentFlowObjectIsExpectedActivity($activity);
 
         $activity->complete($participant);
         $this->selectSequenceFlow($activity);
@@ -490,6 +481,18 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
 
         if ($this->getCurrentFlowObject() instanceof GatewayInterface) {
             $this->selectSequenceFlow($this->getCurrentFlowObject());
+        }
+    }
+
+    /**
+     * @param ActivityInterface $activity
+     *
+     * @throws UnexpectedActivityException
+     */
+    private function assertCurrentFlowObjectIsExpectedActivity(ActivityInterface $activity)
+    {
+        if (!$activity->equals($this->getCurrentFlowObject())) {
+            throw new UnexpectedActivityException();
         }
     }
 }
