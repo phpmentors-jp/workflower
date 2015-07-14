@@ -490,7 +490,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     private function assertCurrentFlowObjectIsExpectedActivity(ActivityInterface $activity)
     {
         if (!$activity->equals($this->getCurrentFlowObject())) {
-            throw new UnexpectedActivityException();
+            throw new UnexpectedActivityException(sprintf('The current flow object is not equal to the expected activity "%s".', $activity->getId()));
         }
     }
 }
