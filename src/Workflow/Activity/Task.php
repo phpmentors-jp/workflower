@@ -112,7 +112,9 @@ class Task implements ActivityInterface, \Serializable
      */
     public function equals(EntityInterface $target)
     {
-        assert($target instanceof self);
+        if (!($target instanceof self)) {
+            return false;
+        }
 
         return $this->id === $target->getId();
     }
