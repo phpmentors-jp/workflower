@@ -478,7 +478,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     private function assertParticipantHasRole(ActivityInterface $activity, ParticipantInterface $participant)
     {
         if (!$participant->hasRole($activity->getRole()->getId())) {
-            throw new AccessDeniedException();
+            throw new AccessDeniedException(sprintf('The participant "%s" does not have the role "%s" that is required to operate the activity "%s".', $participant->getId(), $activity->getRole()->getId(), $activity->getId()));
         }
     }
 
