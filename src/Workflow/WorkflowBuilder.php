@@ -237,7 +237,7 @@ class WorkflowBuilder
     private function assertWorkflowHasRole(Workflow $workflow, $roleId)
     {
         if (!$workflow->hasRole($roleId)) {
-            throw new \LogicException();
+            throw new \LogicException(sprintf('The workflow "%s" does not have the role "%s".', $workflow->getId(), $roleId));
         }
     }
 }
