@@ -190,36 +190,28 @@ class WorkflowBuilder
 
         foreach ($this->startEvents as $id => $event) {
             list($roleId, $name) = $event;
-            if (!$workflow->hasRole($roleId)) {
-                throw new \LogicException();
-            }
+            $this->assertWorkflowHasRole($workflow, $roleId);
 
             $workflow->addFlowObject(new StartEvent($id, $workflow->getRole($roleId), $name));
         }
 
         foreach ($this->endEvents as $id => $event) {
             list($roleId, $name) = $event;
-            if (!$workflow->hasRole($roleId)) {
-                throw new \LogicException();
-            }
+            $this->assertWorkflowHasRole($workflow, $roleId);
 
             $workflow->addFlowObject(new EndEvent($id, $workflow->getRole($roleId), $name));
         }
 
         foreach ($this->tasks as $id => $task) {
             list($roleId, $name) = $task;
-            if (!$workflow->hasRole($roleId)) {
-                throw new \LogicException();
-            }
+            $this->assertWorkflowHasRole($workflow, $roleId);
 
             $workflow->addFlowObject(new Task($id, $workflow->getRole($roleId), $name));
         }
 
         foreach ($this->exclusiveGateways as $id => $gateway) {
             list($roleId, $name) = $gateway;
-            if (!$workflow->hasRole($roleId)) {
-                throw new \LogicException();
-            }
+            $this->assertWorkflowHasRole($workflow, $roleId);
 
             $workflow->addFlowObject(new ExclusiveGateway($id, $workflow->getRole($roleId), $name));
         }
@@ -234,5 +226,18 @@ class WorkflowBuilder
         }
 
         return $workflow;
+    }
+
+    /**
+     * @param Workflow   $workflow
+     * @param int|string $roleId
+     *
+     * @throws \LogicException
+     */
+    private function assertWorkflowHasRole(Workflow $workflow, $roleId)
+    {
+        if (!$workflow->hasRole($roleId)) {
+            throw new \LogicException();
+        }
     }
 }
