@@ -9,6 +9,28 @@ A BPMN2 compliant workflow engine
 
 ## Features
 
+* Workflow
+  * The workflow engine and domain model
+* Process
+  * Some interfaces to work with `Workflow` objects
+* Definition
+  * BPMN2 process definitions
+* Persistence
+  * Serialize/deserialize interfaces for `Workflow` objects
+
+### The workflow model
+
+* Connecting objects
+  * `Sequence flow`
+* Flow objects
+  * Activities
+    * `Task`
+  * Events
+    * `Start event`
+    * `End event`
+  * Gateways
+    * `Exclusive gateway`
+
 ## Installation
 
 `Workflower` can be installed using [Composer](http://getcomposer.org/).
