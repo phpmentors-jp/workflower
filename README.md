@@ -5,7 +5,7 @@ A BPMN2 compliant workflow engine
 [![Total Downloads](https://poser.pugx.org/phpmentors/workflower/downloads)](https://packagist.org/packages/phpmentors/workflower)
 [![Latest Stable Version](https://poser.pugx.org/phpmentors/workflower/v/stable)](https://packagist.org/packages/phpmentors/workflower)
 [![Latest Unstable Version](https://poser.pugx.org/phpmentors/workflower/v/unstable)](https://packagist.org/packages/phpmentors/workflower)
-[![Build Status](https://travis-ci.org/phpmentors-jp/workflower.svg?branch=master)](https://travis-ci.org/phpmentors-jp/workflower)
+[![Build Status](https://travis-ci.org/phpmentors-jp/workflower.svg?branch=1.0)](https://travis-ci.org/phpmentors-jp/workflower)
 
 ## Features
 
@@ -38,7 +38,7 @@ A BPMN2 compliant workflow engine
 Add the dependency to `phpmentors/workflower` into your `composer.json` file as the following:
 
 ```
-composer require phpmentors/workflower "~1.0@dev"
+composer require phpmentors/workflower "1.0.*"
 ```
 
 ## Support
