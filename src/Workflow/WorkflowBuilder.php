@@ -178,6 +178,8 @@ class WorkflowBuilder
 
     /**
      * @return Workflow
+     *
+     * @throws \LogicException
      */
     public function build()
     {
@@ -218,6 +220,11 @@ class WorkflowBuilder
 
         foreach ($this->sequenceFlows as $id => $flow) {
             list($source, $destination, $name, $condition) = $flow;
+
+            if (array_key_exists($id, $this->defaultableFlowObjects) && $condition !== null) {
+                throw new \LogicException(sprintf('The sequence flow "%s" has the condition "%s". A condition cannot be set to the default sequence flow.', $id, $condition));
+            }
+
             $workflow->addConnectingObject(new SequenceFlow($id, $workflow->getFlowObject($source), $workflow->getFlowObject($destination), $name, $condition === null ? null : new Expression($condition)));
 
             if (array_key_exists($id, $this->defaultableFlowObjects)) {
