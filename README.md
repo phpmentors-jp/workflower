@@ -52,3 +52,7 @@ Copyright (c) 2015 KUBO Atsuhiro, All rights reserved.
 ## License
 
 [The BSD 2-Clause License](http://opensource.org/licenses/BSD-2-Clause)
+
+## Acknowledgments
+
+[Q-BPM.org](http://en.q-bpm.org/) by [Questetra,Inc.](http://www.questetra.com/) is the excellent web site for developers such as us who want to create a [business process management](https://en.wikipedia.org/wiki/Business_process_management) ([workflow](https://en.wikipedia.org/wiki/Workflow_engine)) engine.
