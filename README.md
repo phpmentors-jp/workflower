@@ -37,13 +37,13 @@ A BPMN2 compliant workflow engine
 
 Add the dependency to `phpmentors/workflower` into your `composer.json` file as the following:
 
-**Stable version**:
+**Stable version:**
 
 ```
 composer require phpmentors/workflower "1.0.*"
 ```
 
-**Development version**:
+**Development version:**
 
 ```
 composer require phpmentors/workflower "~1.1@dev"
