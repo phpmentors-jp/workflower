@@ -1,6 +1,8 @@
 # Workflower
 
-A BPMN2 compliant workflow engine
+A BPMN 2.0 compliant workflow engine for PHP
+
+`Workflower` is a BPMN 2.0 compliant workflow engine for PHP. `Workflower` runs business processes using [the BPMN 2.0 specification](http://www.omg.org/spec/BPMN/2.0/). It's open-source and distributed under [the BSD 2-Clause License](http://opensource.org/licenses/BSD-2-Clause).
 
 [![Total Downloads](https://poser.pugx.org/phpmentors/workflower/downloads)](https://packagist.org/packages/phpmentors/workflower)
 [![Latest Stable Version](https://poser.pugx.org/phpmentors/workflower/v/stable)](https://packagist.org/packages/phpmentors/workflower)
@@ -14,7 +16,7 @@ A BPMN2 compliant workflow engine
 * Process
   * Some interfaces to work with `Workflow` objects
 * Definition
-  * BPMN2 process definitions
+  * BPMN 2.0 process definitions
 * Persistence
   * Serialize/deserialize interfaces for `Workflow` objects
 
