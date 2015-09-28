@@ -20,18 +20,18 @@ A BPMN 2.0 compliant workflow engine for PHP
 * Persistence
   * Serialize/deserialize interfaces for `Workflow` objects
 
-### The workflow model
+### Supported workflow elements
 
 * Connecting objects
-  * `Sequence flow`
+  * Sequence flows
 * Flow objects
   * Activities
-    * `Task`
+    * Tasks
   * Events
-    * `Start event`
-    * `End event`
+    * Start events
+    * End events
   * Gateways
-    * `Exclusive gateway`
+    * Exclusive gateways
 
 ## Installation
 
