@@ -12,6 +12,6 @@
 
 namespace PHPMentors\Workflower\Workflow\Event;
 
-class EndEvent extends Event
+class EndEvent extends Event implements EventInterface
 {
 }

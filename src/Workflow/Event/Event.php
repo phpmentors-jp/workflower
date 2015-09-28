@@ -15,7 +15,7 @@ namespace PHPMentors\Workflower\Workflow\Event;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
-abstract class Event implements EventInterface, \Serializable
+abstract class Event implements \Serializable
 {
     /**
      * @var int|string
