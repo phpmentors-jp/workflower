@@ -13,11 +13,12 @@
 namespace PHPMentors\Workflower\Workflow\Connection;
 
 use PHPMentors\DomainKata\Entity\EntityInterface;
+use PHPMentors\Workflower\Workflow\Element\ConnectingObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
 
-class SequenceFlow implements ConnectionInterface, \Serializable
+class SequenceFlow implements ConnectingObjectInterface, \Serializable
 {
     /**
      * @var int|string
