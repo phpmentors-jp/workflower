@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2015-2016 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * This file is part of Workflower.
@@ -61,6 +61,15 @@ class WorkItemContext implements WorkItemContextInterface
     public function getActivityId()
     {
         return $this->activityId;
+    }
+
+    /**
+     * @param ParticipantInterface $participant
+     * @since Method available since Release 1.1.0
+     */
+    public function setParticipant(ParticipantInterface $participant)
+    {
+        $this->participant = $participant;
     }
 
     /**
