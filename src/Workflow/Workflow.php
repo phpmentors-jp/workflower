@@ -86,6 +86,11 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     private $stateMachine;
 
     /**
+     * @var ExpressionLanguage
+     */
+    private $expressionLanguage;
+
+    /**
      * @param int|string $id
      * @param string     $name
      */
@@ -367,6 +372,14 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
+     * @param ExpressionLanguage $expressionLanguage
+     */
+    public function setExpressionLanguage(ExpressionLanguage $expressionLanguage)
+    {
+        $this->expressionLanguage = $expressionLanguage;
+    }
+
+    /**
      * @param EndEvent $event
      */
     private function end(EndEvent $event)
@@ -444,7 +457,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
                         $selectedSequenceFlow = $connectingObject;
                         break;
                     } else {
-                        $expressionLanguage = new ExpressionLanguage();
+                        $expressionLanguage = $this->expressionLanguage ?: new ExpressionLanguage();
                         if ($expressionLanguage->evaluate($condition, $this->processData)) {
                             $selectedSequenceFlow = $connectingObject;
                             break;
