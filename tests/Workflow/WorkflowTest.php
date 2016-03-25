@@ -378,7 +378,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
      */
     public function injectExpressionLanguage()
     {
-        $expressionLanguage = \Phake::mock(ExpressionLanguage::class);
+        $expressionLanguage = \Phake::mock('Symfony\Component\ExpressionLanguage\ExpressionLanguage');
         \Phake::when($expressionLanguage)->evaluate($this->equalTo('rejected == true'))->thenReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
