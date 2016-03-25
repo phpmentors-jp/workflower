@@ -15,6 +15,7 @@ namespace PHPMentors\Workflower\Workflow;
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\WorkItem;
 use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 class WorkflowTest extends \PHPUnit_Framework_TestCase
 {
@@ -370,5 +371,20 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         $this->assertThat($activityLog->get(1)->getActivity(), $this->identicalTo($activityLog->get(3)->getActivity()));
         $this->assertThat($activityLog->get(1)->getWorkItem(), $this->logicalNot($this->identicalTo($activityLog->get(3)->getWorkItem())));
+    }
+
+    /**
+     * @test
+     */
+    public function injectExpressionLanguage()
+    {
+        $expressionLanguage = \Phake::mock('Symfony\Component\ExpressionLanguage\ExpressionLanguage');
+        \Phake::when($expressionLanguage)->evaluate($this->equalTo('rejected == true'))->thenReturn(true);
+
+        $workflow = $this->workflowRepository->findById('LoanRequestProcess');
+        $workflow->setExpressionLanguage($expressionLanguage);
+
+        $workflow->setProcessData(array('rejected' => false));
+        $workflow->start($workflow->getFlowObject('Start'));
     }
 }
