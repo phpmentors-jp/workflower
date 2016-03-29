@@ -134,6 +134,16 @@ class Process implements ServiceInterface
     }
 
     /**
+     * @return int|string|WorkflowContextInterface
+     *
+     * @since Method available since Release 1.1.0
+     */
+    public function getWorkflowContext()
+    {
+        return $this->workflowContext;
+    }
+
+    /**
      * @return Workflow
      *
      * @throws WorkflowNotFoundException
