@@ -1,0 +1,11 @@
+version: '2'
+services:
+    app:
+        container_name: "phpmentors.workflower.app"
+        image: "phpmentors/php-app:php53"
+        volumes:
+            - ".:/var/app"
+        environment:
+            TERM: "xterm"
+            TZ: "Asia/Tokyo"
+            LANG: "ja_JP.UTF-8"

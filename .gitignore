@@ -1,5 +1,6 @@
 /.composer/
 /composer.lock
 /composer.phar
+/docker-compose.yml
 /php-cs-fixer.phar
 /vendor/
