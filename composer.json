@@ -19,7 +19,7 @@
     "require-dev": {
         "phake/phake": "~2.0",
         "phpunit/phpunit": "~4.0",
-        "piece/stagehand-testrunner": "~4.1"
+        "piece/stagehand-testrunner": "~4.2@dev"
     },
     "autoload": {
         "psr-4": {
