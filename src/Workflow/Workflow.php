@@ -104,7 +104,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function serialize()
     {
@@ -120,7 +120,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function unserialize($serialized)
     {
@@ -132,7 +132,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @return int|string
      */
@@ -142,7 +142,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -251,7 +251,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isActive()
     {
@@ -259,7 +259,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isEnded()
     {
@@ -304,7 +304,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function start(StartEvent $event)
     {

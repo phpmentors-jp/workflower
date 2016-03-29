@@ -52,7 +52,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function serialize()
     {
@@ -69,7 +69,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function unserialize($serialized)
     {
@@ -81,7 +81,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getCurrentState()
     {
@@ -89,7 +89,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getParticipant()
     {
@@ -97,7 +97,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getCreationDate()
     {
@@ -105,7 +105,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getAllocationDate()
     {
@@ -113,7 +113,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getStartDate()
     {
@@ -121,7 +121,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getEndDate()
     {
@@ -129,7 +129,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getEndParticipant()
     {
@@ -137,7 +137,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getEndResult()
     {
@@ -145,7 +145,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function allocate(ParticipantInterface $participant)
     {
@@ -155,7 +155,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function start()
     {
@@ -164,7 +164,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function complete(ParticipantInterface $participant = null)
     {

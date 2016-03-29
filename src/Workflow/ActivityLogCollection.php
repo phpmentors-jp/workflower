@@ -29,7 +29,7 @@ class ActivityLogCollection implements EntityCollectionInterface
     private $lastWorkItemIndexByActivity = array();
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function add(EntityInterface $entity)
     {
@@ -47,7 +47,7 @@ class ActivityLogCollection implements EntityCollectionInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @return ActivityLog|null
      */
@@ -61,7 +61,7 @@ class ActivityLogCollection implements EntityCollectionInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function remove(EntityInterface $entity)
     {
@@ -69,7 +69,7 @@ class ActivityLogCollection implements EntityCollectionInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function count()
     {
@@ -77,7 +77,7 @@ class ActivityLogCollection implements EntityCollectionInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getIterator()
     {

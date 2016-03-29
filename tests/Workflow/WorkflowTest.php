@@ -15,7 +15,6 @@ namespace PHPMentors\Workflower\Workflow;
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\WorkItem;
 use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 class WorkflowTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,7 +24,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
     protected $workflowRepository;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function setUp()
     {

@@ -62,7 +62,7 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function serialize()
     {
@@ -76,7 +76,7 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function unserialize($serialized)
     {
@@ -88,7 +88,7 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @return int|string
      */
@@ -98,7 +98,7 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -106,7 +106,7 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getSource()
     {
@@ -114,7 +114,7 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getDestination()
     {
@@ -130,7 +130,7 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function equals(EntityInterface $target)
     {

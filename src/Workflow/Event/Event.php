@@ -45,7 +45,7 @@ abstract class Event implements \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function serialize()
     {
@@ -57,7 +57,7 @@ abstract class Event implements \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function unserialize($serialized)
     {
@@ -69,7 +69,7 @@ abstract class Event implements \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @return string
      */
@@ -87,7 +87,7 @@ abstract class Event implements \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getRole()
     {
@@ -95,7 +95,7 @@ abstract class Event implements \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function equals(EntityInterface $target)
     {

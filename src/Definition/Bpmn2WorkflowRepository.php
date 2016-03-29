@@ -23,7 +23,7 @@ class Bpmn2WorkflowRepository implements WorkflowRepositoryInterface
     private $bpmn2Files = array();
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function add(EntityInterface $entity)
     {
@@ -33,7 +33,7 @@ class Bpmn2WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function remove(EntityInterface $entity)
     {
@@ -45,7 +45,7 @@ class Bpmn2WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @return Workflow
      */

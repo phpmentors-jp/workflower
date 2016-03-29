@@ -28,7 +28,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function add(EntityInterface $entity)
     {
@@ -38,7 +38,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function remove(EntityInterface $entity)
     {
@@ -46,7 +46,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function findById($id)
     {

@@ -36,7 +36,7 @@ class LoggedParticipant implements ParticipantInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function serialize()
     {
@@ -47,7 +47,7 @@ class LoggedParticipant implements ParticipantInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function unserialize($serialized)
     {
@@ -59,7 +59,7 @@ class LoggedParticipant implements ParticipantInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function hasRole($role)
     {
@@ -67,7 +67,7 @@ class LoggedParticipant implements ParticipantInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setResource(ResourceInterface $resource)
     {
@@ -75,7 +75,7 @@ class LoggedParticipant implements ParticipantInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getResource()
     {
@@ -83,7 +83,7 @@ class LoggedParticipant implements ParticipantInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getId()
     {
@@ -91,7 +91,7 @@ class LoggedParticipant implements ParticipantInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getName()
     {

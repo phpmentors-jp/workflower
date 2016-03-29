@@ -56,7 +56,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function serialize()
     {
@@ -70,7 +70,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function unserialize($serialized)
     {
@@ -82,7 +82,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @return int|string
      */
@@ -92,7 +92,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getRole()
     {
@@ -100,7 +100,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -108,7 +108,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function equals(EntityInterface $target)
     {
@@ -120,7 +120,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setDefaultSequenceFlowId($sequenceFlowId)
     {
@@ -128,7 +128,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getDefaultSequenceFlowId()
     {
@@ -136,7 +136,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getCurrentState()
     {
@@ -148,7 +148,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getParticipant()
     {
@@ -160,7 +160,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getCreationDate()
     {
@@ -172,7 +172,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getAllocationDate()
     {
@@ -184,7 +184,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getStartDate()
     {
@@ -196,7 +196,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getEndDate()
     {
@@ -208,7 +208,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getEndParticipant()
     {
@@ -220,7 +220,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getEndResult()
     {
@@ -232,7 +232,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function createWorkItem()
     {
@@ -244,7 +244,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function allocate(ParticipantInterface $participant)
     {
@@ -256,7 +256,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function start()
     {
@@ -268,7 +268,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function complete(ParticipantInterface $participant)
     {
@@ -280,7 +280,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isAllocatable()
     {
@@ -288,7 +288,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isStartable()
     {
@@ -296,7 +296,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isCompletable()
     {
@@ -304,7 +304,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isEnded()
     {
@@ -312,7 +312,7 @@ class Task implements ActivityInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getWorkItem($index)
     {

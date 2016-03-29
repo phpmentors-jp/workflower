@@ -17,7 +17,7 @@ use PHPMentors\Workflower\Workflow\Workflow;
 class PhpWorkflowSerializer implements WorkflowSerializerInterface
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function serialize(Workflow $workflow)
     {
@@ -25,7 +25,7 @@ class PhpWorkflowSerializer implements WorkflowSerializerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function deserialize($workflow)
     {

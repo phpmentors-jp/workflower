@@ -17,7 +17,7 @@ use PHPMentors\Workflower\Workflow\Workflow;
 class Base64PhpWorkflowSerializer extends PhpWorkflowSerializer
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function serialize(Workflow $workflow)
     {
@@ -25,7 +25,7 @@ class Base64PhpWorkflowSerializer extends PhpWorkflowSerializer
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function deserialize($workflow)
     {

@@ -23,7 +23,7 @@ class ConnectingObjectCollection implements EntityCollectionInterface, \Serializ
     private $connectingObjects = array();
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function serialize()
     {
@@ -33,7 +33,7 @@ class ConnectingObjectCollection implements EntityCollectionInterface, \Serializ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function unserialize($serialized)
     {
@@ -45,7 +45,7 @@ class ConnectingObjectCollection implements EntityCollectionInterface, \Serializ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function add(EntityInterface $entity)
     {
@@ -55,7 +55,7 @@ class ConnectingObjectCollection implements EntityCollectionInterface, \Serializ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @return ConnectingObjectInterface|null
      */
@@ -69,7 +69,7 @@ class ConnectingObjectCollection implements EntityCollectionInterface, \Serializ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function remove(EntityInterface $entity)
     {
@@ -77,7 +77,7 @@ class ConnectingObjectCollection implements EntityCollectionInterface, \Serializ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function count()
     {
@@ -85,7 +85,7 @@ class ConnectingObjectCollection implements EntityCollectionInterface, \Serializ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getIterator()
     {

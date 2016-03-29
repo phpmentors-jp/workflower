@@ -50,7 +50,7 @@ class ExclusiveGateway implements GatewayInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function serialize()
     {
@@ -63,7 +63,7 @@ class ExclusiveGateway implements GatewayInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function unserialize($serialized)
     {
@@ -75,7 +75,7 @@ class ExclusiveGateway implements GatewayInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @return int|string
      */
@@ -85,7 +85,7 @@ class ExclusiveGateway implements GatewayInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getRole()
     {
@@ -93,7 +93,7 @@ class ExclusiveGateway implements GatewayInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -101,7 +101,7 @@ class ExclusiveGateway implements GatewayInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function equals(EntityInterface $target)
     {
@@ -113,7 +113,7 @@ class ExclusiveGateway implements GatewayInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setDefaultSequenceFlowId($sequenceFlowId)
     {
@@ -121,7 +121,7 @@ class ExclusiveGateway implements GatewayInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getDefaultSequenceFlowId()
     {

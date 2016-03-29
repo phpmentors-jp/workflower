@@ -35,7 +35,7 @@ class EventContext implements EventContextInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getEventId()
     {
@@ -43,7 +43,7 @@ class EventContext implements EventContextInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getProcessContext()
     {

@@ -38,7 +38,7 @@ class Role implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function serialize()
     {
@@ -49,7 +49,7 @@ class Role implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function unserialize($serialized)
     {
@@ -61,7 +61,7 @@ class Role implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @return int|string
      */
