@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2015-2016 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * This file is part of Workflower.
@@ -20,9 +20,9 @@ use PHPMentors\Workflower\Workflow\WorkflowRepositoryInterface;
 class Process implements ServiceInterface
 {
     /**
-     * @var int|string
+     * @var int|string|WorkflowContextInterface
      */
-    private $workflowId;
+    private $workflowContext;
 
     /**
      * @var WorkflowRepositoryInterface
@@ -30,12 +30,12 @@ class Process implements ServiceInterface
     private $workflowRepository;
 
     /**
-     * @param int|string                  $workflowId
-     * @param WorkflowRepositoryInterface $workflowRepository
+     * @param int|string|WorkflowContextInterface $workflowContext
+     * @param WorkflowRepositoryInterface         $workflowRepository
      */
-    public function __construct($workflowId, WorkflowRepositoryInterface $workflowRepository)
+    public function __construct($workflowContext, WorkflowRepositoryInterface $workflowRepository)
     {
-        $this->workflowId = $workflowId;
+        $this->workflowContext = $workflowContext;
         $this->workflowRepository = $workflowRepository;
     }
 
@@ -134,15 +134,26 @@ class Process implements ServiceInterface
     }
 
     /**
+     * @return int|string|WorkflowContextInterface
+     *
+     * @since Method available since Release 1.1.0
+     */
+    public function getWorkflowContext()
+    {
+        return $this->workflowContext;
+    }
+
+    /**
      * @return Workflow
      *
      * @throws WorkflowNotFoundException
      */
     private function createWorkflow()
     {
-        $workflow = $this->workflowRepository->findById($this->workflowId);
+        $workflowId = $this->workflowContext instanceof WorkflowContextInterface ? $this->workflowContext->getWorkflowId() : $this->workflowContext;
+        $workflow = $this->workflowRepository->findById($workflowId);
         if ($workflow === null) {
-            throw new WorkflowNotFoundException(sprintf('The workflow "%s" is not found.', $this->workflowId));
+            throw new WorkflowNotFoundException(sprintf('The workflow "%s" is not found.', $workflowId));
         }
 
         return $workflow;
