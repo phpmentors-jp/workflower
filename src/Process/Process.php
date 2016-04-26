@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015-2016 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) KUBO Atsuhiro <kubo@iteman.jp> and contributors,
  * All rights reserved.
  *
  * This file is part of Workflower.
