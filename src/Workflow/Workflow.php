@@ -87,6 +87,8 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
 
     /**
      * @var ExpressionLanguage
+     *
+     * @since Property available since Release 1.1.0
      */
     private $expressionLanguage;
 
@@ -373,6 +375,8 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
 
     /**
      * @param ExpressionLanguage $expressionLanguage
+     *
+     * @since Method available since Release 1.1.0
      */
     public function setExpressionLanguage(ExpressionLanguage $expressionLanguage)
     {
