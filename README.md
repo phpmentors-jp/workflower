@@ -42,13 +42,13 @@ Add the dependency to `phpmentors/workflower` into your `composer.json` file as 
 **Stable version:**
 
 ```
-composer require phpmentors/workflower "1.0.*"
+composer require phpmentors/workflower "1.1.*"
 ```
 
 **Development version:**
 
 ```
-composer require phpmentors/workflower "~1.1@dev"
+composer require phpmentors/workflower "~1.2@dev"
 ```
 
 ## Support
