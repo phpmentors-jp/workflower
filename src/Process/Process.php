@@ -15,7 +15,9 @@ namespace PHPMentors\Workflower\Process;
 use PHPMentors\DomainKata\Service\ServiceInterface;
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\UnexpectedActivityStateException;
+use PHPMentors\Workflower\Workflow\Workflow;
 use PHPMentors\Workflower\Workflow\WorkflowRepositoryInterface;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 class Process implements ServiceInterface
 {
@@ -30,6 +32,13 @@ class Process implements ServiceInterface
     private $workflowRepository;
 
     /**
+     * @var ExpressionLanguage
+     *
+     * @since Property available since Release 1.2.0
+     */
+    private $expressionLanguage;
+
+    /**
      * @param int|string|WorkflowContextInterface $workflowContext
      * @param WorkflowRepositoryInterface         $workflowRepository
      */
@@ -37,6 +46,16 @@ class Process implements ServiceInterface
     {
         $this->workflowContext = $workflowContext;
         $this->workflowRepository = $workflowRepository;
+    }
+
+    /**
+     * @param ExpressionLanguage $expressionLanguage
+     *
+     * @since Method available since Release 1.2.0
+     */
+    public function setExpressionLanguage(ExpressionLanguage $expressionLanguage)
+    {
+        $this->expressionLanguage = $expressionLanguage;
     }
 
     /**
@@ -48,9 +67,10 @@ class Process implements ServiceInterface
         assert($eventContext->getProcessContext()->getWorkflow() === null);
         assert($eventContext->getEventId() !== null);
 
-        $eventContext->getProcessContext()->setWorkflow($this->createWorkflow());
-        $eventContext->getProcessContext()->getWorkflow()->setProcessData($eventContext->getProcessContext()->getProcessData());
-        $eventContext->getProcessContext()->getWorkflow()->start($eventContext->getProcessContext()->getWorkflow()->getFlowObject($eventContext->getEventId()));
+        $workflow = $this->configureWorkflow($this->createWorkflow());
+        $eventContext->getProcessContext()->setWorkflow($workflow);
+        $workflow->setProcessData($eventContext->getProcessContext()->getProcessData());
+        $workflow->start($workflow->getFlowObject($eventContext->getEventId()));
     }
 
     /**
@@ -62,10 +82,8 @@ class Process implements ServiceInterface
         assert($workItemContext->getProcessContext()->getWorkflow() !== null);
         assert($workItemContext->getActivityId() !== null);
 
-        $workItemContext->getProcessContext()->getWorkflow()->allocateWorkItem(
-            $workItemContext->getProcessContext()->getWorkflow()->getFlowObject($workItemContext->getActivityId()),
-            $workItemContext->getParticipant()
-        );
+        $workflow = $this->configureWorkflow($workItemContext->getProcessContext()->getWorkflow());
+        $workflow->allocateWorkItem($workflow->getFlowObject($workItemContext->getActivityId()), $workItemContext->getParticipant());
     }
 
     /**
@@ -77,10 +95,8 @@ class Process implements ServiceInterface
         assert($workItemContext->getProcessContext()->getWorkflow() !== null);
         assert($workItemContext->getActivityId() !== null);
 
-        $workItemContext->getProcessContext()->getWorkflow()->startWorkItem(
-            $workItemContext->getProcessContext()->getWorkflow()->getFlowObject($workItemContext->getActivityId()),
-            $workItemContext->getParticipant()
-        );
+        $workflow = $this->configureWorkflow($workItemContext->getProcessContext()->getWorkflow());
+        $workflow->startWorkItem($workflow->getFlowObject($workItemContext->getActivityId()), $workItemContext->getParticipant());
     }
 
     /**
@@ -92,11 +108,9 @@ class Process implements ServiceInterface
         assert($workItemContext->getProcessContext()->getWorkflow() !== null);
         assert($workItemContext->getActivityId() !== null);
 
-        $workItemContext->getProcessContext()->getWorkflow()->setProcessData($workItemContext->getProcessContext()->getProcessData());
-        $workItemContext->getProcessContext()->getWorkflow()->completeWorkItem(
-            $workItemContext->getProcessContext()->getWorkflow()->getFlowObject($workItemContext->getActivityId()),
-            $workItemContext->getParticipant()
-        );
+        $workflow = $this->configureWorkflow($workItemContext->getProcessContext()->getWorkflow());
+        $workflow->setProcessData($workItemContext->getProcessContext()->getProcessData());
+        $workflow->completeWorkItem($workflow->getFlowObject($workItemContext->getActivityId()), $workItemContext->getParticipant());
     }
 
     /**
@@ -155,6 +169,20 @@ class Process implements ServiceInterface
         if ($workflow === null) {
             throw new WorkflowNotFoundException(sprintf('The workflow "%s" is not found.', $workflowId));
         }
+
+        return $workflow;
+    }
+
+    /**
+     * @param Workflow $workflow
+     *
+     * @return Workflow
+     *
+     * @since Method available since Release 1.2.0
+     */
+    private function configureWorkflow(Workflow $workflow)
+    {
+        $workflow->setExpressionLanguage($this->expressionLanguage);
 
         return $workflow;
     }
