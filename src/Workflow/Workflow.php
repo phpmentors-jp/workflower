@@ -314,12 +314,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
         $this->stateMachine->start();
         $this->stateMachine->triggerEvent($event->getId());
         $this->selectSequenceFlow($event);
-
-        if ($this->getCurrentFlowObject() instanceof ActivityInterface) {
-            $this->getCurrentFlowObject()->createWorkItem();
-        } elseif ($this->getCurrentFlowObject() instanceof EndEvent) {
-            $this->end($this->getCurrentFlowObject());
-        }
+        $this->next();
     }
 
     /**
@@ -357,12 +352,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
 
         $activity->complete($participant);
         $this->selectSequenceFlow($activity);
-
-        if ($this->getCurrentFlowObject() instanceof ActivityInterface) {
-            $this->getCurrentFlowObject()->createWorkItem();
-        } elseif ($this->getCurrentFlowObject() instanceof EndEvent) {
-            $this->end($this->getCurrentFlowObject());
-        }
+        $this->next();
     }
 
     /**
@@ -508,6 +498,19 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     {
         if (!$activity->equals($this->getCurrentFlowObject())) {
             throw new UnexpectedActivityException(sprintf('The current flow object is not equal to the expected activity "%s".', $activity->getId()));
+        }
+    }
+
+    /**
+     * @since Method available since Release 1.2.0
+     */
+    private function next()
+    {
+        $currentFlowObject = $this->getCurrentFlowObject();
+        if ($currentFlowObject instanceof ActivityInterface) {
+            $currentFlowObject->createWorkItem();
+        } elseif ($currentFlowObject instanceof EndEvent) {
+            $this->end($currentFlowObject);
         }
     }
 }
