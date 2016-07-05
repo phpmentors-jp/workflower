@@ -169,7 +169,7 @@ class WorkflowBuilder
      */
     public function addTask($id, $participant, $name = null, $defaultSequenceFlow = null)
     {
-        $this->tasks[$id] = array($participant, $name, $defaultSequenceFlow);
+        $this->tasks[$id] = array($participant, $name);
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
