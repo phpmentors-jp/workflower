@@ -23,7 +23,6 @@ before_script:
   - rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
   - composer self-update
   - composer install
-  - ./vendor/bin/testrunner compile
 
 script:
-  - ./vendor/bin/testrunner phpunit -p tests/bootstrap.php -R tests
+  - ./vendor/bin/phpunit
