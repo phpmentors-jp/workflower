@@ -15,6 +15,7 @@ namespace PHPMentors\Workflower\Process;
 use PHPMentors\DomainKata\Service\ServiceInterface;
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\UnexpectedActivityStateException;
+use PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface;
 use PHPMentors\Workflower\Workflow\Workflow;
 use PHPMentors\Workflower\Workflow\WorkflowRepositoryInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -39,13 +40,22 @@ class Process implements ServiceInterface
     private $expressionLanguage;
 
     /**
+     * @var OperationRunnerInterface
+     *
+     * @since Property available since Release 1.2.0
+     */
+    private $operationRunner;
+
+    /**
      * @param int|string|WorkflowContextInterface $workflowContext
      * @param WorkflowRepositoryInterface         $workflowRepository
+     * @param OperationRunnerInterface            $operationRunner
      */
-    public function __construct($workflowContext, WorkflowRepositoryInterface $workflowRepository)
+    public function __construct($workflowContext, WorkflowRepositoryInterface $workflowRepository, OperationRunnerInterface $operationRunner)
     {
         $this->workflowContext = $workflowContext;
         $this->workflowRepository = $workflowRepository;
+        $this->operationRunner = $operationRunner;
     }
 
     /**
@@ -184,6 +194,10 @@ class Process implements ServiceInterface
     {
         if ($this->expressionLanguage !== null) {
             $workflow->setExpressionLanguage($this->expressionLanguage);
+        }
+
+        if ($this->operationRunner !== null) {
+            $workflow->setOperationRunner($this->operationRunner);
         }
 
         return $workflow;

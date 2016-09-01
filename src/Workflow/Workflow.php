@@ -26,6 +26,8 @@ use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 use PHPMentors\Workflower\Workflow\Event\EndEvent;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
 use PHPMentors\Workflower\Workflow\Gateway\GatewayInterface;
+use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
+use PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
@@ -91,6 +93,13 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
      * @since Property available since Release 1.1.0
      */
     private $expressionLanguage;
+
+    /**
+     * @var OperationRunnerInterface
+     *
+     * @since Property available since Release 1.2.0
+     */
+    private $operationRunner;
 
     /**
      * @param int|string $id
@@ -374,6 +383,16 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
+     * @param OperationRunnerInterface $operationRunner
+     *
+     * @since Method available since Release 1.2.0
+     */
+    public function setOperationRunner(OperationRunnerInterface $operationRunner)
+    {
+        $this->operationRunner = $operationRunner;
+    }
+
+    /**
      * @param EndEvent $event
      */
     private function end(EndEvent $event)
@@ -509,8 +528,23 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
         $currentFlowObject = $this->getCurrentFlowObject();
         if ($currentFlowObject instanceof ActivityInterface) {
             $currentFlowObject->createWorkItem();
+
+            if ($currentFlowObject instanceof OperationalInterface) {
+                $this->runOperationalActivity($currentFlowObject);
+            }
         } elseif ($currentFlowObject instanceof EndEvent) {
             $this->end($currentFlowObject);
         }
+    }
+
+    /**
+     * @since Method available since Release 1.2.0
+     */
+    private function runOperationalActivity(ActivityInterface $operational)
+    {
+        $this->allocateWorkItem($operational, $this->operationRunner->provideParticipant($operational, $this));
+        $this->startWorkItem($operational, $this->operationRunner->provideParticipant($operational, $this));
+        $this->operationRunner->run($operational, $this);
+        $this->completeWorkItem($operational, $this->operationRunner->provideParticipant($operational, $this));
     }
 }
