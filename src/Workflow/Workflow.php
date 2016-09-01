@@ -530,7 +530,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
             $currentFlowObject->createWorkItem();
 
             if ($currentFlowObject instanceof OperationalInterface) {
-                $this->runOperationalActivity($currentFlowObject);
+                $this->executeOperationalActivity($currentFlowObject);
             }
         }
 
@@ -542,7 +542,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     /**
      * @since Method available since Release 1.2.0
      */
-    private function runOperationalActivity(ActivityInterface $operational)
+    private function executeOperationalActivity(ActivityInterface $operational)
     {
         $this->allocateWorkItem($operational, $this->operationRunner->provideParticipant($operational, $this));
         $this->startWorkItem($operational, $this->operationRunner->provideParticipant($operational, $this));
