@@ -544,9 +544,10 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
      */
     private function executeOperationalActivity(ActivityInterface $operational)
     {
-        $this->allocateWorkItem($operational, $this->operationRunner->provideParticipant($operational, $this));
-        $this->startWorkItem($operational, $this->operationRunner->provideParticipant($operational, $this));
+        $participant = $this->operationRunner->provideParticipant($operational, $this);
+        $this->allocateWorkItem($operational, $participant);
+        $this->startWorkItem($operational, $participant);
         $this->operationRunner->run($operational, $this);
-        $this->completeWorkItem($operational, $this->operationRunner->provideParticipant($operational, $this));
+        $this->completeWorkItem($operational, $participant);
     }
 }
