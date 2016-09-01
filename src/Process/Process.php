@@ -182,7 +182,9 @@ class Process implements ServiceInterface
      */
     private function configureWorkflow(Workflow $workflow)
     {
-        $workflow->setExpressionLanguage($this->expressionLanguage);
+        if ($this->expressionLanguage !== null) {
+            $workflow->setExpressionLanguage($this->expressionLanguage);
+        }
 
         return $workflow;
     }
