@@ -373,6 +373,16 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
+     * @return array
+     *
+     * @since Method available since Release 1.2.0
+     */
+    public function getProcessData()
+    {
+        return $this->processData;
+    }
+
+    /**
      * @param ExpressionLanguage $expressionLanguage
      *
      * @since Method available since Release 1.1.0
