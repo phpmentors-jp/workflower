@@ -542,9 +542,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
             if ($currentFlowObject instanceof OperationalInterface) {
                 $this->executeOperationalActivity($currentFlowObject);
             }
-        }
-
-        if ($currentFlowObject instanceof EndEvent) {
+        } elseif ($currentFlowObject instanceof EndEvent) {
             $this->end($currentFlowObject);
         }
     }
