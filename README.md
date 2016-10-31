@@ -27,6 +27,7 @@ A BPMN 2.0 compliant workflow engine for PHP
 * Flow objects
   * Activities
     * Tasks
+    * Service tasks
   * Events
     * Start events
     * End events
