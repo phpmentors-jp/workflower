@@ -13,6 +13,7 @@
 namespace PHPMentors\Workflower\Workflow;
 
 use PHPMentors\DomainKata\Entity\EntityInterface;
+use PHPMentors\Workflower\Definition\Bpmn2Reader;
 
 class WorkflowRepository implements WorkflowRepositoryInterface
 {
@@ -25,6 +26,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     {
         $this->add($this->createLoanRequestProcess());
         $this->add($this->createMultipleWorkItemsProcess());
+        $this->add($this->createServiceTasksProcess());
     }
 
     /**
@@ -109,5 +111,17 @@ class WorkflowRepository implements WorkflowRepositoryInterface
         $workflowBuilder->addSequenceFlow('Task2', 'Task1', 'Task2.Task1', null, 'satisfied !== true');
 
         return $workflowBuilder->build();
+    }
+
+    /**
+     * @return Workflow
+     *
+     * @since Method available since Release 1.2.0
+     */
+    private function createServiceTasksProcess()
+    {
+        $bpmn2Reader = new Bpmn2Reader();
+
+        return $bpmn2Reader->read(dirname(__DIR__).'/Resources/config/workflower/ServiceTasksProcess.bpmn');
     }
 }

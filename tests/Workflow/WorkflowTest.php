@@ -15,6 +15,7 @@ namespace PHPMentors\Workflower\Workflow;
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\WorkItem;
 use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
+use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
 
 class WorkflowTest extends \PHPUnit_Framework_TestCase
 {
@@ -385,5 +386,34 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         $workflow->setProcessData(array('rejected' => false));
         $workflow->start($workflow->getFlowObject('Start'));
+    }
+
+    /**
+     * @test
+     *
+     * @since Method available since Release 1.2.0
+     */
+    public function executeServiceTasks()
+    {
+        $participant = \Phake::mock('PHPMentors\Workflower\Workflow\Participant\ParticipantInterface');
+        \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
+        $operationRunner = \Phake::mock('PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface');
+        \Phake::when($operationRunner)->provideParticipant($this->anything(), $this->anything())->thenReturn($participant);
+        $self = $this;
+        \Phake::when($operationRunner)->run($this->anything(), $this->anything())->thenReturnCallback(function (OperationalInterface $operational, Workflow $workflow) use ($self) {
+            static $calls = 0;
+
+            ++$calls;
+            $self->assertThat($operational, $self->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ServiceTask'));
+            $self->assertThat($operational->getOperation(), $self->equalTo('phpmentors_workflower.service'.$calls));
+        });
+
+        $workflow = $this->workflowRepository->findById('ServiceTasksProcess');
+        $workflow->setOperationRunner($operationRunner);
+        $workflow->start($workflow->getFlowObject('Start'));
+
+        $this->assertThat($workflow->isEnded(), $this->isTrue());
+
+        \Phake::verify($operationRunner, \Phake::times(2))->run($this->anything(), $this->anything());
     }
 }
