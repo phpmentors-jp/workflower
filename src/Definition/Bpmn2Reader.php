@@ -33,7 +33,29 @@ class Bpmn2Reader implements ServiceInterface
             $document->schemaValidate(dirname(__DIR__).'/Resources/config/workflower/schema/BPMN20.xsd');
         });
         $errorToExceptionContext->invoke();
+        return $this->readDocument($document);
+    }
 
+    public function readSource($source)
+    {
+        $document = new \DOMDocument();
+        $errorToExceptionContext = new ErrorToExceptionContext(E_WARNING, function () use ($source, $document) {
+            $document->loadXML($source);
+            $document->schemaValidate(dirname(__DIR__).'/Resources/config/workflower/schema/BPMN20.xsd');
+        });
+        $errorToExceptionContext->invoke();
+        return $this->readDocument($document);
+    }
+
+    /**
+     * @param DOMDocument $file
+     *
+     * @return Workflow
+     *
+     * @throws IdAttributeNotFoundException
+     */
+    private function readDocument(\DOMDocument $document)
+    {
         $workflowBuilder = new WorkflowBuilder();
 
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'process') as $element) {
