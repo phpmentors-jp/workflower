@@ -36,6 +36,13 @@ class Bpmn2Reader implements ServiceInterface
         return $this->readDocument($document);
     }
 
+    /**
+     * @param string $source
+     *
+     * @return Workflow
+     *
+     * @throws IdAttributeNotFoundException
+     */
     public function readSource($source)
     {
         $document = new \DOMDocument();
