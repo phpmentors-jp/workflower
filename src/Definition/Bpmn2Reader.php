@@ -33,6 +33,7 @@ class Bpmn2Reader implements ServiceInterface
             $document->schemaValidate(dirname(__DIR__).'/Resources/config/workflower/schema/BPMN20.xsd');
         });
         $errorToExceptionContext->invoke();
+
         return $this->readDocument($document);
     }
 
@@ -51,6 +52,7 @@ class Bpmn2Reader implements ServiceInterface
             $document->schemaValidate(dirname(__DIR__).'/Resources/config/workflower/schema/BPMN20.xsd');
         });
         $errorToExceptionContext->invoke();
+
         return $this->readDocument($document);
     }
 
