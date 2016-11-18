@@ -30,6 +30,8 @@ class Bpmn2ReaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     *
+     * @since Method available since Release 1.3.0
      */
     public function readSource()
     {

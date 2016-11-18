@@ -42,6 +42,8 @@ class Bpmn2Reader implements ServiceInterface
      * @return Workflow
      *
      * @throws IdAttributeNotFoundException
+     *
+     * @since Method available since Release 1.3.0
      */
     public function readSource($source)
     {
@@ -60,6 +62,8 @@ class Bpmn2Reader implements ServiceInterface
      * @return Workflow
      *
      * @throws IdAttributeNotFoundException
+     *
+     * @since Method available since Release 1.3.0
      */
     private function readDocument(\DOMDocument $document)
     {
