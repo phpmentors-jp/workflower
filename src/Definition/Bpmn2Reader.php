@@ -30,7 +30,6 @@ class Bpmn2Reader implements ServiceInterface
         $document = new \DOMDocument();
         $errorToExceptionContext = new ErrorToExceptionContext(E_WARNING, function () use ($file, $document) {
             $document->load($file);
-            $document->schemaValidate(dirname(__DIR__).'/Resources/config/workflower/schema/BPMN20.xsd');
         });
         $errorToExceptionContext->invoke();
 
@@ -49,7 +48,6 @@ class Bpmn2Reader implements ServiceInterface
         $document = new \DOMDocument();
         $errorToExceptionContext = new ErrorToExceptionContext(E_WARNING, function () use ($source, $document) {
             $document->loadXML($source);
-            $document->schemaValidate(dirname(__DIR__).'/Resources/config/workflower/schema/BPMN20.xsd');
         });
         $errorToExceptionContext->invoke();
 
@@ -65,6 +63,11 @@ class Bpmn2Reader implements ServiceInterface
      */
     private function readDocument(\DOMDocument $document)
     {
+        $errorToExceptionContext = new ErrorToExceptionContext(E_WARNING, function () use ($document) {
+            $document->schemaValidate(dirname(__DIR__).'/Resources/config/workflower/schema/BPMN20.xsd');
+        });
+        $errorToExceptionContext->invoke();
+
         $workflowBuilder = new WorkflowBuilder();
 
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'process') as $element) {
