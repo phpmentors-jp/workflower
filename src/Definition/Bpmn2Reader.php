@@ -57,7 +57,7 @@ class Bpmn2Reader implements ServiceInterface
     }
 
     /**
-     * @param DOMDocument $file
+     * @param DOMDocument $document
      *
      * @return Workflow
      *
