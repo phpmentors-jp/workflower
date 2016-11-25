@@ -70,6 +70,8 @@ Define a workflow to work with Workflower using an editor supporting BPMN 2.0. I
 
 The screenshot below is from [BPMN2 Modeler](https://www.eclipse.org/bpmn2-modeler/), a BPMN editor available in [Eclipse](https://eclipse.org/):
 
+![Editing a BPMN 2.0 model by BPMN2 Modeler](https://cloud.githubusercontent.com/assets/52985/20619334/57813132-b337-11e6-80dd-36e1c873eb81.png)
+
 ### Workflow elements supported by Workflower
 
 Workflower supports the following BPMN 2.0 workflow elements:
