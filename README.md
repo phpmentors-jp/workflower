@@ -52,6 +52,11 @@ composer require phpmentors/workflower "1.2.*"
 composer require phpmentors/workflower "~1.3@dev"
 ```
 
+## Documentation
+
+* [Quick Start Guide](https://github.com/phpmentors-jp/workflower/blob/master/docs/GUIDE.md)
+* [Release Notes](https://github.com/phpmentors-jp/workflower/releases)
+
 ## Support
 
 If you find a bug or have a question, or want to request a feature, create an issue or pull request for it on [Issues](https://github.com/phpmentors-jp/workflower/issues).
