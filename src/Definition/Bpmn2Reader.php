@@ -104,6 +104,24 @@ class Bpmn2Reader implements ServiceInterface
             }
         }
 
+        if (count($flowObjectRoles) <= 0) { // laneless flow, use participant name as role
+            $participants = [];
+            foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'participant') as $element) {
+                $participants[$element->getAttribute('processRef')] = $element->getAttribute('id');
+                $workflowBuilder->addRole(
+                    $element->getAttribute('id'),
+                    $element->hasAttribute('name') ? $element->getAttribute('name') : null
+                );
+            }
+
+            foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'process') as $element) {
+                foreach ($element->childNodes as $childElement) {
+                    if (!$childElement->hasAttributes()) continue;
+                    $flowObjectRoles[$childElement->getAttribute('id')] = $participants[$element->getAttribute('id')];
+                }
+            }
+        }
+
         $operations = array();
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'operation') as $element) {
             if (!$element->hasAttribute('id')) {
