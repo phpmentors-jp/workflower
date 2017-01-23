@@ -28,8 +28,8 @@ class Role implements EntityInterface, IdentifiableInterface, \Serializable
     private $name;
 
     /**
-     * @param string $id
-     * @param string $name
+     * @param int|string $id
+     * @param string     $name
      */
     public function __construct($id, $name = null)
     {
