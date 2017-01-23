@@ -105,7 +105,7 @@ class Bpmn2Reader implements ServiceInterface
         }
 
         if (count($flowObjectRoles) <= 0) { // laneless flow, use participant name as role
-            $participants = [];
+            $participants = array();
             foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'participant') as $element) {
                 $participants[$element->getAttribute('processRef')] = $element->getAttribute('id');
                 $workflowBuilder->addRole(
