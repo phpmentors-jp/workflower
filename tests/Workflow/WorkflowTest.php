@@ -437,4 +437,35 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         \Phake::verify($participant, \Phake::times(3))->hasRole($this->equalTo(Workflow::DEFAULT_ROLE_ID));
     }
+
+    /**
+     * @test
+     *
+     * @since Method available since Release 1.3.0
+     */
+    public function executeSendTasks()
+    {
+        $participant = \Phake::mock('PHPMentors\Workflower\Workflow\Participant\ParticipantInterface');
+        \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
+        $operationRunner = \Phake::mock('PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface');
+        \Phake::when($operationRunner)->provideParticipant($this->anything(), $this->anything())->thenReturn($participant);
+        $self = $this;
+        \Phake::when($operationRunner)->run($this->anything(), $this->anything())->thenReturnCallback(function (OperationalInterface $operational, Workflow $workflow) use ($self) {
+            static $calls = 0;
+
+            ++$calls;
+            $self->assertThat($operational, $self->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\SendTask'));
+            $self->assertThat($operational->getOperation(), $self->equalTo('phpmentors_workflower.service'.$calls));
+            $self->assertThat($operational, $self->isInstanceOf('PHPMentors\Workflower\Workflow\Resource\MessageInterface'));
+            $self->assertThat($operational->getMessage(), $self->equalTo('phpmentors_workflower.message'.$calls));
+        });
+
+        $workflow = $this->workflowRepository->findById('SendTasksProcess');
+        $workflow->setOperationRunner($operationRunner);
+        $workflow->start($workflow->getFlowObject('Start'));
+
+        $this->assertThat($workflow->isEnded(), $this->isTrue());
+
+        \Phake::verify($operationRunner, \Phake::times(2))->run($this->anything(), $this->anything());
+    }
 }

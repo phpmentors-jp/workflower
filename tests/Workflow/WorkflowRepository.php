@@ -28,6 +28,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
         $this->add($this->createMultipleWorkItemsProcess());
         $this->add($this->createServiceTasksProcess());
         $this->add($this->createNoLanesProcess());
+        $this->add($this->createSendTasksProcess());
     }
 
     /**
@@ -136,5 +137,17 @@ class WorkflowRepository implements WorkflowRepositoryInterface
         $bpmn2Reader = new Bpmn2Reader();
 
         return $bpmn2Reader->read(dirname(__DIR__).'/Resources/config/workflower/NoLanesProcess.bpmn');
+    }
+
+    /**
+     * @return Workflow
+     *
+     * @since Method available since Release 1.3.0
+     */
+    private function createSendTasksProcess()
+    {
+        $bpmn2Reader = new Bpmn2Reader();
+
+        return $bpmn2Reader->read(dirname(__DIR__).'/Resources/config/workflower/SendTasksProcess.bpmn');
     }
 }
