@@ -103,9 +103,18 @@ class Bpmn2Reader implements ServiceInterface
                 $flowObjectRoles[$childElement->nodeValue] = $element->getAttribute('id');
             }
         }
-
+        
         if (count($flowObjectRoles) == 0) {
             $workflowBuilder->addRole(Workflow::DEFAULT_ROLE_ID);
+        }
+
+        $messages = array();
+        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'message') as $element) {
+            if (!$element->hasAttribute('id')) {
+                throw $this->createIdAttributeNotFoundException($element, $file);
+            }
+
+            $messages[$element->getAttribute('id')] = $element->getAttribute('name');
         }
 
         $operations = array();
@@ -152,6 +161,21 @@ class Bpmn2Reader implements ServiceInterface
                 $element->getAttribute('id'),
                 $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
                 $operations[$element->getAttribute('operationRef')],
+                $element->hasAttribute('name') ? $element->getAttribute('name') : null,
+                $element->hasAttribute('default') ? $element->getAttribute('default') : null
+            );
+        }
+
+        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'sendTask') as $element) {
+            if (!$element->hasAttribute('id')) {
+                throw $this->createIdAttributeNotFoundException($element, $file);
+            }
+
+            $workflowBuilder->addSendTask(
+                $element->getAttribute('id'),
+                $flowObjectRoles[$element->getAttribute('id')],
+                $element->hasAttribute('messageRef') ? $messages[$element->getAttribute('messageRef')] : null,
+                $element->hasAttribute('operationRef') ? $operations[$element->getAttribute('operationRef')] : null,
                 $element->hasAttribute('name') ? $element->getAttribute('name') : null,
                 $element->hasAttribute('default') ? $element->getAttribute('default') : null
             );
