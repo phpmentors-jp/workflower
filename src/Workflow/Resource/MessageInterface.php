@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Resource;
 
-interface MessageInterface
+interface MessageInterface extends OperationInterface
 {
     /**
      * @return int|string
