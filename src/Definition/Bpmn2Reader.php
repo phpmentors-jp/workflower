@@ -103,7 +103,7 @@ class Bpmn2Reader implements ServiceInterface
                 $flowObjectRoles[$childElement->nodeValue] = $element->getAttribute('id');
             }
         }
-      
+        
         if (count($flowObjectRoles) == 0) {
             $workflowBuilder->addRole(Workflow::DEFAULT_ROLE_ID);
         }
