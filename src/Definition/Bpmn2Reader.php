@@ -104,6 +104,10 @@ class Bpmn2Reader implements ServiceInterface
             }
         }
 
+        if (count($flowObjectRoles) == 0) {
+            $workflowBuilder->addRole(Workflow::DEFAULT_ROLE_ID);
+        }
+
         $operations = array();
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'operation') as $element) {
             if (!$element->hasAttribute('id')) {
@@ -120,7 +124,7 @@ class Bpmn2Reader implements ServiceInterface
 
             $workflowBuilder->addStartEvent(
                 $element->getAttribute('id'),
-                $flowObjectRoles[$element->getAttribute('id')],
+                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
                 $element->hasAttribute('name') ? $element->getAttribute('name') : null,
                 $element->hasAttribute('default') ? $element->getAttribute('default') : null
             );
@@ -133,7 +137,7 @@ class Bpmn2Reader implements ServiceInterface
 
             $workflowBuilder->addTask(
                 $element->getAttribute('id'),
-                $flowObjectRoles[$element->getAttribute('id')],
+                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
                 $element->hasAttribute('name') ? $element->getAttribute('name') : null,
                 $element->hasAttribute('default') ? $element->getAttribute('default') : null
             );
@@ -146,7 +150,7 @@ class Bpmn2Reader implements ServiceInterface
 
             $workflowBuilder->addServiceTask(
                 $element->getAttribute('id'),
-                $flowObjectRoles[$element->getAttribute('id')],
+                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
                 $operations[$element->getAttribute('operationRef')],
                 $element->hasAttribute('name') ? $element->getAttribute('name') : null,
                 $element->hasAttribute('default') ? $element->getAttribute('default') : null
@@ -160,7 +164,7 @@ class Bpmn2Reader implements ServiceInterface
 
             $workflowBuilder->addExclusiveGateway(
                 $element->getAttribute('id'),
-                $flowObjectRoles[$element->getAttribute('id')],
+                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
                 $element->hasAttribute('name') ? $element->getAttribute('name') : null,
                 $element->hasAttribute('default') ? $element->getAttribute('default') : null
             );
@@ -171,7 +175,7 @@ class Bpmn2Reader implements ServiceInterface
                 throw $this->createIdAttributeNotFoundException($element, $file);
             }
 
-            $workflowBuilder->addEndEvent($element->getAttribute('id'), $flowObjectRoles[$element->getAttribute('id')], $element->hasAttribute('name') ? $element->getAttribute('name') : null);
+            $workflowBuilder->addEndEvent($element->getAttribute('id'), $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')), $element->hasAttribute('name') ? $element->getAttribute('name') : null);
         }
 
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'sequenceFlow') as $element) {
@@ -206,5 +210,18 @@ class Bpmn2Reader implements ServiceInterface
     private function createIdAttributeNotFoundException(\DOMElement $element, $file)
     {
         return new IdAttributeNotFoundException(sprintf('The id attribute of the "%s" element is not found in "%s" on line %d', $element->tagName, $file, $element->getLineNo()));
+    }
+
+    /**
+     * @param array  $flowObjectRoles
+     * @param string $flowObjectId
+     *
+     * @return string
+     *
+     * @since Method available since Release 1.3.0
+     */
+    private function provideRoleIdForFlowObject(array $flowObjectRoles, $flowObjectId)
+    {
+        return count($flowObjectRoles) ? $flowObjectRoles[$flowObjectId] : Workflow::DEFAULT_ROLE_ID;
     }
 }

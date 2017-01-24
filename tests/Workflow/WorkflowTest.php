@@ -416,4 +416,25 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         \Phake::verify($operationRunner, \Phake::times(2))->run($this->anything(), $this->anything());
     }
+
+    /**
+     * @test
+     *
+     * @since Method available since Release 1.3.0
+     */
+    public function provideDefaultRoleForWorkflowWithoutLanes()
+    {
+        $participant = \Phake::mock('PHPMentors\Workflower\Workflow\Participant\ParticipantInterface');
+        \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
+
+        $workflow = $this->workflowRepository->findById('NoLanesProcess');
+        $workflow->start($workflow->getFlowObject('Start'));
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $this->assertThat($workflow->isEnded(), $this->isTrue());
+
+        \Phake::verify($participant, \Phake::times(3))->hasRole($this->equalTo(Workflow::DEFAULT_ROLE_ID));
+    }
 }
