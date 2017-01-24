@@ -1,4 +1,5 @@
 <?php
+
 namespace PHPMentors\Workflower\Workflow\Activity;
 
 use PHPMentors\Workflower\Workflow\Participant\LoggedParticipant;
