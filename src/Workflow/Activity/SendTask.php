@@ -16,6 +16,9 @@ use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use PHPMentors\Workflower\Workflow\Resource\MessageInterface;
 
+/**
+ * @since Class available since Release 1.3.0
+ */
 class SendTask extends Task implements MessageInterface, OperationalInterface
 {
     /**

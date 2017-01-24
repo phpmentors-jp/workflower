@@ -63,6 +63,8 @@ class WorkflowBuilder
 
     /**
      * @var array
+     *
+     * @since Property available since Release 1.3.0
      */
     private $sendTasks = array();
 
@@ -216,7 +218,7 @@ class WorkflowBuilder
      * @param string     $name
      * @param int|string $defaultSequenceFlow
      *
-     * @since Method available since Release 1.2.0
+     * @since Method available since Release 1.3.0
      */
     public function addSendTask($id, $participant, $message, $operation, $name = null, $defaultSequenceFlow = null)
     {
