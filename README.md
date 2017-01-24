@@ -28,11 +28,14 @@ A BPMN 2.0 compliant workflow engine for PHP
   * Activities
     * Tasks
     * Service tasks
+    * Send tasks
   * Events
     * Start events
     * End events
   * Gateways
     * Exclusive gateways
+* Swimlanes
+  * Lanes
 
 ## Installation
 
