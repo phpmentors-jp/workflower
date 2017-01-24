@@ -12,13 +12,10 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-use PHPMentors\Workflower\Workflow\Resource\MessageInterface;
 use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
+use PHPMentors\Workflower\Workflow\Resource\MessageInterface;
 
-/**
- *
- */
 class SendTask extends Task implements MessageInterface, OperationalInterface
 {
     /**

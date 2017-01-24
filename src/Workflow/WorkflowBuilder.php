@@ -12,8 +12,8 @@
 
 namespace PHPMentors\Workflower\Workflow;
 
-use PHPMentors\Workflower\Workflow\Activity\ServiceTask;
 use PHPMentors\Workflower\Workflow\Activity\SendTask;
+use PHPMentors\Workflower\Workflow\Activity\ServiceTask;
 use PHPMentors\Workflower\Workflow\Activity\Task;
 use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
 use PHPMentors\Workflower\Workflow\Event\EndEvent;
