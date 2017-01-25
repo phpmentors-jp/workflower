@@ -173,7 +173,7 @@ class Bpmn2Reader implements ServiceInterface
 
             $workflowBuilder->addSendTask(
                 $element->getAttribute('id'),
-                $flowObjectRoles[$element->getAttribute('id')],
+                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
                 $element->hasAttribute('messageRef') ? $messages[$element->getAttribute('messageRef')] : null,
                 $element->hasAttribute('operationRef') ? $operations[$element->getAttribute('operationRef')] : null,
                 $element->hasAttribute('name') ? $element->getAttribute('name') : null,
