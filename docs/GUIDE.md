@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Workflower is a workflow engine for PHP that is compliant with [BPMN 2.0](http://www.omg.org/spec/BPMN/2.0/) and is an open source product released under [The BSD 2-Clause License](https://opensource.org/licenses/BSD-2-Clause). The primary use of Workflower is to manage human-centric business processes with PHP applications.
+Workflower is a [BPMN 2.0](http://www.omg.org/spec/BPMN/2.0/) workflow engine for PHP and is an open source product released under [The BSD 2-Clause License](https://opensource.org/licenses/BSD-2-Clause). The primary use of Workflower is to manage human-centric business processes with PHP applications.
 
 This article shows the work required to manage business processes using Workflower on [Symfony](http://symfony.com/) applications.
 
