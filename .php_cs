@@ -7,11 +7,10 @@ $finder = PhpCsFixer\Finder::create()
 return PhpCsFixer\Config::create()
     ->setRules(array(
         '@Symfony' => true,
-        'empty_return' => false,
-        'blankline_after_open_tag' => false,
+        'no_useless_return' => false,
+        'blank_line_after_opening_tag' => false,
         'ordered_imports' => true,
         'phpdoc_no_empty_return' => false,
-        'array_syntax' => false,
     ))
     ->setFinder($finder)
     ;
