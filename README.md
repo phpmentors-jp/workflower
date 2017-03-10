@@ -66,7 +66,7 @@ If you find a bug or have a question, or want to request a feature, create an is
 
 ## Copyright
 
-Copyright (c) 2015-2016 KUBO Atsuhiro and [contributors](https://github.com/phpmentors-jp/workflower/wiki/Contributors), All rights reserved.
+Copyright (c) 2015-2017 KUBO Atsuhiro and [contributors](https://github.com/phpmentors-jp/workflower/wiki/Contributors), All rights reserved.
 
 ## License
 
