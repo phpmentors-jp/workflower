@@ -8,7 +8,7 @@ This article shows the work required to manage business processes using Workflow
 
 [PHPMentorsWorkflowerBundle](https://github.com/phpmentors-jp/workflower-bundle) is an integration layer to use Workflower in Symfony applications and provides the following features:
 
-* Automatically generates DI container services corresponding to workflows and automatically injects service objects using the `phpmentors_workflower.process_aware` tags
+* Automatically generates DI container services according to workflows and automatically injects service objects using the `phpmentors_workflower.process_aware` tags
 * Allocates tasks to participants and controls access for participants using the Symfony security system
 * Provides transparent serialization/deserialization for entities using [Doctrine ORM](http://www.doctrine-project.org/projects/orm.html)
 * Supports multiple workflow contexts (directories where BPMN files are stored)
@@ -227,7 +227,7 @@ class LoanRequestProcessCompletionUsecase implements ProcessAwareInterface
 }
 ```
 
-The service definition corresponding to the above is as follows:
+The service definition according to the above is as follows:
 
 ```yaml
 # ...
