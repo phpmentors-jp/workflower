@@ -82,11 +82,14 @@ Workflower supports the following BPMN 2.0 workflow elements:
   * Activities
     * Tasks
     * Service tasks
+    * Send tasks
   * Events
     * Start events
     * End events
   * Gateways
     * Exclusive gateways
+* Swimlanes
+  * Lanes
 
 Please be aware that the unsupported elements in a workflow will be ignored.
 
