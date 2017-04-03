@@ -8,10 +8,10 @@ This article shows the work required to manage business processes using Workflow
 
 [PHPMentorsWorkflowerBundle](https://github.com/phpmentors-jp/workflower-bundle) is an integration layer to use Workflower in Symfony applications and provides the following features:
 
-* Automatically generates DI container services according to workflows and automatically injects service objects using the `phpmentors_workflower.process_aware` tags
-* Allocates tasks to participants and controls access for participants using the Symfony security system
-* Provides transparent serialization/deserialization for entities using [Doctrine ORM](http://www.doctrine-project.org/projects/orm.html)
-* Supports multiple workflow contexts (directories where BPMN files are stored)
+- Automatically generates DI container services according to workflows and automatically injects service objects using the `phpmentors_workflower.process_aware` tags
+- Allocates tasks to participants and controls access for participants using the Symfony security system
+- Provides transparent serialization/deserialization for entities using [Doctrine ORM](http://www.doctrine-project.org/projects/orm.html)
+- Supports multiple workflow contexts (directories where BPMN files are stored)
 
 ## Installing Workflower and PHPMentorsWorkflowerBundle
 
@@ -61,8 +61,8 @@ phpmentors_workflower:
 # ...
 ```
 
-* `serializer_service` - Specify the ID of the DI container service to be used for serializing `PHPMentors\Workflower\Workflow\Workflow` objects that are instances of workflows. `PHPMentors\Workflower\Persistence\WorkflowSerializerInterface` implementation is expected for the specified service. The default is `phpmentors_workflower.php_workflow_serializer`. You can also use `phpmentors_workflower.base64_php_workflow_serializer` to encode/decode serialized objects with MIME base64.
-* `workflow_contexts` - Specify `definition_dir` (the directory where the BPMN files are stored) for each workflow context ID.
+- `serializer_service` - Specify the ID of the DI container service to be used for serializing `PHPMentors\Workflower\Workflow\Workflow` objects that are instances of workflows. `PHPMentors\Workflower\Persistence\WorkflowSerializerInterface` implementation is expected for the specified service. The default is `phpmentors_workflower.php_workflow_serializer`. You can also use `phpmentors_workflower.base64_php_workflow_serializer` to encode/decode serialized objects with MIME base64.
+- `workflow_contexts` - Specify `definition_dir` (the directory where the BPMN files are stored) for each workflow context ID.
 
 ## Designing workflows with BPMN
 
@@ -76,20 +76,20 @@ The screenshot below is from [BPMN2 Modeler](https://www.eclipse.org/bpmn2-model
 
 Workflower supports the following BPMN 2.0 workflow elements:
 
-* Connecting objects
-  * Sequence flows
-* Flow objects
-  * Activities
-    * Tasks
-    * Service tasks
-    * Send tasks
-  * Events
-    * Start events
-    * End events
-  * Gateways
-    * Exclusive gateways
-* Swimlanes
-  * Lanes
+- Connecting objects
+    - Sequence flows
+- Flow objects
+    - Activities
+        - Tasks
+        - Service tasks
+        - Send tasks
+    - Events
+        - Start events
+        - End events
+    - Gateways
+        - Exclusive gateways
+- Swimlanes
+    - Lanes
 
 Please be aware that the unsupported elements in a workflow will be ignored.
 
@@ -257,6 +257,6 @@ In addition, software development by BPMS can be said to be the practice of [Gen
 
 ## References
 
-* [phpmentors-jp/workflower-bundle](https://github.com/phpmentors-jp/workflower-bundle)
-* [phpmentors-jp/workflower](https://github.com/phpmentors-jp/workflower)
-* [Q-BPM](http://en.q-bpm.org/mediawiki/index.php?title=Main_Page)
+- [phpmentors-jp/workflower-bundle](https://github.com/phpmentors-jp/workflower-bundle)
+- [phpmentors-jp/workflower](https://github.com/phpmentors-jp/workflower)
+- [Q-BPM](http://en.q-bpm.org/mediawiki/index.php?title=Main_Page)
