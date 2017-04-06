@@ -14,7 +14,7 @@
         "php": ">=5.3.9",
         "phpmentors/domain-kata": "~1.4",
         "piece/stagehand-fsm": "~2.5",
-        "symfony/expression-language": "~2.8|~3.0"
+        "symfony/expression-language": "~2.8 || ~3.0"
     },
     "require-dev": {
         "phake/phake": "~2.0",
