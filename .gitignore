@@ -1,7 +1,11 @@
 /.composer/
+/.idea/
 /.php_cs.cache
+/.project
+/.settings/
 /composer.lock
 /composer.phar
 /docker-compose.yml
 /php-cs-fixer.phar
 /vendor/
+*.iml
