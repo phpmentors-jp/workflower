@@ -7,6 +7,6 @@
 /composer.lock
 /composer.phar
 /docker-compose.yml
-/php-cs-fixer.phar
+/php-cs-fixer-v2.phar
 /vendor/
 *.iml
