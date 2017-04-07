@@ -18,8 +18,8 @@ This article shows the work required to manage business processes using Workflow
 First, we will use Composer to install Workflower and PHPMentorsWorkflowerBundle as project dependent packages:
 
 ```console
-$ composer require phpmentors/workflower "1.2.*"
-$ composer require phpmentors/workflower-bundle "1.2.*"
+$ composer require phpmentors/workflower "1.3.*"
+$ composer require phpmentors/workflower-bundle "1.3.*"
 ```
 
 Second, change `Appkernel` to enable `PHPMentorsWorkflowerBundle`:
@@ -248,6 +248,52 @@ Implementation of the use case class corresponding to "combination of process an
 Finally, it is necessary to implement clients (controllers, commands, event listeners, etc.) to start processes, allocate/start/complete work items. These clients should also be able to extract variability to the outside.
 
 Once you have done so, you will be able to perform a series of operations on the business process from the web interface or the command line interface (CLI).
+
+### Starting a process
+
+The lifecycle of a workflow process (often called a process instance) starts by triggering a start event from some application event (e.g. an account opening application from a web page). Once the process is started, it will be subject to management.
+
+### Managing processes with Process Console
+
+For process management, one or more sets of a list-operation (generally known as list-detail) views can be used. These views and the features provided by their seem to be called **Process Console** in some products. 
+
+#### Process operation views
+ 
+A process operation view, which is detail or operation view, will consist of the following items:
+
+- The process entity and its related entities
+    - Some of these are evaluated as process data in Expression Language expressions when selecting sequence flows after completing an activity
+- Buttons that are enabled / disabled according to the state of the activity
+    - Allocate (the activity to the authenticated user or specified user)
+    - Start
+    - Complete
+- The activity Log for the process
+
+In addition, in the operation view we've seen the checklist to complete the activity, buttons for other operations related to the activity, the audit log for the process, etc. in the real world.
+
+#### Process list views
+
+A process list view is used to find processes matched with some conditions. In the list view it is useful to group the processes by the current activity ID, the process state, etc.. Their groups can be represented as tabs or nodes in a tree such like Gmail.
+
+### Designing the persistent process model
+
+The design and use of an excellent persistent model is one of the most important things in business systems. Persistence of workflow processes is, in a narrow sense, persistence of `Workflow` objects,
+but in an actual system a model of business processes, that is the persistent process model for your system, including` Workflow` object should be considered. In this model, different process data items and search keys for each workflow should also be considered. The models that we consider effective are the following:
+
+1. Individual `ProcessContextInterface` implementations for each workflow
+2. A common `ProcessContextInterface` implementation for all workflows
+3. A combination of an entity that has common properties for all workflows and individual `ProcessContextInterface` implementations for each workflow
+    - with inheritance(*1)
+    - with composition
+
+An example of third model with the *Class Table Composition* (*2) is shown in the following figure.
+
+![An example of third model with the Class Table Composition](https://cloud.githubusercontent.com/assets/52985/24827098/5f5e2796-1c7f-11e7-9da5-d7d602501625.png)
+
+--
+
+1. See [Single Table Inheritance](https://martinfowler.com/eaaCatalog/singleTableInheritance.html), [Class Table Inheritance](https://martinfowler.com/eaaCatalog/classTableInheritance.html), [Concrete Table Inheritance](https://martinfowler.com/eaaCatalog/concreteTableInheritance.html) described in [Catalog of Patterns of Enterprise Application Architecture](https://www.martinfowler.com/eaaCatalog/).
+2. *Class Table Composition*: this is a pattern I had used in the real world over the past two years, similar to PofEAA's Class Table Inheritance, except that it uses composition rather than inheritance.
 
 ## Toward the realization of Generative Programming with BPMS
 
