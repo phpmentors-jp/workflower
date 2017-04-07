@@ -2,7 +2,7 @@
     "name": "phpmentors/workflower",
     "type": "library",
     "description": "A BPMN 2.0 workflow engine for PHP",
-    "keywords": ["flow", "workflow", "process", "bpm", "bpmn"],
+    "keywords": ["flow", "workflow", "process", "bpm", "bpmn", "bpms"],
     "license": "BSD-2-Clause",
     "authors": [
         {
