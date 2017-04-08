@@ -307,7 +307,7 @@ but in an actual system a model of business processes, that is the persistent pr
     - with inheritance(*1)
     - with composition
 
-An example of third model with the *Class Table Composition* (*2) is shown in the following figure.
+An example of the third model with the *Class Table Composition* (*2) is shown in the following figure.
 
 ![An example of third model with the Class Table Composition](https://cloud.githubusercontent.com/assets/52985/24827098/5f5e2796-1c7f-11e7-9da5-d7d602501625.png)
 
