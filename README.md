@@ -57,7 +57,7 @@ composer require phpmentors/workflower "~2.0@dev"
 
 ## Documentation
 
-* [Quick Start Guide](https://github.com/phpmentors-jp/workflower/blob/master/docs/GUIDE.md)
+* [Quick Start Guide](https://github.com/phpmentors-jp/workflower/blob/master/docs/quick-start-guide.md)
 * [Release Notes](https://github.com/phpmentors-jp/workflower/releases)
 
 ## Support
