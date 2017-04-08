@@ -311,7 +311,7 @@ An example of third model with the *Class Table Composition* (*2) is shown in th
 
 ![An example of third model with the Class Table Composition](https://cloud.githubusercontent.com/assets/52985/24827098/5f5e2796-1c7f-11e7-9da5-d7d602501625.png)
 
---
+---
 
 1. See [Single Table Inheritance](https://martinfowler.com/eaaCatalog/singleTableInheritance.html), [Class Table Inheritance](https://martinfowler.com/eaaCatalog/classTableInheritance.html), [Concrete Table Inheritance](https://martinfowler.com/eaaCatalog/concreteTableInheritance.html) described in [Catalog of Patterns of Enterprise Application Architecture](https://www.martinfowler.com/eaaCatalog/).
 2. *Class Table Composition*: this is a pattern I had used in the real world over the past two years, similar to PofEAA's Class Table Inheritance, except that it uses composition rather than inheritance.
