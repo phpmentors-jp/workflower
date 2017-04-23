@@ -309,7 +309,7 @@ but in an actual system a model of business processes, that is the persistent pr
 
 An example of the third model with the *Class Table Composition* (*2) is shown in the following figure.
 
-![An example of third model with the Class Table Composition](https://cloud.githubusercontent.com/assets/52985/24827098/5f5e2796-1c7f-11e7-9da5-d7d602501625.png)
+![An example of third model with the Class Table Composition](https://cloud.githubusercontent.com/assets/52985/25310218/9b1d17d2-281a-11e7-9721-dce3b912d3b5.png)
 
 ---
 
