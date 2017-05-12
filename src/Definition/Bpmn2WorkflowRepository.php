@@ -13,6 +13,7 @@
 namespace PHPMentors\Workflower\Definition;
 
 use PHPMentors\DomainKata\Entity\EntityInterface;
+use PHPMentors\Workflower\Workflow\Workflow;
 use PHPMentors\Workflower\Workflow\WorkflowRepositoryInterface;
 
 class Bpmn2WorkflowRepository implements WorkflowRepositoryInterface

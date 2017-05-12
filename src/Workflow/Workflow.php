@@ -31,6 +31,7 @@ use PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
+use Stagehand\FSM\Event\EventInterface;
 use Stagehand\FSM\Event\TransitionEvent;
 use Stagehand\FSM\State\FinalState;
 use Stagehand\FSM\State\InitialState;
@@ -458,7 +459,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
         $stateMachine->addState(new State(self::$STATE_START));
         $stateMachine->addTransition(
             $stateMachine->getState(StateInterface::STATE_INITIAL),
-            new TransitionEvent(\Stagehand\FSM\Event\EventInterface::EVENT_START),
+            new TransitionEvent(EventInterface::EVENT_START),
             $stateMachine->getState(self::$STATE_START),
             null,
             null
@@ -503,7 +504,8 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
         $this->stateMachine->triggerEvent($selectedSequenceFlow->getDestination()->getId());
 
         if ($this->getCurrentFlowObject() instanceof GatewayInterface) {
-            $this->selectSequenceFlow($this->getCurrentFlowObject());
+            $gateway = $this->getCurrentFlowObject();
+            $this->selectSequenceFlow(/* @var $gateway GatewayInterface */$gateway);
         }
     }
 
@@ -551,13 +553,14 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
 
     /**
      * @since Method available since Release 1.2.0
+     * @param ActivityInterface $operational
      */
     private function executeOperationalActivity(ActivityInterface $operational)
     {
-        $participant = $this->operationRunner->provideParticipant($operational, $this);
+        $participant = $this->operationRunner->provideParticipant(/* @var $operational OperationalInterface */ $operational, $this);
         $this->allocateWorkItem($operational, $participant);
         $this->startWorkItem($operational, $participant);
-        $this->operationRunner->run($operational, $this);
+        $this->operationRunner->run(/* @var $operational OperationalInterface */ $operational, $this);
         $this->completeWorkItem($operational, $participant);
     }
 }

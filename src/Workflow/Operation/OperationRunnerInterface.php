@@ -23,9 +23,8 @@ use PHPMentors\Workflower\Workflow\Workflow;
 interface OperationRunnerInterface extends ServiceInterface
 {
     /**
-     * @param ActivityInterface $activity
-     * @param Workflow          $workflow
-     *
+     * @param OperationalInterface $operational
+     * @param Workflow $workflow
      * @return ParticipantInterface
      */
     public function provideParticipant(OperationalInterface $operational, Workflow $workflow);

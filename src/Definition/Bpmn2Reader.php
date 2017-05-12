@@ -57,7 +57,7 @@ class Bpmn2Reader implements ServiceInterface
     }
 
     /**
-     * @param DOMDocument $document
+     * @param \DOMDocument $document
      * @param int|string  $workflowId
      *
      * @return Workflow
@@ -76,6 +76,7 @@ class Bpmn2Reader implements ServiceInterface
         $workflowBuilder = new WorkflowBuilder($workflowId);
 
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'process') as $element) {
+            /* @var $element \DOMElement */
             if ($element->hasAttribute('id')) {
                 $workflowBuilder->setWorkflowId($element->getAttribute('id'));
             }

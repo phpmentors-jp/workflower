@@ -101,7 +101,7 @@ class LoggedParticipant implements ParticipantInterface, \Serializable
     /**
      * @param string $method
      *
-     * @throws OperationNotSupportedException
+     * @return OperationNotSupportedException
      */
     private function createOperationNotFoundException($method)
     {

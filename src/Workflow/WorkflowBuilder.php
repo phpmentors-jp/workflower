@@ -16,6 +16,8 @@ use PHPMentors\Workflower\Workflow\Activity\SendTask;
 use PHPMentors\Workflower\Workflow\Activity\ServiceTask;
 use PHPMentors\Workflower\Workflow\Activity\Task;
 use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
+use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
+use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 use PHPMentors\Workflower\Workflow\Event\EndEvent;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
 use PHPMentors\Workflower\Workflow\Gateway\ExclusiveGateway;
@@ -292,10 +294,12 @@ class WorkflowBuilder
                 throw new \LogicException(sprintf('The sequence flow "%s" has the condition "%s". A condition cannot be set to the default sequence flow.', $id, $condition));
             }
 
-            $workflow->addConnectingObject(new SequenceFlow($id, $workflow->getFlowObject($source), $workflow->getFlowObject($destination), $name, $condition === null ? null : new Expression($condition)));
+            $flowObject = $workflow->getFlowObject($source); /* @var $flowObject TransitionalInterface */
+            $workflow->addConnectingObject(new SequenceFlow($id, $flowObject, $workflow->getFlowObject($destination), $name, $condition === null ? null : new Expression($condition)));
 
             if (array_key_exists($id, $this->defaultableFlowObjects)) {
-                $workflow->getFlowObject($this->defaultableFlowObjects[$id])->setDefaultSequenceFlowId($id);
+                $flowObject = $workflow->getFlowObject($this->defaultableFlowObjects[$id]);
+                /* @var $flowObject ConditionalInterface */$flowObject->setDefaultSequenceFlowId($id);
             }
         }
 
