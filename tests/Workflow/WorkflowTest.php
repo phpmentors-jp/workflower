@@ -17,7 +17,7 @@ use PHPMentors\Workflower\Workflow\Activity\WorkItem;
 use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
 use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
 
-class WorkflowTest extends \PHPUnit_Framework_TestCase
+class WorkflowTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var WorkflowRepositoryInterface
