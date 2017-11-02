@@ -91,7 +91,7 @@ Define a workflow to work with Workflower using an editor supporting BPMN 2.0. I
 
 The screenshot below is from [BPMN2 Modeler](https://www.eclipse.org/bpmn2-modeler/), a BPMN editor available in [Eclipse](https://eclipse.org/):
 
-![Editing a BPMN 2.0 model by BPMN2 Modeler](https://cloud.githubusercontent.com/assets/52985/20619334/57813132-b337-11e6-80dd-36e1c873eb81.png)
+![Editing a BPMN 2.0 model by BPMN2 Modeler](https://user-images.githubusercontent.com/52985/32307958-a784fba4-bfc6-11e7-823d-45e4c2e75d1e.png)
 
 ### Workflow elements supported by Workflower
 
@@ -309,7 +309,7 @@ but in an actual system a model of business processes, that is the persistent pr
 
 An example of the third model with the *Class Table Composition* (*2) is shown in the following figure.
 
-![An example of third model with the Class Table Composition](https://cloud.githubusercontent.com/assets/52985/25310218/9b1d17d2-281a-11e7-9721-dce3b912d3b5.png)
+![An example of third model with the Class Table Composition](https://user-images.githubusercontent.com/52985/32316727-c1610800-bff4-11e7-8b93-683ebfe865d2.png)
 
 ---
 
