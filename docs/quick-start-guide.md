@@ -89,9 +89,7 @@ phpmentors_workflower:
 
 Define a workflow to work with Workflower using an editor supporting BPMN 2.0. Initially it is better to define a workflow consisting only of start events, tasks, and end events, and then designs and defines the entire workflow once if you can see to work the workflow from start to finish. The name of this BPMN file is used as `the workflow ID`. Save it as a name like `LoanRequestProcess.bpmn`. The conditional expression of the sequence flow used for branching is evaluated as an expression of [the Symfony ExpressionLanguage component](http://symfony.com/doc/3.1/components/expression_language.html). Note that the sequence flow evaluation order is undefined, so it is necessary to set conditional expressions consistent with other branch destinations. In the conditional expression, you can use associative array keys returned from `PHPMentors\Workflower\Process\ProcessContextInterface::getProcessData()`.
 
-The screenshot below is from [BPMN2 Modeler](https://www.eclipse.org/bpmn2-modeler/), a BPMN editor available in [Eclipse](https://eclipse.org/):
-
-![Editing a BPMN 2.0 model by BPMN2 Modeler](https://user-images.githubusercontent.com/52985/32307958-a784fba4-bfc6-11e7-823d-45e4c2e75d1e.png)
+![Editing a BPMN 2.0 model by Camunda Modeler](https://user-images.githubusercontent.com/52985/32307958-a784fba4-bfc6-11e7-823d-45e4c2e75d1e.png)
 
 ### Workflow elements supported by Workflower
 
