@@ -2,7 +2,7 @@ version: '2'
 services:
     app:
         container_name: "phpmentors.workflower.app"
-        image: "phpmentors/php-app:php70"
+        image: "phpmentors/php-app:php71"
         volumes:
             - ".:/var/app"
         environment:
