@@ -15,6 +15,7 @@ namespace PHPMentors\Workflower\Workflow\Activity;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
+use PHPMentors\Workflower\Workflow\Event\BoundaryEvent;
 
 class Task implements ActivityInterface, \Serializable
 {
@@ -42,6 +43,11 @@ class Task implements ActivityInterface, \Serializable
      * @var int|string
      */
     private $defaultSequenceFlowId;
+	
+	/**
+     * @var BoundaryEvent
+     */
+    private $boundaryEvent;
 
     /**
      * @param int|string $id
@@ -321,5 +327,22 @@ class Task implements ActivityInterface, \Serializable
         }
 
         return $this->workItems[$index];
+    }
+	
+    /**
+     * @return BoundaryEvent
+     */
+    public function getBoundaryEvent()
+    {
+        return $this->boundaryEvent;
+    }
+
+    /**
+     * @var BoundaryEvent
+     */
+    public function setBoundaryEvent(BoundaryEvent $boundaryEvent = null)
+    {
+        $this->boundaryEvent = $boundaryEvent;
+        return $this;
     }
 }

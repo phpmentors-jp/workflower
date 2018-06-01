@@ -20,7 +20,12 @@ use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 use PHPMentors\Workflower\Workflow\Event\EndEvent;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
+use PHPMentors\Workflower\Workflow\Event\IntermediateCatchEvent;
+use PHPMentors\Workflower\Workflow\Event\BoundaryEvent;
+use PHPMentors\Workflower\Workflow\EventDefinition\TimerEventDefinition;
+use PHPMentors\Workflower\Workflow\EventDefinition\EventDefinitionInterface;
 use PHPMentors\Workflower\Workflow\Gateway\ExclusiveGateway;
+use PHPMentors\Workflower\Workflow\Gateway\ParallelGateway;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use Symfony\Component\ExpressionLanguage\Expression;
 
@@ -35,6 +40,11 @@ class WorkflowBuilder
      * @var array
      */
     private $exclusiveGateways = array();
+
+    /**
+     * @var array
+     */
+    private $parallelGateways = array();
 
     /**
      * @var array
@@ -69,6 +79,16 @@ class WorkflowBuilder
      * @since Property available since Release 1.3.0
      */
     private $sendTasks = array();
+
+    /**
+     * @var array
+     */
+    private $intermediateCatchEvents = array();
+
+    /**
+     * @var array
+     */
+    private $boundaryEvents = array();
 
     /**
      * @var string
@@ -138,6 +158,21 @@ class WorkflowBuilder
 
     /**
      * @param int|string $id
+     * @param string     $participant
+     * @param string     $name
+     * @param int|string $defaultSequenceFlow
+     */
+    public function addParallelGateway($id, $participant, $name = null, $defaultSequenceFlow = null)
+    {
+        $this->parallelGateways[$id] = array($participant, $name);
+
+        if ($defaultSequenceFlow !== null) {
+            $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
+        }
+    }
+
+    /**
+     * @param int|string $id
      * @param string     $name
      */
     public function addRole($id, $name = null)
@@ -177,6 +212,40 @@ class WorkflowBuilder
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
         }
+    }
+
+    /**
+     * @param string    $timerDuration
+     * @param string    $timeCycle
+     * @return TimerEventDefinition
+     */
+    public function buildTimerEventDefinition($timeDuration, $timeCycle)
+    {
+        return new TimerEventDefinition($timeDuration, $timeCycle);
+    }
+
+    /**
+     * @param string    $id
+     * @param string    $participant
+     * @param string    $name
+     * @param EventDefinitionInterface  $eventDefinition
+     */
+    public function addIntermediateCatchEvent($id, $participant, $name = null, EventDefinitionInterface $eventDefinition = null)
+    {
+        $this->intermediateCatchEvents[$id] = array($participant, $name, $eventDefinition);
+    }
+
+    /**
+     * @param string    $id
+     * @param string    $participant
+     * @param string    $name
+     * @param string    $attachedTo
+     * @param boolean   $cancelActivity
+     * @param EventDefinitionInterface  $eventDefinition
+     */
+    public function addBoundaryEvent($id, $participant, $name = null, $attachedTo, $cancelActivity, EventDefinitionInterface $eventDefinition = null)
+    {
+        $this->boundaryEvents[$id] = array($participant, $name, $attachedTo, $cancelActivity, $eventDefinition);
     }
 
     /**
@@ -285,6 +354,31 @@ class WorkflowBuilder
             $this->assertWorkflowHasRole($workflow, $roleId);
 
             $workflow->addFlowObject(new ExclusiveGateway($id, $workflow->getRole($roleId), $name));
+        }
+
+        foreach ($this->parallelGateways as $id => $gateway) {
+            list($roleId, $name) = $gateway;
+            $this->assertWorkflowHasRole($workflow, $roleId);
+
+            $workflow->addFlowObject(new ParallelGateway($id, $workflow->getRole($roleId), $name));
+        }
+
+        foreach ($this->intermediateCatchEvents as $id => $intermediateCatchEvent) {
+            list($roleId, $name, $eventDefinition) = $intermediateCatchEvent;
+            $this->assertWorkflowHasRole($workflow, $roleId);
+
+            $workflow->addFlowObject(new IntermediateCatchEvent($id, $workflow->getRole($roleId), $name, $eventDefinition));
+        }
+
+        foreach ($this->boundaryEvents as $id => $boundaryEvent) {
+            list($roleId, $name, $attachedTo, $cancelActivity, $eventDefinition) = $boundaryEvent;
+            $this->assertWorkflowHasRole($workflow, $roleId);
+
+            $createdEvent = new BoundaryEvent($id, $workflow->getRole($roleId), $name, $eventDefinition, $cancelActivity);
+            $workflow->addFlowObject($createdEvent);
+            $task = $workflow->getFlowObject($attachedTo);
+            if (!$task || !$task instanceof Task) throw new \Exception("Attached Reference does not exist");
+            $task->setBoundaryEvent($createdEvent);
         }
 
         foreach ($this->sequenceFlows as $id => $flow) {
