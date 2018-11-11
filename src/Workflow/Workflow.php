@@ -356,14 +356,14 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
      * @param ActivityInterface    $activity
      * @param ParticipantInterface $participant
      */
-    public function completeWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
+    public function completeWorkItem(ActivityInterface $activity, ParticipantInterface $participant, FlowObjectInterface $target = null)
     {
         $this->assertParticipantHasRole($activity, $participant);
         $this->assertCurrentFlowObjectIsExpectedActivity($activity);
 
         $activity->complete($participant);
         $this->selectSequenceFlow($activity);
-        $this->next();
+        $this->next($target);
     }
 
     /**
@@ -535,12 +535,41 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     /**
      * @since Method available since Release 1.2.0
      */
-    private function next()
+    // private function next()
+    // {
+    //     $currentFlowObject = $this->getCurrentFlowObject();
+    //     if ($currentFlowObject instanceof ActivityInterface) {
+    //         $currentFlowObject->createWorkItem();
+    //
+    //         if ($currentFlowObject instanceof OperationalInterface) {
+    //             $this->executeOperationalActivity($currentFlowObject);
+    //         }
+    //     } elseif ($currentFlowObject instanceof EndEvent) {
+    //         $this->end($currentFlowObject);
+    //     }
+    // }
+
+    private function next(FlowObjectInterface $target = null)
     {
+        $currentFlowObject = $this->getCurrentFlowObject();
+        $connections = $this->getConnectingObjectCollectionBySource($currentFlowObject);
+        if (count($connections) <= 0) {
+            // I dunno
+            return;
+        }
+        $connections = $connections->toArray();
+        $this->activityLog[] = $this->currentFlowId;
+        $this->currentFlowId = reset($connections)->getDestination()->getId();
+        if ($target) {
+            foreach ($connections as $connection) {
+                if ($connection->getDestination() == $target) {
+                    $this->currentFlowId = $target->getId();
+                }
+            }
+        }
         $currentFlowObject = $this->getCurrentFlowObject();
         if ($currentFlowObject instanceof ActivityInterface) {
             $currentFlowObject->createWorkItem();
-
             if ($currentFlowObject instanceof OperationalInterface) {
                 $this->executeOperationalActivity($currentFlowObject);
             }
