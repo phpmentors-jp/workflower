@@ -5,12 +5,13 @@ $finder = PhpCsFixer\Finder::create()
     ;
 
 return PhpCsFixer\Config::create()
-    ->setRules(array(
+    ->setRules([
         '@Symfony' => true,
         'no_useless_return' => false,
         'blank_line_after_opening_tag' => false,
         'ordered_imports' => true,
         'phpdoc_no_empty_return' => false,
-    ))
+        'yoda_style' => false,
+    ])
     ->setFinder($finder)
     ;

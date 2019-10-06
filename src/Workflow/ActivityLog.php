@@ -12,11 +12,10 @@
 
 namespace PHPMentors\Workflower\Workflow;
 
-use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
 
-class ActivityLog implements EntityInterface
+class ActivityLog
 {
     /**
      * @var ActivityInterface

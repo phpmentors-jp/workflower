@@ -12,10 +12,9 @@
 
 namespace PHPMentors\Workflower\Persistence;
 
-use PHPMentors\DomainKata\Service\ServiceInterface;
 use PHPMentors\Workflower\Workflow\Workflow;
 
-interface WorkflowSerializerInterface extends ServiceInterface
+interface WorkflowSerializerInterface
 {
     /**
      * @param Workflow $workflow

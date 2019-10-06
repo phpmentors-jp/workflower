@@ -12,7 +12,6 @@
 
 namespace PHPMentors\Workflower\Workflow\Gateway;
 
-use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
 class ExclusiveGateway implements GatewayInterface, \Serializable
@@ -103,7 +102,7 @@ class ExclusiveGateway implements GatewayInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function equals(EntityInterface $target)
+    public function equals($target)
     {
         if (!($target instanceof self)) {
             return false;

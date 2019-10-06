@@ -12,9 +12,7 @@
 
 namespace PHPMentors\Workflower\Process;
 
-use PHPMentors\DomainKata\Entity\EntityInterface;
-
-interface EventContextInterface extends EntityInterface
+interface EventContextInterface
 {
     /**
      * @return int|string

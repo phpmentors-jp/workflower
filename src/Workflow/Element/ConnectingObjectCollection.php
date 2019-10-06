@@ -12,10 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Element;
 
-use PHPMentors\DomainKata\Entity\EntityCollectionInterface;
-use PHPMentors\DomainKata\Entity\EntityInterface;
-
-class ConnectingObjectCollection implements EntityCollectionInterface, \Serializable
+class ConnectingObjectCollection implements \Countable, \IteratorAggregate, \Serializable
 {
     /**
      * @var array
@@ -47,11 +44,9 @@ class ConnectingObjectCollection implements EntityCollectionInterface, \Serializ
     /**
      * {@inheritdoc}
      */
-    public function add(EntityInterface $entity)
+    public function add(ConnectingObjectInterface $connectingObject)
     {
-        assert($entity instanceof ConnectingObjectInterface);
-
-        $this->connectingObjects[$entity->getId()] = $entity;
+        $this->connectingObjects[$connectingObject->getId()] = $connectingObject;
     }
 
     /**
@@ -66,14 +61,6 @@ class ConnectingObjectCollection implements EntityCollectionInterface, \Serializ
         }
 
         return $this->connectingObjects[$key];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function remove(EntityInterface $entity)
-    {
-        assert($entity instanceof ConnectingObjectInterface);
     }
 
     /**

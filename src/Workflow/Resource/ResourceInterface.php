@@ -12,9 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Resource;
 
-use PHPMentors\DomainKata\Entity\Operation\IdentifiableInterface;
-
-interface ResourceInterface extends OperationInterface, IdentifiableInterface
+interface ResourceInterface
 {
     /**
      * @return string

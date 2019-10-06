@@ -12,10 +12,9 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 
-interface WorkItemInterface extends EntityInterface
+interface WorkItemInterface
 {
     const STATE_CREATED = 'created';
     const STATE_ALLOCATED = 'allocated';

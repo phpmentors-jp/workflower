@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Participant;
 
-interface RoleAwareInterface extends OperationInterface
+interface RoleAwareInterface
 {
     /**
      * @return Role

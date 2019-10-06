@@ -12,11 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Element;
 
-use PHPMentors\DomainKata\Entity\EntityInterface;
-use PHPMentors\DomainKata\Entity\Operation\EquatableInterface;
-use PHPMentors\DomainKata\Entity\Operation\IdentifiableInterface;
-
-interface WorkflowElementInterface extends EntityInterface, EquatableInterface, IdentifiableInterface
+interface WorkflowElementInterface
 {
     /**
      * @return string

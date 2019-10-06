@@ -12,19 +12,18 @@
 
 namespace PHPMentors\Workflower\Workflow\Operation;
 
-use PHPMentors\DomainKata\Service\ServiceInterface;
-use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Workflow;
 
 /**
  * @since Interface available since Release 1.2.0
  */
-interface OperationRunnerInterface extends ServiceInterface
+interface OperationRunnerInterface
 {
     /**
      * @param OperationalInterface $operational
-     * @param Workflow $workflow
+     * @param Workflow             $workflow
+     *
      * @return ParticipantInterface
      */
     public function provideParticipant(OperationalInterface $operational, Workflow $workflow);
