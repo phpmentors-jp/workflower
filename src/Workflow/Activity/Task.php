@@ -12,7 +12,6 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
@@ -110,7 +109,7 @@ class Task implements ActivityInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function equals(EntityInterface $target)
+    public function equals($target)
     {
         if (!($target instanceof self)) {
             return false;

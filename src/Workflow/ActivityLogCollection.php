@@ -12,11 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow;
 
-use PHPMentors\DomainKata\Entity\EntityCollectionInterface;
-use PHPMentors\DomainKata\Entity\EntityInterface;
-use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
-
-class ActivityLogCollection implements EntityCollectionInterface
+class ActivityLogCollection implements \Countable, \IteratorAggregate
 {
     /**
      * @var ActivityLog[]
@@ -31,19 +27,17 @@ class ActivityLogCollection implements EntityCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function add(EntityInterface $entity)
+    public function add(ActivityLog $activityLog)
     {
-        assert($entity instanceof ActivityLog);
+        $this->activityLogs[] = $activityLog;
 
-        $this->activityLogs[] = $entity;
-
-        if (array_key_exists($entity->getActivity()->getId(), $this->lastWorkItemIndexByActivity)) {
-            ++$this->lastWorkItemIndexByActivity[$entity->getActivity()->getId()];
+        if (array_key_exists($activityLog->getActivity()->getId(), $this->lastWorkItemIndexByActivity)) {
+            ++$this->lastWorkItemIndexByActivity[$activityLog->getActivity()->getId()];
         } else {
-            $this->lastWorkItemIndexByActivity[$entity->getActivity()->getId()] = 0;
+            $this->lastWorkItemIndexByActivity[$activityLog->getActivity()->getId()] = 0;
         }
 
-        $entity->setWorkItem($entity->getActivity()->getWorkItem($this->lastWorkItemIndexByActivity[$entity->getActivity()->getId()]));
+        $activityLog->setWorkItem($activityLog->getActivity()->getWorkItem($this->lastWorkItemIndexByActivity[$activityLog->getActivity()->getId()]));
     }
 
     /**
@@ -58,14 +52,6 @@ class ActivityLogCollection implements EntityCollectionInterface
         }
 
         return $this->activityLogs[$key];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function remove(EntityInterface $entity)
-    {
-        assert($entity instanceof ActivityInterface);
     }
 
     /**

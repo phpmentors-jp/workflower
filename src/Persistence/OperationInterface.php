@@ -12,6 +12,6 @@
 
 namespace PHPMentors\Workflower\Persistence;
 
-interface OperationInterface extends \PHPMentors\DomainKata\Operation\OperationInterface
+interface OperationInterface
 {
 }

@@ -19,7 +19,6 @@ use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
 use PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 class WorkflowTest extends TestCase
 {

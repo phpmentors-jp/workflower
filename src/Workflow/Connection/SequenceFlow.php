@@ -12,7 +12,6 @@
 
 namespace PHPMentors\Workflower\Workflow\Connection;
 
-use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Element\ConnectingObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
@@ -132,7 +131,7 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function equals(EntityInterface $target)
+    public function equals($target)
     {
         if (!($target instanceof self)) {
             return false;

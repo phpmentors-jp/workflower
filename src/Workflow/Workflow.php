@@ -12,8 +12,6 @@
 
 namespace PHPMentors\Workflower\Workflow;
 
-use PHPMentors\DomainKata\Entity\EntityInterface;
-use PHPMentors\DomainKata\Entity\Operation\IdentifiableInterface;
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\UnexpectedActivityException;
 use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
@@ -41,7 +39,7 @@ use Stagehand\FSM\StateMachine\StateMachine;
 use Stagehand\FSM\StateMachine\StateMachineInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
-class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
+class Workflow implements \Serializable
 {
     const DEFAULT_ROLE_ID = '__ROLE__';
 
@@ -553,6 +551,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
 
     /**
      * @since Method available since Release 1.2.0
+     *
      * @param ActivityInterface $operational
      */
     private function executeOperationalActivity(ActivityInterface $operational)

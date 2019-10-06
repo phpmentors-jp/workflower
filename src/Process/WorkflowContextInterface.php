@@ -12,12 +12,10 @@
 
 namespace PHPMentors\Workflower\Process;
 
-use PHPMentors\DomainKata\Entity\EntityInterface;
-
 /**
  * @since Interface available since Release 1.1.0
  */
-interface WorkflowContextInterface extends EntityInterface
+interface WorkflowContextInterface
 {
     /**
      * @return int|string

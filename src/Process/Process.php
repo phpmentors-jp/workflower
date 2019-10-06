@@ -12,7 +12,6 @@
 
 namespace PHPMentors\Workflower\Process;
 
-use PHPMentors\DomainKata\Service\ServiceInterface;
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\UnexpectedActivityStateException;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
@@ -21,7 +20,7 @@ use PHPMentors\Workflower\Workflow\Workflow;
 use PHPMentors\Workflower\Workflow\WorkflowRepositoryInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
-class Process implements ServiceInterface
+class Process
 {
     /**
      * @var int|string|WorkflowContextInterface

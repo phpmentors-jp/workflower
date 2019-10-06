@@ -12,10 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Element;
 
-use PHPMentors\DomainKata\Entity\EntityCollectionInterface;
-use PHPMentors\DomainKata\Entity\EntityInterface;
-
-class FlowObjectCollection implements EntityCollectionInterface, \Serializable
+class FlowObjectCollection implements \Countable, \IteratorAggregate, \Serializable
 {
     /**
      * @var array
@@ -47,11 +44,11 @@ class FlowObjectCollection implements EntityCollectionInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function add(EntityInterface $entity)
+    public function add(FlowObjectInterface $flowObject)
     {
-        assert($entity instanceof FlowObjectInterface);
+        assert($flowObject instanceof FlowObjectInterface);
 
-        $this->flowObjects[$entity->getId()] = $entity;
+        $this->flowObjects[$flowObject->getId()] = $flowObject;
     }
 
     /**
@@ -66,14 +63,6 @@ class FlowObjectCollection implements EntityCollectionInterface, \Serializable
         }
 
         return $this->flowObjects[$key];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function remove(EntityInterface $entity)
-    {
-        assert($entity instanceof FlowObjectInterface);
     }
 
     /**

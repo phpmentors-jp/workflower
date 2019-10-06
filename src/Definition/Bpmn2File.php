@@ -12,10 +12,7 @@
 
 namespace PHPMentors\Workflower\Definition;
 
-use PHPMentors\DomainKata\Entity\EntityInterface;
-use PHPMentors\DomainKata\Entity\Operation\IdentifiableInterface;
-
-class Bpmn2File implements EntityInterface, IdentifiableInterface
+class Bpmn2File
 {
     /**
      * @var string

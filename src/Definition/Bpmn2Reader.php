@@ -12,11 +12,10 @@
 
 namespace PHPMentors\Workflower\Definition;
 
-use PHPMentors\DomainKata\Service\ServiceInterface;
 use PHPMentors\Workflower\Workflow\Workflow;
 use PHPMentors\Workflower\Workflow\WorkflowBuilder;
 
-class Bpmn2Reader implements ServiceInterface
+class Bpmn2Reader
 {
     /**
      * @param string $file
@@ -58,7 +57,7 @@ class Bpmn2Reader implements ServiceInterface
 
     /**
      * @param \DOMDocument $document
-     * @param int|string  $workflowId
+     * @param int|string   $workflowId
      *
      * @return Workflow
      *

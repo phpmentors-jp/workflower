@@ -12,6 +12,6 @@
 
 namespace PHPMentors\Workflower\Workflow\Participant;
 
-interface OperationInterface extends \PHPMentors\DomainKata\Operation\OperationInterface
+interface OperationInterface
 {
 }

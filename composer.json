@@ -13,7 +13,6 @@
     "require": {
         "php": "^7.1.3",
         "ext-dom": "*",
-        "phpmentors/domain-kata": "~1.4",
         "piece/stagehand-fsm": "~2.6",
         "symfony/expression-language": "~3.4|~4.0"
     },

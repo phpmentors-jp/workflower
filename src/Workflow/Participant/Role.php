@@ -12,10 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Participant;
 
-use PHPMentors\DomainKata\Entity\EntityInterface;
-use PHPMentors\DomainKata\Entity\Operation\IdentifiableInterface;
-
-class Role implements EntityInterface, IdentifiableInterface, \Serializable
+class Role implements \Serializable
 {
     /**
      * @var int|string
