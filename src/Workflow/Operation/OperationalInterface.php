@@ -15,7 +15,7 @@ namespace PHPMentors\Workflower\Workflow\Operation;
 /**
  * @since Interface available since Release 1.2.0
  */
-interface OperationalInterface extends OperationInterface
+interface OperationalInterface
 {
     /**
      * @return int|string

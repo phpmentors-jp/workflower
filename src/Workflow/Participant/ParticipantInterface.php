@@ -14,7 +14,7 @@ namespace PHPMentors\Workflower\Workflow\Participant;
 
 use PHPMentors\Workflower\Workflow\Resource\ResourceInterface;
 
-interface ParticipantInterface extends OperationInterface
+interface ParticipantInterface
 {
     /**
      * @param string $role

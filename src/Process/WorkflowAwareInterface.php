@@ -14,7 +14,7 @@ namespace PHPMentors\Workflower\Process;
 
 use PHPMentors\Workflower\Workflow\Workflow;
 
-interface WorkflowAwareInterface extends OperationInterface
+interface WorkflowAwareInterface
 {
     /**
      * @param Workflow $workflow

@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Process;
 
-interface ProcessAwareInterface extends OperationInterface
+interface ProcessAwareInterface
 {
     /**
      * @param Process $process

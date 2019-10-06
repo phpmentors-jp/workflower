@@ -12,6 +12,6 @@
 
 namespace PHPMentors\Workflower\Workflow\Element;
 
-interface TransitionalInterface extends OperationInterface
+interface TransitionalInterface
 {
 }
