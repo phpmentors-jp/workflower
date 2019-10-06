@@ -18,8 +18,7 @@
         "symfony/expression-language": "~3.4|~4.0"
     },
     "require-dev": {
-        "phake/phake": "~2.0",
-        "phpunit/phpunit": "~5.0"
+        "phpunit/phpunit": "~6.5"
     },
     "autoload": {
         "psr-4": {
