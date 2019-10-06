@@ -29,13 +29,8 @@ use PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
-use Stagehand\FSM\Event\EventInterface;
-use Stagehand\FSM\Event\TransitionEvent;
 use Stagehand\FSM\State\FinalState;
-use Stagehand\FSM\State\InitialState;
-use Stagehand\FSM\State\State;
-use Stagehand\FSM\State\StateInterface;
-use Stagehand\FSM\StateMachine\StateMachine;
+use Stagehand\FSM\StateMachine\StateMachineBuilder;
 use Stagehand\FSM\StateMachine\StateMachineInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
@@ -47,6 +42,13 @@ class Workflow implements \Serializable
      * @var string
      */
     private static $STATE_START = '__START__';
+
+    /**
+     * @var int|string
+     *
+     * @since Property available since Release 2.0.0
+     */
+    private $id;
 
     /**
      * @var string
@@ -89,6 +91,13 @@ class Workflow implements \Serializable
     private $stateMachine;
 
     /**
+     * @var StateMachineBuilder
+     *
+     * @since Property available since Release 2.0.0
+     */
+    private $stateMachineBuilder;
+
+    /**
      * @var ExpressionLanguage
      *
      * @since Property available since Release 1.1.0
@@ -108,11 +117,12 @@ class Workflow implements \Serializable
      */
     public function __construct($id, $name)
     {
+        $this->id = $id;
+        $this->name = $name;
         $this->connectingObjectCollection = new ConnectingObjectCollection();
         $this->flowObjectCollection = new FlowObjectCollection();
         $this->roleCollection = new RoleCollection();
-        $this->stateMachine = $this->createStateMachine($id);
-        $this->name = $name;
+        $this->stateMachineBuilder = $this->createStateMachineBuilder($this->id);
     }
 
     /**
@@ -150,7 +160,7 @@ class Workflow implements \Serializable
      */
     public function getId()
     {
-        return $this->stateMachine->getStateMachineId();
+        return $this->id;
     }
 
     /**
@@ -166,14 +176,7 @@ class Workflow implements \Serializable
      */
     public function addConnectingObject(ConnectingObjectInterface $connectingObject)
     {
-        $this->stateMachine->addTransition(
-            $this->stateMachine->getState($connectingObject->getSource()->getId()),
-            new TransitionEvent($connectingObject->getDestination()->getId()),
-            $this->stateMachine->getState($connectingObject->getDestination()->getId()),
-            null,
-            null
-        );
-
+        $this->stateMachineBuilder->addTransition($connectingObject->getSource()->getId(), $connectingObject->getDestination()->getId(), $connectingObject->getDestination()->getId());
         $this->connectingObjectCollection->add($connectingObject);
     }
 
@@ -182,23 +185,11 @@ class Workflow implements \Serializable
      */
     public function addFlowObject(FlowObjectInterface $flowObject)
     {
-        $this->stateMachine->addState(new State($flowObject->getId()));
+        $this->stateMachineBuilder->addState($flowObject->getId());
         if ($flowObject instanceof StartEvent) {
-            $this->stateMachine->addTransition(
-                $this->stateMachine->getState(self::$STATE_START),
-                new TransitionEvent($flowObject->getId()),
-                $this->stateMachine->getState($flowObject->getId()),
-                null,
-                null
-            );
+            $this->stateMachineBuilder->addTransition(self::$STATE_START, $flowObject->getId(), $flowObject->getId());
         } elseif ($flowObject instanceof EndEvent) {
-            $this->stateMachine->addTransition(
-                $this->stateMachine->getState($flowObject->getId()),
-                new TransitionEvent($flowObject->getId()),
-                $this->stateMachine->getState(StateInterface::STATE_FINAL),
-                null,
-                null
-            );
+            $this->stateMachineBuilder->setEndState($flowObject->getId(), $flowObject->getId());
         }
 
         $this->flowObjectCollection->add($flowObject);
@@ -267,6 +258,10 @@ class Workflow implements \Serializable
      */
     public function isActive()
     {
+        if ($this->stateMachine === null) {
+            return false;
+        }
+
         return $this->stateMachine->isActive();
     }
 
@@ -275,6 +270,10 @@ class Workflow implements \Serializable
      */
     public function isEnded()
     {
+        if ($this->stateMachine === null) {
+            return false;
+        }
+
         return $this->stateMachine->isEnded();
     }
 
@@ -283,6 +282,10 @@ class Workflow implements \Serializable
      */
     public function getCurrentFlowObject()
     {
+        if ($this->stateMachine === null) {
+            return null;
+        }
+
         $state = $this->stateMachine->getCurrentState();
         if ($state === null) {
             return null;
@@ -300,6 +303,10 @@ class Workflow implements \Serializable
      */
     public function getPreviousFlowObject()
     {
+        if ($this->stateMachine === null) {
+            return null;
+        }
+
         $state = $this->stateMachine->getPreviousState();
         if ($state === null) {
             return null;
@@ -307,7 +314,7 @@ class Workflow implements \Serializable
 
         $previousFlowObject = $this->flowObjectCollection->get($state->getStateId());
         if ($previousFlowObject instanceof EndEvent) {
-            $transitionLogs = $this->stateMachine->getTransitionLogs();
+            $transitionLogs = $this->stateMachine->getTransitionLog();
 
             return $this->flowObjectCollection->get($transitionLogs[count($transitionLogs) - 2]->getFromState()->getStateId());
         } else {
@@ -320,6 +327,10 @@ class Workflow implements \Serializable
      */
     public function start(StartEvent $event)
     {
+        if ($this->stateMachine === null) {
+            $this->stateMachine = $this->stateMachineBuilder->getStateMachine();
+        }
+
         $this->startDate = new \DateTime();
         $this->stateMachine->start();
         $this->stateMachine->triggerEvent($event->getId());
@@ -445,25 +456,19 @@ class Workflow implements \Serializable
     }
 
     /**
-     * @param string $stateMachineName
+     * @param string $stateMachineId
      *
-     * @return StateMachineInterface
+     * @return StateMachineBuilder
+     *
+     * @since Property available since Release 2.0.0
      */
-    private function createStateMachine($stateMachineName)
+    private function createStateMachineBuilder($stateMachineId): StateMachineBuilder
     {
-        $stateMachine = new StateMachine($stateMachineName);
-        $stateMachine->addState(new InitialState());
-        $stateMachine->addState(new FinalState());
-        $stateMachine->addState(new State(self::$STATE_START));
-        $stateMachine->addTransition(
-            $stateMachine->getState(StateInterface::STATE_INITIAL),
-            new TransitionEvent(EventInterface::EVENT_START),
-            $stateMachine->getState(self::$STATE_START),
-            null,
-            null
-        );
+        $stateMachineBuilder = new StateMachineBuilder($stateMachineId);
+        $stateMachineBuilder->addState(self::$STATE_START);
+        $stateMachineBuilder->setStartState(self::$STATE_START);
 
-        return $stateMachine;
+        return $stateMachineBuilder;
     }
 
     /**
