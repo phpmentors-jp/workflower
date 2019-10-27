@@ -12,9 +12,11 @@
 
 namespace PHPMentors\Workflower\Workflow\Gateway;
 
+use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
+use PHPMentors\Workflower\Workflow\Element\Token;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
-class ExclusiveGateway implements GatewayInterface, \Serializable
+class ExclusiveGateway implements GatewayInterface, ConditionalInterface, \Serializable
 {
     /**
      * @var int|string
@@ -37,6 +39,13 @@ class ExclusiveGateway implements GatewayInterface, \Serializable
     private $defaultSequenceFlowId;
 
     /**
+     * @var Token
+     *
+     * @since Property available since Release 2.0.0
+     */
+    private $token;
+
+    /**
      * @param int|string $id
      * @param Role       $role
      * @param string     $name
@@ -53,12 +62,13 @@ class ExclusiveGateway implements GatewayInterface, \Serializable
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             'id' => $this->id,
             'name' => $this->name,
             'role' => $this->role,
             'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
-        ));
+            'token' => $this->token,
+        ]);
     }
 
     /**
@@ -125,5 +135,31 @@ class ExclusiveGateway implements GatewayInterface, \Serializable
     public function getDefaultSequenceFlowId()
     {
         return $this->defaultSequenceFlowId;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getToken(): Token
+    {
+        return $this->token;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attachToken(Token $token): void
+    {
+        $this->token = $token;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function detachToken(Token $token): void
+    {
+        assert($this->token->getId() == $token->getId());
+
+        $this->token = null;
     }
 }

@@ -12,6 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
+use PHPMentors\Workflower\Workflow\Element\Token;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
@@ -43,6 +44,13 @@ class Task implements ActivityInterface, \Serializable
     private $defaultSequenceFlowId;
 
     /**
+     * @var Token
+     *
+     * @since Property available since Release 2.0.0
+     */
+    private $token;
+
+    /**
      * @param int|string $id
      * @param Role       $role
      * @param string     $name
@@ -59,13 +67,14 @@ class Task implements ActivityInterface, \Serializable
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             'id' => $this->id,
             'role' => $this->role,
             'name' => $this->name,
             'workItems' => $this->workItems,
             'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
-        ));
+            'token' => $this->token,
+        ]);
     }
 
     /**
@@ -320,5 +329,31 @@ class Task implements ActivityInterface, \Serializable
         }
 
         return $this->workItems[$index];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getToken(): Token
+    {
+        return $this->token;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attachToken(Token $token): void
+    {
+        $this->token = $token;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function detachToken(Token $token): void
+    {
+        assert($this->token->getId() == $token->getId());
+
+        $this->token = null;
     }
 }
