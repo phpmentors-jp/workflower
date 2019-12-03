@@ -46,7 +46,7 @@ Add the dependency to `phpmentors/workflower` into your `composer.json` file as 
 **Stable version:**
 
 ```
-composer require phpmentors/workflower "1.3.*"
+composer require phpmentors/workflower "1.4.*"
 ```
 
 **Development version:**
@@ -66,7 +66,7 @@ If you find a bug or have a question, or want to request a feature, create an is
 
 ## Copyright
 
-Copyright (c) 2015-2017 KUBO Atsuhiro and [contributors](https://github.com/phpmentors-jp/workflower/wiki/Contributors), All rights reserved.
+Copyright (c) 2015-2019 KUBO Atsuhiro and [contributors](https://github.com/phpmentors-jp/workflower/wiki/Contributors), All rights reserved.
 
 ## License
 

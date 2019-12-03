@@ -57,7 +57,7 @@ class ExclusiveGateway implements GatewayInterface, \Serializable
             'id' => $this->id,
             'name' => $this->name,
             'role' => $this->role,
-            'defaultSequenceFlow' => $this->defaultSequenceFlowId,
+            'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
         ));
     }
 
