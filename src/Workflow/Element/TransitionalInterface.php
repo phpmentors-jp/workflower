@@ -15,7 +15,7 @@ namespace PHPMentors\Workflower\Workflow\Element;
 interface TransitionalInterface
 {
     /**
-     * @return Token
+     * @return Token[]
      */
-    public function getToken(): Token;
+    public function getToken(): iterable;
 }

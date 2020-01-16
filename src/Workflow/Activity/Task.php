@@ -334,9 +334,9 @@ class Task implements ActivityInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function getToken(): Token
+    public function getToken(): iterable
     {
-        return $this->token;
+        return [$this->token];
     }
 
     /**

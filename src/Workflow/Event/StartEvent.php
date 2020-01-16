@@ -48,9 +48,9 @@ class StartEvent extends Event implements EventInterface, TransitionalInterface,
     /**
      * {@inheritdoc}
      */
-    public function getToken(): Token
+    public function getToken(): iterable
     {
-        return $this->token;
+        return [$this->token];
     }
 
     /**

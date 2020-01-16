@@ -28,6 +28,8 @@ class WorkflowRepository implements WorkflowRepositoryInterface
         $this->add($this->createServiceTasksProcess());
         $this->add($this->createNoLanesProcess());
         $this->add($this->createSendTasksProcess());
+        $this->add($this->createParallelGatewayProcess());
+        $this->add($this->createMultipleEndEventsProcess());
     }
 
     /**
@@ -148,5 +150,29 @@ class WorkflowRepository implements WorkflowRepositoryInterface
         $bpmn2Reader = new Bpmn2Reader();
 
         return $bpmn2Reader->read(dirname(__DIR__).'/Resources/config/workflower/SendTasksProcess.bpmn');
+    }
+
+    /**
+     * @return Workflow
+     *
+     * @since Method available since Release 2.0.0
+     */
+    private function createParallelGatewayProcess(): Workflow
+    {
+        $bpmn2Reader = new Bpmn2Reader();
+
+        return $bpmn2Reader->read(dirname(__DIR__).'/Resources/config/workflower/ParallelGatewayProcess.bpmn');
+    }
+
+    /**
+     * @return Workflow
+     *
+     * @since Method available since Release 2.0.0
+     */
+    private function createMultipleEndEventsProcess(): Workflow
+    {
+        $bpmn2Reader = new Bpmn2Reader();
+
+        return $bpmn2Reader->read(dirname(__DIR__).'/Resources/config/workflower/MultipleEndEvents.bpmn');
     }
 }

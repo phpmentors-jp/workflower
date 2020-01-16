@@ -453,4 +453,126 @@ class WorkflowTest extends TestCase
 
         $this->assertThat($workflow->isEnded(), $this->isTrue());
     }
+
+    /**
+     * @test
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function parallelGateway()
+    {
+        $participant = $this->createMock(ParticipantInterface::class);
+        $participant->method('hasRole')->willReturn(true);
+
+        $workflow = $this->workflowRepository->findById('ParallelGatewayProcess');
+        $workflow->start($workflow->getFlowObject('Start'));
+
+        $concurrentFlowObjects = ['ReceivePayment', 'ShipOrder'];
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(count($concurrentFlowObjects)));
+
+        foreach ($currentFlowObjects as $currentFlowObject) {
+            $this->assertThat($concurrentFlowObjects, $this->contains($currentFlowObject->getId()));
+            $this->assertThat(current($currentFlowObject->getToken())->getPreviousFlowObject()->getId(), $this->equalTo('ParallelGateway1'));
+
+            unset($concurrentFlowObjects[ array_search($currentFlowObject->getId(), $concurrentFlowObjects) ]);
+            $concurrentFlowObjects = array_values($concurrentFlowObjects);
+        }
+
+        $workflow->allocateWorkItem($currentFlowObjects[0], $participant);
+        $workflow->startWorkItem($currentFlowObjects[0], $participant);
+        $workflow->completeWorkItem($currentFlowObjects[0], $participant);
+
+        $this->assertThat(count($workflow->getCurrentFlowObjects()), $this->equalTo(2));
+
+        $workflow->allocateWorkItem($currentFlowObjects[1], $participant);
+        $workflow->startWorkItem($currentFlowObjects[1], $participant);
+        $workflow->completeWorkItem($currentFlowObjects[1], $participant);
+
+        $this->assertThat(count($workflow->getCurrentFlowObjects()), $this->equalTo(1));
+        $this->assertThat(current($workflow->getCurrentFlowObjects())->getId(), $this->equalTo('ArchiveOrder'));
+        $this->assertThat(current(current($workflow->getCurrentFlowObjects())->getToken())->getPreviousFlowObject()->getId(), $this->equalTo('ParallelGateway2'));
+
+        $activityLog = $workflow->getActivityLog();
+
+        $this->assertThat(count($activityLog), $this->equalTo(3));
+
+        $concurrentFlowObjects = ['ReceivePayment', 'ShipOrder'];
+
+        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(0)->getActivity()->getId()));
+
+        unset($concurrentFlowObjects[ array_search($activityLog->get(0)->getActivity()->getId(), $concurrentFlowObjects) ]);
+
+        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(1)->getActivity()->getId()));
+
+        $this->assertThat($activityLog->get(2)->getActivity()->getId(), $this->equalTo('ArchiveOrder'));
+    }
+
+    /**
+     * @test
+     *
+     * "All the tokens that were generated within the Process MUST be consumed by an End Event before the Process has been completed."
+     * --Business Process Model and Notation, v2.0 https://www.omg.org/spec/BPMN/2.0 p.246
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function multipleEndEvents()
+    {
+        $participant = $this->createMock(ParticipantInterface::class);
+        $participant->method('hasRole')->willReturn(true);
+
+        $workflow = $this->workflowRepository->findById('MultipleEndEventsProcess');
+        $workflow->start($workflow->getFlowObject('Start'));
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(3));
+
+        foreach ($workflow->getCurrentFlowObjects() as $currentFlowObject) {
+            if ($currentFlowObject->getId() == 'Task1') {
+                $workflow->allocateWorkItem($currentFlowObject, $participant);
+                $workflow->startWorkItem($currentFlowObject, $participant);
+                $workflow->completeWorkItem($currentFlowObject, $participant);
+
+                break;
+            }
+        }
+
+        $this->assertThat($workflow->isActive(), $this->isTrue());
+        $this->assertThat($workflow->isEnded(), $this->isFalse());
+
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(3));
+
+        foreach ($workflow->getCurrentFlowObjects() as $currentFlowObject) {
+            if ($currentFlowObject->getId() == 'Task2') {
+                $workflow->allocateWorkItem($currentFlowObject, $participant);
+                $workflow->startWorkItem($currentFlowObject, $participant);
+                $workflow->completeWorkItem($currentFlowObject, $participant);
+
+                break;
+            }
+        }
+
+        $this->assertThat($workflow->isActive(), $this->isTrue());
+        $this->assertThat($workflow->isEnded(), $this->isFalse());
+
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(3));
+
+        foreach ($workflow->getCurrentFlowObjects() as $currentFlowObject) {
+            if ($currentFlowObject->getId() == 'Task3') {
+                $workflow->allocateWorkItem($currentFlowObject, $participant);
+                $workflow->startWorkItem($currentFlowObject, $participant);
+                $workflow->completeWorkItem($currentFlowObject, $participant);
+
+                break;
+            }
+        }
+
+        $this->assertThat($workflow->isActive(), $this->isFalse());
+        $this->assertThat($workflow->isEnded(), $this->isTrue());
+    }
 }
