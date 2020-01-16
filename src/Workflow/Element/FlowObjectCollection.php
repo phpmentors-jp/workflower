@@ -17,16 +17,16 @@ class FlowObjectCollection implements \Countable, \IteratorAggregate, \Serializa
     /**
      * @var array
      */
-    private $flowObjects = array();
+    private $flowObjects = [];
 
     /**
      * {@inheritdoc}
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             'flowObjects' => $this->flowObjects,
-        ));
+        ]);
     }
 
     /**

@@ -17,16 +17,16 @@ class ConnectingObjectCollection implements \Countable, \IteratorAggregate, \Ser
     /**
      * @var array
      */
-    private $connectingObjects = array();
+    private $connectingObjects = [];
 
     /**
      * {@inheritdoc}
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             'connectingObjects' => $this->connectingObjects,
-        ));
+        ]);
     }
 
     /**

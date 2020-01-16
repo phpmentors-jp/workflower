@@ -17,12 +17,12 @@ class ActivityLogCollection implements \Countable, \IteratorAggregate
     /**
      * @var ActivityLog[]
      */
-    private $activityLogs = array();
+    private $activityLogs = [];
 
     /**
      * @var array
      */
-    private $lastWorkItemIndexByActivity = array();
+    private $lastWorkItemIndexByActivity = [];
 
     /**
      * {@inheritdoc}

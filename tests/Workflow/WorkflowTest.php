@@ -149,10 +149,10 @@ class WorkflowTest extends TestCase
      */
     public function completeActivityOnConditionalSequenceFlowsData()
     {
-        return array(
-            array(true, 'End'),
-            array(false, 'LoanStudy'),
-        );
+        return [
+            [true, 'End'],
+            [false, 'LoanStudy'],
+        ];
     }
 
     /**
@@ -168,7 +168,7 @@ class WorkflowTest extends TestCase
         $participant->method('hasRole')->willReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
-        $workflow->setProcessData(array('rejected' => false));
+        $workflow->setProcessData(['rejected' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
@@ -177,7 +177,7 @@ class WorkflowTest extends TestCase
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
         $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->setProcessData(array('rejected' => $rejected));
+        $workflow->setProcessData(['rejected' => $rejected]);
         $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
@@ -190,10 +190,10 @@ class WorkflowTest extends TestCase
      */
     public function selectSequenceFlowOnExclusiveGatewayData()
     {
-        return array(
-            array(true, 'InformRejection'),
-            array(false, 'Disbursement'),
-        );
+        return [
+            [true, 'InformRejection'],
+            [false, 'Disbursement'],
+        ];
     }
 
     /**
@@ -209,7 +209,7 @@ class WorkflowTest extends TestCase
         $participant->method('hasRole')->willReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
-        $workflow->setProcessData(array('rejected' => false));
+        $workflow->setProcessData(['rejected' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
@@ -222,7 +222,7 @@ class WorkflowTest extends TestCase
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
         $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->setProcessData(array('rejected' => $rejected));
+        $workflow->setProcessData(['rejected' => $rejected]);
         $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
@@ -239,7 +239,7 @@ class WorkflowTest extends TestCase
         $participant->method('hasRole')->willReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
-        $workflow->setProcessData(array('rejected' => false));
+        $workflow->setProcessData(['rejected' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
@@ -283,7 +283,7 @@ class WorkflowTest extends TestCase
         $participant->method('hasRole')->willReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
-        $workflow->setProcessData(array('rejected' => false));
+        $workflow->setProcessData(['rejected' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
@@ -307,12 +307,12 @@ class WorkflowTest extends TestCase
         $this->assertThat($activityLog, $this->isInstanceOf('PHPMentors\Workflower\Workflow\ActivityLogCollection'));
         $this->assertThat(count($activityLog), $this->equalTo(4));
 
-        $activityIds = array(
+        $activityIds = [
             'RecordLoanApplicationInformation',
             'CheckApplicantInformation',
             'LoanStudy',
             'Disbursement',
-        );
+        ];
 
         foreach ($activityLog as $i => $activityLogEntry) { /* @var $activityLogEntry ActivityLog */
             $this->assertThat($activityLogEntry->getActivity()->getId(), $this->equalTo($activityIds[$i]));
@@ -336,7 +336,7 @@ class WorkflowTest extends TestCase
         $participant->method('hasRole')->willReturn(true);
 
         $workflow = $this->workflowRepository->findById('MultipleWorkItemsProcess');
-        $workflow->setProcessData(array('satisfied' => false));
+        $workflow->setProcessData(['satisfied' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
@@ -353,7 +353,7 @@ class WorkflowTest extends TestCase
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
         $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->setProcessData(array('satisfied' => true));
+        $workflow->setProcessData(['satisfied' => true]);
         $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
 
         $activityLog = $workflow->getActivityLog();

@@ -57,7 +57,7 @@ class WorkItem implements WorkItemInterface, \Serializable
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             'currentState' => $this->currentState,
             'participant' => $this->participant === null ? null : ($this->participant instanceof LoggedParticipant ? $this->participant : new LoggedParticipant($this->participant)),
             'creationDate' => $this->creationDate,
@@ -66,7 +66,7 @@ class WorkItem implements WorkItemInterface, \Serializable
             'endDate' => $this->endDate,
             'endParticipant' => $this->endParticipant === null ? null : ($this->endParticipant instanceof LoggedParticipant ? $this->endParticipant : new LoggedParticipant($this->endParticipant)),
             'endResult' => $this->endResult,
-        ));
+        ]);
     }
 
     /**

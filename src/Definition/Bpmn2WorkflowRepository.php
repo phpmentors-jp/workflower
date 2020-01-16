@@ -20,7 +20,7 @@ class Bpmn2WorkflowRepository implements WorkflowRepositoryInterface
     /**
      * @var array
      */
-    private $bpmn2Files = array();
+    private $bpmn2Files = [];
 
     /**
      * {@inheritdoc}

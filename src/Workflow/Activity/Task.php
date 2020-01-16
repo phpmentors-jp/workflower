@@ -36,7 +36,7 @@ class Task implements ActivityInterface, \Serializable
     /**
      * @var WorkItemInterface[]
      */
-    private $workItems = array();
+    private $workItems = [];
 
     /**
      * @var int|string

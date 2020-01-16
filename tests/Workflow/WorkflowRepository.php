@@ -19,7 +19,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     /**
      * @var array
      */
-    private $workflows = array();
+    private $workflows = [];
 
     public function __construct()
     {

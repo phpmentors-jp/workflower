@@ -48,11 +48,11 @@ abstract class Event implements \Serializable
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             'id' => $this->id,
             'name' => $this->name,
             'role' => $this->role,
-        ));
+        ]);
     }
 
     /**
