@@ -18,12 +18,12 @@ use PHPMentors\Workflower\Workflow\Workflow;
 interface WorkflowSerializableInterface extends WorkflowAwareInterface
 {
     /**
-     * @param string $serializedWorkflow
+     * @param string|null $serializedWorkflow
      */
     public function setSerializedWorkflow($serializedWorkflow);
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSerializedWorkflow();
 
