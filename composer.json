@@ -16,7 +16,7 @@
         "symfony/expression-language": "^4.3|^5.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~6.5"
+        "phpunit/phpunit": "^7.0"
     },
     "autoload": {
         "psr-4": {
