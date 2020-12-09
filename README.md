@@ -63,7 +63,3 @@ Copyright (c) 2015-2019 KUBO Atsuhiro and [contributors](https://github.com/phpm
 ## License
 
 [The BSD 2-Clause License](http://opensource.org/licenses/BSD-2-Clause)
-
-## Acknowledgments
-
-[Q-BPM.org](http://en.q-bpm.org/) by [Questetra,Inc.](http://www.questetra.com/) is the excellent web site for developers such as us who want to create a [workflow engine](https://en.wikipedia.org/wiki/Workflow_engine), which is also called [business process management](https://en.wikipedia.org/wiki/Business_process_management) (BPM) engine.
