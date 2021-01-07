@@ -21,6 +21,7 @@ use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 use PHPMentors\Workflower\Workflow\Event\EndEvent;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
 use PHPMentors\Workflower\Workflow\Gateway\ExclusiveGateway;
+use PHPMentors\Workflower\Workflow\Gateway\ParallelGateway;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use Symfony\Component\ExpressionLanguage\Expression;
 
@@ -29,46 +30,53 @@ class WorkflowBuilder
     /**
      * @var array
      */
-    private $endEvents = array();
+    private $endEvents = [];
 
     /**
      * @var array
      */
-    private $exclusiveGateways = array();
+    private $exclusiveGateways = [];
+
+    /**
+     * @var array
+     *
+     * @since Property available since Release 2.0.0
+     */
+    private $parallelGateways = [];
 
     /**
      * @var array
      */
-    private $roles = array();
+    private $roles = [];
 
     /**
      * @var array
      */
-    private $sequenceFlows = array();
+    private $sequenceFlows = [];
 
     /**
      * @var array
      */
-    private $startEvents = array();
+    private $startEvents = [];
 
     /**
      * @var array
      */
-    private $tasks = array();
+    private $tasks = [];
 
     /**
      * @var array
      *
      * @since Property available since Release 1.2.0
      */
-    private $serviceTasks = array();
+    private $serviceTasks = [];
 
     /**
      * @var array
      *
      * @since Property available since Release 1.3.0
      */
-    private $sendTasks = array();
+    private $sendTasks = [];
 
     /**
      * @var string
@@ -83,7 +91,7 @@ class WorkflowBuilder
     /**
      * @var array
      */
-    private $defaultableFlowObjects = array();
+    private $defaultableFlowObjects = [];
 
     /**
      * @param int|string $workflowId
@@ -118,7 +126,7 @@ class WorkflowBuilder
      */
     public function addEndEvent($id, $participant, $name = null)
     {
-        $this->endEvents[$id] = array($participant, $name);
+        $this->endEvents[$id] = [$participant, $name];
     }
 
     /**
@@ -129,7 +137,7 @@ class WorkflowBuilder
      */
     public function addExclusiveGateway($id, $participant, $name = null, $defaultSequenceFlow = null)
     {
-        $this->exclusiveGateways[$id] = array($participant, $name);
+        $this->exclusiveGateways[$id] = [$participant, $name];
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
@@ -138,11 +146,21 @@ class WorkflowBuilder
 
     /**
      * @param int|string $id
+     * @param string     $participant
+     * @param string     $name
+     */
+    public function addParallelGateway($id, string $participant, string $name = null): void
+    {
+        $this->parallelGateways[$id] = [$participant, $name];
+    }
+
+    /**
+     * @param int|string $id
      * @param string     $name
      */
     public function addRole($id, $name = null)
     {
-        $this->roles[$id] = array($name);
+        $this->roles[$id] = [$name];
     }
 
     /**
@@ -161,7 +179,7 @@ class WorkflowBuilder
             ++$i;
         }
 
-        $this->sequenceFlows[$id] = array($source, $destination, $name, $condition);
+        $this->sequenceFlows[$id] = [$source, $destination, $name, $condition];
     }
 
     /**
@@ -172,7 +190,7 @@ class WorkflowBuilder
      */
     public function addStartEvent($id, $participant, $name = null, $defaultSequenceFlow = null)
     {
-        $this->startEvents[$id] = array($participant, $name, $defaultSequenceFlow);
+        $this->startEvents[$id] = [$participant, $name, $defaultSequenceFlow];
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
@@ -187,7 +205,7 @@ class WorkflowBuilder
      */
     public function addTask($id, $participant, $name = null, $defaultSequenceFlow = null)
     {
-        $this->tasks[$id] = array($participant, $name);
+        $this->tasks[$id] = [$participant, $name];
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
@@ -205,7 +223,7 @@ class WorkflowBuilder
      */
     public function addServiceTask($id, $participant, $operation, $name = null, $defaultSequenceFlow = null)
     {
-        $this->serviceTasks[$id] = array($participant, $operation, $name);
+        $this->serviceTasks[$id] = [$participant, $operation, $name];
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
@@ -224,7 +242,7 @@ class WorkflowBuilder
      */
     public function addSendTask($id, $participant, $message, $operation, $name = null, $defaultSequenceFlow = null)
     {
-        $this->sendTasks[$id] = array($participant, $message, $operation, $name);
+        $this->sendTasks[$id] = [$participant, $message, $operation, $name];
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
@@ -285,6 +303,13 @@ class WorkflowBuilder
             $this->assertWorkflowHasRole($workflow, $roleId);
 
             $workflow->addFlowObject(new ExclusiveGateway($id, $workflow->getRole($roleId), $name));
+        }
+
+        foreach ($this->parallelGateways as $id => $gateway) {
+            list($roleId, $name) = $gateway;
+            $this->assertWorkflowHasRole($workflow, $roleId);
+
+            $workflow->addFlowObject(new ParallelGateway($id, $workflow->getRole($roleId), $name));
         }
 
         foreach ($this->sequenceFlows as $id => $flow) {

@@ -12,11 +12,13 @@
 
 namespace PHPMentors\Workflower\Workflow\Gateway;
 
-use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
 use PHPMentors\Workflower\Workflow\Element\Token;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
-class ExclusiveGateway implements GatewayInterface, ConditionalInterface, \Serializable
+/**
+ * @since Class available since Release 2.0.0
+ */
+class ParallelGateway implements GatewayInterface, \Serializable
 {
     /**
      * @var int|string
@@ -34,14 +36,7 @@ class ExclusiveGateway implements GatewayInterface, ConditionalInterface, \Seria
     private $role;
 
     /**
-     * @var int|string
-     */
-    private $defaultSequenceFlowId;
-
-    /**
      * @var Token
-     *
-     * @since Property available since Release 2.0.0
      */
     private $token;
 
@@ -66,7 +61,6 @@ class ExclusiveGateway implements GatewayInterface, ConditionalInterface, \Seria
             'id' => $this->id,
             'name' => $this->name,
             'role' => $this->role,
-            'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
             'token' => $this->token,
         ]);
     }
@@ -124,25 +118,9 @@ class ExclusiveGateway implements GatewayInterface, ConditionalInterface, \Seria
     /**
      * {@inheritdoc}
      */
-    public function setDefaultSequenceFlowId($sequenceFlowId)
-    {
-        $this->defaultSequenceFlowId = $sequenceFlowId;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefaultSequenceFlowId()
-    {
-        return $this->defaultSequenceFlowId;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getToken(): iterable
     {
-        return [$this->token];
+        return new \ArrayIterator($this->token);
     }
 
     /**
@@ -150,7 +128,7 @@ class ExclusiveGateway implements GatewayInterface, ConditionalInterface, \Seria
      */
     public function attachToken(Token $token): void
     {
-        $this->token = $token;
+        $this->token[$token->getId()] = $token;
     }
 
     /**
@@ -158,8 +136,8 @@ class ExclusiveGateway implements GatewayInterface, ConditionalInterface, \Seria
      */
     public function detachToken(Token $token): void
     {
-        assert($this->token->getId() == $token->getId());
+        assert(array_key_exists($token->getId(), $this->token));
 
-        $this->token = null;
+        unset($this->token[$token->getId()]);
     }
 }

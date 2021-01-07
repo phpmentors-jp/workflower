@@ -65,13 +65,13 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             'id' => $this->id,
             'name' => $this->name,
             'source' => $this->source,
             'destination' => $this->destination,
             'condition' => $this->condition,
-        ));
+        ]);
     }
 
     /**

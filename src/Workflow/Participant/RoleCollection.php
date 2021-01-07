@@ -17,16 +17,16 @@ class RoleCollection implements \Countable, \IteratorAggregate, \Serializable
     /**
      * @var array
      */
-    private $roles = array();
+    private $roles = [];
 
     /**
      * {@inheritdoc}
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             'roles' => $this->roles,
-        ));
+        ]);
     }
 
     /**

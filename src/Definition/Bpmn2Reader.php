@@ -85,7 +85,7 @@ class Bpmn2Reader
             }
         }
 
-        $flowObjectRoles = array();
+        $flowObjectRoles = [];
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'lane') as $element) {
             if (!$element->hasAttribute('id')) {
                 throw $this->createIdAttributeNotFoundException($element, $workflowId);
@@ -105,7 +105,7 @@ class Bpmn2Reader
             $workflowBuilder->addRole(Workflow::DEFAULT_ROLE_ID);
         }
 
-        $messages = array();
+        $messages = [];
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'message') as $element) {
             if (!$element->hasAttribute('id')) {
                 throw $this->createIdAttributeNotFoundException($element, $workflowId);
@@ -114,7 +114,7 @@ class Bpmn2Reader
             $messages[$element->getAttribute('id')] = $element->getAttribute('name');
         }
 
-        $operations = array();
+        $operations = [];
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'operation') as $element) {
             if (!$element->hasAttribute('id')) {
                 throw $this->createIdAttributeNotFoundException($element, $workflowId);
@@ -188,6 +188,18 @@ class Bpmn2Reader
                 $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
                 $element->hasAttribute('name') ? $element->getAttribute('name') : null,
                 $element->hasAttribute('default') ? $element->getAttribute('default') : null
+            );
+        }
+
+        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'parallelGateway') as $element) {
+            if (!$element->hasAttribute('id')) {
+                throw $this->createIdAttributeNotFoundException($element, $workflowId);
+            }
+
+            $workflowBuilder->addParallelGateway(
+                $element->getAttribute('id'),
+                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
+                $element->hasAttribute('name') ? $element->getAttribute('name') : null
             );
         }
 

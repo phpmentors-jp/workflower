@@ -43,10 +43,10 @@ class ServiceTask extends Task implements OperationalInterface
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             get_parent_class($this) => parent::serialize(),
             'operation' => $this->operation,
-        ));
+        ]);
     }
 
     /**

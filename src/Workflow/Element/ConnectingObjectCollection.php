@@ -17,16 +17,16 @@ class ConnectingObjectCollection implements \Countable, \IteratorAggregate, \Ser
     /**
      * @var array
      */
-    private $connectingObjects = array();
+    private $connectingObjects = [];
 
     /**
      * {@inheritdoc}
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             'connectingObjects' => $this->connectingObjects,
-        ));
+        ]);
     }
 
     /**
@@ -90,6 +90,26 @@ class ConnectingObjectCollection implements \Countable, \IteratorAggregate, \Ser
 
         foreach ($this as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
             if ($connectingObject->getSource()->getId() === $flowObject->getId()) {
+                $collection->add($connectingObject);
+            }
+        }
+
+        return $collection;
+    }
+
+    /**
+     * @param TransitionalInterface $flowObject
+     *
+     * @return ConnectingObjectCollection
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function filterByDestination(TransitionalInterface $flowObject): ConnectingObjectCollection
+    {
+        $collection = new static();
+
+        foreach ($this as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
+            if ($connectingObject->getDestination()->getId() === $flowObject->getId()) {
                 $collection->add($connectingObject);
             }
         }

@@ -20,28 +20,22 @@ use PHPMentors\Workflower\Workflow\Element\ConnectingObjectCollection;
 use PHPMentors\Workflower\Workflow\Element\ConnectingObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\FlowObjectCollection;
 use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
+use PHPMentors\Workflower\Workflow\Element\Token;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 use PHPMentors\Workflower\Workflow\Event\EndEvent;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
-use PHPMentors\Workflower\Workflow\Gateway\GatewayInterface;
+use PHPMentors\Workflower\Workflow\Gateway\ExclusiveGateway;
+use PHPMentors\Workflower\Workflow\Gateway\ParallelGateway;
 use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
 use PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
-use Stagehand\FSM\State\FinalState;
-use Stagehand\FSM\StateMachine\StateMachineBuilder;
-use Stagehand\FSM\StateMachine\StateMachineInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 class Workflow implements \Serializable
 {
     const DEFAULT_ROLE_ID = '__ROLE__';
-
-    /**
-     * @var string
-     */
-    private static $STATE_START = '__START__';
 
     /**
      * @var int|string
@@ -71,31 +65,23 @@ class Workflow implements \Serializable
     private $roleCollection;
 
     /**
-     * @var \DateTime
+     * @var StartEvent
+     *
+     * @since Property available since Release 2.0.0
      */
-    private $startDate;
+    private $startEvent;
 
     /**
-     * @var \DateTime
+     * @var EndEvent[]
+     *
+     * @since Property available since Release 2.0.0
      */
-    private $endDate;
+    private $endEvents = [];
 
     /**
      * @var array
      */
     private $processData;
-
-    /**
-     * @var StateMachineInterface
-     */
-    private $stateMachine;
-
-    /**
-     * @var StateMachineBuilder
-     *
-     * @since Property available since Release 2.0.0
-     */
-    private $stateMachineBuilder;
 
     /**
      * @var ExpressionLanguage
@@ -112,6 +98,20 @@ class Workflow implements \Serializable
     private $operationRunner;
 
     /**
+     * @var Token[]
+     *
+     * @since Property available since Release 2.0.0
+     */
+    private $tokens = [];
+
+    /**
+     * @var ActivityLogCollection
+     *
+     * @since Property available since Release 2.0.0
+     */
+    private $activityLogCollection;
+
+    /**
      * @param int|string $id
      * @param string     $name
      */
@@ -122,7 +122,7 @@ class Workflow implements \Serializable
         $this->connectingObjectCollection = new ConnectingObjectCollection();
         $this->flowObjectCollection = new FlowObjectCollection();
         $this->roleCollection = new RoleCollection();
-        $this->stateMachineBuilder = $this->createStateMachineBuilder($this->id);
+        $this->activityLogCollection = new ActivityLogCollection();
     }
 
     /**
@@ -130,15 +130,17 @@ class Workflow implements \Serializable
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
+            'id' => $this->id,
             'name' => $this->name,
             'connectingObjectCollection' => $this->connectingObjectCollection,
             'flowObjectCollection' => $this->flowObjectCollection,
             'roleCollection' => $this->roleCollection,
-            'startDate' => $this->startDate,
-            'endDate' => $this->endDate,
-            'stateMachine' => $this->stateMachine,
-        ));
+            'startEvent' => $this->startEvent,
+            'endEvents' => $this->endEvents,
+            'tokens' => $this->tokens,
+            'activityLogCollection' => $this->activityLogCollection,
+        ]);
     }
 
     /**
@@ -176,7 +178,6 @@ class Workflow implements \Serializable
      */
     public function addConnectingObject(ConnectingObjectInterface $connectingObject)
     {
-        $this->stateMachineBuilder->addTransition($connectingObject->getSource()->getId(), $connectingObject->getDestination()->getId(), $connectingObject->getDestination()->getId());
         $this->connectingObjectCollection->add($connectingObject);
     }
 
@@ -185,13 +186,6 @@ class Workflow implements \Serializable
      */
     public function addFlowObject(FlowObjectInterface $flowObject)
     {
-        $this->stateMachineBuilder->addState($flowObject->getId());
-        if ($flowObject instanceof StartEvent) {
-            $this->stateMachineBuilder->addTransition(self::$STATE_START, $flowObject->getId(), $flowObject->getId());
-        } elseif ($flowObject instanceof EndEvent) {
-            $this->stateMachineBuilder->setEndState($flowObject->getId(), $flowObject->getId());
-        }
-
         $this->flowObjectCollection->add($flowObject);
     }
 
@@ -258,11 +252,17 @@ class Workflow implements \Serializable
      */
     public function isActive()
     {
-        if ($this->stateMachine === null) {
+        if (count($this->tokens) == 0) {
             return false;
         }
 
-        return $this->stateMachine->isActive();
+        foreach ($this->tokens as $token) {
+            if (!($token->getCurrentFlowObject() instanceof EndEvent)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -270,56 +270,71 @@ class Workflow implements \Serializable
      */
     public function isEnded()
     {
-        if ($this->stateMachine === null) {
+        if (count($this->tokens) == 0) {
             return false;
         }
 
-        return $this->stateMachine->isEnded();
+        foreach ($this->tokens as $token) {
+            if ($token->getCurrentFlowObject() instanceof EndEvent) {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * @return FlowObjectInterface|null
      */
-    public function getCurrentFlowObject()
+    public function getCurrentFlowObject(): ?FlowObjectInterface
     {
-        if ($this->stateMachine === null) {
+        $flowObjects = $this->getCurrentFlowObjects();
+        if (count($flowObjects) == 0) {
             return null;
         }
 
-        $state = $this->stateMachine->getCurrentState();
-        if ($state === null) {
-            return null;
-        }
+        return $flowObjects[0];
+    }
 
-        if ($state instanceof FinalState) {
-            return $this->flowObjectCollection->get($this->stateMachine->getPreviousState()->getStateId());
-        } else {
-            return $this->flowObjectCollection->get($state->getStateId());
-        }
+    /**
+     * @return FlowObjectInterface[]
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function getCurrentFlowObjects(): iterable
+    {
+        return array_map(function (Token $token) {
+            return $token->getCurrentFlowObject();
+        }, $this->tokens
+        );
     }
 
     /**
      * @return FlowObjectInterface|null
      */
-    public function getPreviousFlowObject()
+    public function getPreviousFlowObject(): ?FlowObjectInterface
     {
-        if ($this->stateMachine === null) {
+        $flowObjects = $this->getPreviousFlowObjects();
+        if (count($flowObjects) == 0) {
             return null;
         }
 
-        $state = $this->stateMachine->getPreviousState();
-        if ($state === null) {
-            return null;
-        }
+        return $flowObjects[0];
+    }
 
-        $previousFlowObject = $this->flowObjectCollection->get($state->getStateId());
-        if ($previousFlowObject instanceof EndEvent) {
-            $transitionLogs = $this->stateMachine->getTransitionLog();
-
-            return $this->flowObjectCollection->get($transitionLogs[count($transitionLogs) - 2]->getFromState()->getStateId());
-        } else {
-            return $previousFlowObject;
-        }
+    /**
+     * @return FlowObjectInterface[]
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function getPreviousFlowObjects(): iterable
+    {
+        return array_map(function (Token $token) {
+            return $token->getPreviousFlowObject();
+        }, $this->tokens
+        );
     }
 
     /**
@@ -327,15 +342,9 @@ class Workflow implements \Serializable
      */
     public function start(StartEvent $event)
     {
-        if ($this->stateMachine === null) {
-            $this->stateMachine = $this->stateMachineBuilder->getStateMachine();
-        }
-
-        $this->startDate = new \DateTime();
-        $this->stateMachine->start();
-        $this->stateMachine->triggerEvent($event->getId());
-        $this->selectSequenceFlow($event);
-        $this->next();
+        $this->startEvent = $event;
+        $this->tokens[] = $this->generateToken($this->startEvent);
+        $this->selectSequenceFlow($this->startEvent);
     }
 
     /**
@@ -373,7 +382,6 @@ class Workflow implements \Serializable
 
         $activity->complete($participant);
         $this->selectSequenceFlow($activity);
-        $this->next();
     }
 
     /**
@@ -419,8 +427,7 @@ class Workflow implements \Serializable
      */
     private function end(EndEvent $event)
     {
-        $this->stateMachine->triggerEvent($event->getId());
-        $this->endDate = new \DateTime();
+        $this->endEvents[] = $event;
     }
 
     /**
@@ -428,7 +435,11 @@ class Workflow implements \Serializable
      */
     public function getStartDate()
     {
-        return $this->startDate;
+        if ($this->startEvent === null) {
+            return null;
+        }
+
+        return $this->startEvent->getStartDate();
     }
 
     /**
@@ -436,7 +447,9 @@ class Workflow implements \Serializable
      */
     public function getEndDate()
     {
-        return $this->endDate;
+        if ($this->isEnded()) {
+            return $this->endEvents[ count($this->endEvents) - 1 ]->getEndDate();
+        }
     }
 
     /**
@@ -444,31 +457,7 @@ class Workflow implements \Serializable
      */
     public function getActivityLog()
     {
-        $activityLogCollection = new ActivityLogCollection();
-        foreach ($this->stateMachine->getTransitionLog() as $transitionLog) {
-            $flowObject = $this->getFlowObject($transitionLog->getToState()->getStateId());
-            if ($flowObject instanceof ActivityInterface) {
-                $activityLogCollection->add(new ActivityLog($flowObject));
-            }
-        }
-
-        return $activityLogCollection;
-    }
-
-    /**
-     * @param string $stateMachineId
-     *
-     * @return StateMachineBuilder
-     *
-     * @since Property available since Release 2.0.0
-     */
-    private function createStateMachineBuilder($stateMachineId): StateMachineBuilder
-    {
-        $stateMachineBuilder = new StateMachineBuilder($stateMachineId);
-        $stateMachineBuilder->addState(self::$STATE_START);
-        $stateMachineBuilder->setStartState(self::$STATE_START);
-
-        return $stateMachineBuilder;
+        return $this->activityLogCollection;
     }
 
     /**
@@ -504,12 +493,10 @@ class Workflow implements \Serializable
             $selectedSequenceFlow = $this->connectingObjectCollection->get($currentFlowObject->getDefaultSequenceFlowId());
         }
 
-        $this->stateMachine->triggerEvent($selectedSequenceFlow->getDestination()->getId());
+        $token = $currentFlowObject->getToken();
+        assert(count($token) === 1);
 
-        if ($this->getCurrentFlowObject() instanceof GatewayInterface) {
-            $gateway = $this->getCurrentFlowObject();
-            $this->selectSequenceFlow(/* @var $gateway GatewayInterface */$gateway);
-        }
+        $this->flow(current($token), $selectedSequenceFlow->getDestination());
     }
 
     /**
@@ -532,26 +519,13 @@ class Workflow implements \Serializable
      */
     private function assertCurrentFlowObjectIsExpectedActivity(ActivityInterface $activity)
     {
-        if (!$activity->equals($this->getCurrentFlowObject())) {
-            throw new UnexpectedActivityException(sprintf('The current flow object is not equal to the expected activity "%s".', $activity->getId()));
-        }
-    }
-
-    /**
-     * @since Method available since Release 1.2.0
-     */
-    private function next()
-    {
-        $currentFlowObject = $this->getCurrentFlowObject();
-        if ($currentFlowObject instanceof ActivityInterface) {
-            $currentFlowObject->createWorkItem();
-
-            if ($currentFlowObject instanceof OperationalInterface) {
-                $this->executeOperationalActivity($currentFlowObject);
+        foreach ($this->getCurrentFlowObjects() as $currentFlowObject) {
+            if ($activity->equals($currentFlowObject)) {
+                return true;
             }
-        } elseif ($currentFlowObject instanceof EndEvent) {
-            $this->end($currentFlowObject);
         }
+
+        throw new UnexpectedActivityException(sprintf('The current flow object is not equal to the expected activity "%s".', $activity->getId()));
     }
 
     /**
@@ -566,5 +540,70 @@ class Workflow implements \Serializable
         $this->startWorkItem($operational, $participant);
         $this->operationRunner->run(/* @var $operational OperationalInterface */ $operational, $this);
         $this->completeWorkItem($operational, $participant);
+    }
+
+    /**
+     * @param FlowObjectInterface $flowObject
+     * @return Token
+     * @throws \Exception
+     *
+     * @since Method available since Release 2.0.0
+     */
+    private function generateToken(FlowObjectInterface $flowObject): Token
+    {
+        return new Token(sha1(random_bytes(24)), $flowObject);
+    }
+
+    /**
+     * @param Token $token
+     *
+     * @since Method available since Release 2.0.0
+     */
+    private function removeToken(Token $token): void
+    {
+        $this->tokens = array_filter($this->tokens, function (Token $currentToken) use ($token) {
+            return $currentToken !== $token;
+        });
+    }
+
+    /**
+     * @param Token $token
+     * @param FlowObjectInterface $flowObject
+     * @throws \Exception
+     *
+     * @since Method available since Release 2.0.0
+     */
+    private function flow(Token $token, FlowObjectInterface $flowObject): void
+    {
+        $token->flow($flowObject);
+
+        if ($flowObject instanceof ExclusiveGateway) {
+            $this->selectSequenceFlow($flowObject);
+        } elseif ($flowObject instanceof ParallelGateway) {
+            $parallelGateway = $flowObject;
+            $incomings = $this->connectingObjectCollection->filterByDestination($parallelGateway);
+            $incomingTokens = $parallelGateway->getToken();
+            if (count($incomingTokens) == count($incomings)) {
+                foreach ($incomingTokens as $incomingToken) {
+                    $parallelGateway->detachToken($incomingToken);
+                    $this->removeToken($incomingToken);
+                }
+
+                foreach ($this->connectingObjectCollection->filterBySource($parallelGateway) as $outgoing) {
+                    $outgoingToken = $this->generateToken($parallelGateway);
+                    $this->tokens[] = $outgoingToken;
+                    $this->flow($outgoingToken, $outgoing->getDestination());
+                }
+            }
+        } elseif ($flowObject instanceof ActivityInterface) {
+            $flowObject->createWorkItem();
+            $this->activityLogCollection->add(new ActivityLog($flowObject));
+
+            if ($flowObject instanceof OperationalInterface) {
+                $this->executeOperationalActivity($flowObject);
+            }
+        } elseif ($flowObject instanceof EndEvent) {
+            $this->end($flowObject);
+        }
     }
 }

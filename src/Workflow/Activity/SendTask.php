@@ -50,11 +50,11 @@ class SendTask extends Task implements MessageInterface, OperationalInterface
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             get_parent_class($this) => parent::serialize(),
             'message' => $this->message,
             'operation' => $this->operation,
-        ));
+        ]);
     }
 
     /**
