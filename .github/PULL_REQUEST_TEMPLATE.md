@@ -1,6 +1,6 @@
 | Q             | A
 | ------------- | ---
-| Branch?       | master for new features / 1.3 for fixes
+| Branch?       | master for new features / 1.4 for fixes
 | Bug fix?      | yes/no
 | New feature?  | yes/no
 | BC breaks?    | yes/no
