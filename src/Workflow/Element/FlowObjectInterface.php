@@ -19,7 +19,7 @@ interface FlowObjectInterface extends RoleAwareInterface, WorkflowElementInterfa
     /**
      * @param Token $token
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     public function attachToken(Token $token): void;
 }

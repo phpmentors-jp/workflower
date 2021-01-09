@@ -40,7 +40,7 @@ class Workflow implements \Serializable
     /**
      * @var int|string
      *
-     * @since Property available since Release 2.0.0
+     * @since 2.0.0
      */
     private $id;
 
@@ -67,14 +67,14 @@ class Workflow implements \Serializable
     /**
      * @var StartEvent
      *
-     * @since Property available since Release 2.0.0
+     * @since 2.0.0
      */
     private $startEvent;
 
     /**
      * @var EndEvent[]
      *
-     * @since Property available since Release 2.0.0
+     * @since 2.0.0
      */
     private $endEvents = [];
 
@@ -86,28 +86,28 @@ class Workflow implements \Serializable
     /**
      * @var ExpressionLanguage
      *
-     * @since Property available since Release 1.1.0
+     * @since 1.1.0
      */
     private $expressionLanguage;
 
     /**
      * @var OperationRunnerInterface
      *
-     * @since Property available since Release 1.2.0
+     * @since 1.2.0
      */
     private $operationRunner;
 
     /**
      * @var Token[]
      *
-     * @since Property available since Release 2.0.0
+     * @since 2.0.0
      */
     private $tokens = [];
 
     /**
      * @var ActivityLogCollection
      *
-     * @since Property available since Release 2.0.0
+     * @since 2.0.0
      */
     private $activityLogCollection;
 
@@ -301,7 +301,7 @@ class Workflow implements \Serializable
     /**
      * @return FlowObjectInterface[]
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     public function getCurrentFlowObjects(): iterable
     {
@@ -327,7 +327,7 @@ class Workflow implements \Serializable
     /**
      * @return FlowObjectInterface[]
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     public function getPreviousFlowObjects(): iterable
     {
@@ -395,7 +395,7 @@ class Workflow implements \Serializable
     /**
      * @return array
      *
-     * @since Method available since Release 1.2.0
+     * @since 1.2.0
      */
     public function getProcessData()
     {
@@ -405,7 +405,7 @@ class Workflow implements \Serializable
     /**
      * @param ExpressionLanguage $expressionLanguage
      *
-     * @since Method available since Release 1.1.0
+     * @since 1.1.0
      */
     public function setExpressionLanguage(ExpressionLanguage $expressionLanguage)
     {
@@ -415,7 +415,7 @@ class Workflow implements \Serializable
     /**
      * @param OperationRunnerInterface $operationRunner
      *
-     * @since Method available since Release 1.2.0
+     * @since 1.2.0
      */
     public function setOperationRunner(OperationRunnerInterface $operationRunner)
     {
@@ -529,7 +529,7 @@ class Workflow implements \Serializable
     }
 
     /**
-     * @since Method available since Release 1.2.0
+     * @since 1.2.0
      *
      * @param ActivityInterface $operational
      */
@@ -547,7 +547,7 @@ class Workflow implements \Serializable
      * @return Token
      * @throws \Exception
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     private function generateToken(FlowObjectInterface $flowObject): Token
     {
@@ -557,7 +557,7 @@ class Workflow implements \Serializable
     /**
      * @param Token $token
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     private function removeToken(Token $token): void
     {
@@ -571,7 +571,7 @@ class Workflow implements \Serializable
      * @param FlowObjectInterface $flowObject
      * @throws \Exception
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     private function flow(Token $token, FlowObjectInterface $flowObject): void
     {

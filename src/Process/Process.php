@@ -35,14 +35,14 @@ class Process
     /**
      * @var ExpressionLanguage
      *
-     * @since Property available since Release 1.2.0
+     * @since 1.2.0
      */
     private $expressionLanguage;
 
     /**
      * @var OperationRunnerInterface
      *
-     * @since Property available since Release 1.2.0
+     * @since 1.2.0
      */
     private $operationRunner;
 
@@ -61,7 +61,7 @@ class Process
     /**
      * @param ExpressionLanguage $expressionLanguage
      *
-     * @since Method available since Release 1.2.0
+     * @since 1.2.0
      */
     public function setExpressionLanguage(ExpressionLanguage $expressionLanguage)
     {
@@ -164,7 +164,7 @@ class Process
     /**
      * @return int|string|WorkflowContextInterface
      *
-     * @since Method available since Release 1.1.0
+     * @since 1.1.0
      */
     public function getWorkflowContext()
     {
@@ -192,7 +192,7 @@ class Process
      *
      * @return Workflow
      *
-     * @since Method available since Release 1.2.0
+     * @since 1.2.0
      */
     private function configureWorkflow(Workflow $workflow)
     {

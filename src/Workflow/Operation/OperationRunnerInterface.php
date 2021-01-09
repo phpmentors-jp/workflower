@@ -16,7 +16,7 @@ use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Workflow;
 
 /**
- * @since Interface available since Release 1.2.0
+ * @since 1.2.0
  */
 interface OperationRunnerInterface
 {

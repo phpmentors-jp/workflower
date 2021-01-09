@@ -42,7 +42,7 @@ class Bpmn2Reader
      *
      * @throws IdAttributeNotFoundException
      *
-     * @since Method available since Release 1.3.0
+     * @since 1.3.0
      */
     public function readSource($source)
     {
@@ -63,7 +63,7 @@ class Bpmn2Reader
      *
      * @throws IdAttributeNotFoundException
      *
-     * @since Method available since Release 1.3.0
+     * @since 1.3.0
      */
     private function readDocument(\DOMDocument $document, $workflowId = null)
     {
@@ -251,7 +251,7 @@ class Bpmn2Reader
      *
      * @return string
      *
-     * @since Method available since Release 1.3.0
+     * @since 1.3.0
      */
     private function provideRoleIdForFlowObject(array $flowObjectRoles, $flowObjectId)
     {

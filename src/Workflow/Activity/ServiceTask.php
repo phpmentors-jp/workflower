@@ -16,7 +16,7 @@ use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
 /**
- * @since Class available since Release 1.2.0
+ * @since 1.2.0
  */
 class ServiceTask extends Task implements OperationalInterface
 {

@@ -66,7 +66,7 @@ class WorkItemContext implements WorkItemContextInterface
     /**
      * @param ParticipantInterface $participant
      *
-     * @since Method available since Release 1.1.0
+     * @since 1.1.0
      */
     public function setParticipant(ParticipantInterface $participant)
     {

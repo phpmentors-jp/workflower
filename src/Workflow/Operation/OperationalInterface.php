@@ -13,7 +13,7 @@
 namespace PHPMentors\Workflower\Workflow\Operation;
 
 /**
- * @since Interface available since Release 1.2.0
+ * @since 1.2.0
  */
 interface OperationalInterface
 {

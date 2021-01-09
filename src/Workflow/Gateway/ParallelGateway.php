@@ -16,7 +16,7 @@ use PHPMentors\Workflower\Workflow\Element\Token;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
 /**
- * @since Class available since Release 2.0.0
+ * @since 2.0.0
  */
 class ParallelGateway implements GatewayInterface, \Serializable
 {

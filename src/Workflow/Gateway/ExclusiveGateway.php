@@ -41,7 +41,7 @@ class ExclusiveGateway implements GatewayInterface, ConditionalInterface, \Seria
     /**
      * @var Token
      *
-     * @since Property available since Release 2.0.0
+     * @since 2.0.0
      */
     private $token;
 

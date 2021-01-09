@@ -376,7 +376,7 @@ class WorkflowTest extends TestCase
     /**
      * @test
      *
-     * @since Method available since Release 1.2.0
+     * @since 1.2.0
      */
     public function executeServiceTasks()
     {
@@ -405,7 +405,7 @@ class WorkflowTest extends TestCase
     /**
      * @test
      *
-     * @since Method available since Release 1.3.0
+     * @since 1.3.0
      */
     public function provideDefaultRoleForWorkflowWithoutLanes()
     {
@@ -426,7 +426,7 @@ class WorkflowTest extends TestCase
     /**
      * @test
      *
-     * @since Method available since Release 1.3.0
+     * @since 1.3.0
      */
     public function executeSendTasks()
     {
@@ -457,7 +457,7 @@ class WorkflowTest extends TestCase
     /**
      * @test
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     public function parallelGateway()
     {
@@ -515,7 +515,7 @@ class WorkflowTest extends TestCase
      * "All the tokens that were generated within the Process MUST be consumed by an End Event before the Process has been completed."
      * --Business Process Model and Notation, v2.0 https://www.omg.org/spec/BPMN/2.0 p.246
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     public function multipleEndEvents()
     {
