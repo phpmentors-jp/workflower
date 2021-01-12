@@ -265,6 +265,19 @@ class Workflow implements \Serializable
     }
 
     /**
+     * @return FlowObjectInterface[]
+     *
+     * @since 2.0.0
+     */
+    public function getActiveFlowObjects(): array
+    {
+        return array_map(function (Token $token) {
+            return $token->getCurrentFlowObject();
+        }, $this->tokenRegistry->getActiveTokens()
+        );
+    }
+
+    /**
      * @return FlowObjectInterface|null
      */
     public function getCurrentFlowObject(): ?FlowObjectInterface
@@ -498,13 +511,13 @@ class Workflow implements \Serializable
      */
     private function assertCurrentFlowObjectIsExpectedActivity(ActivityInterface $activity)
     {
-        foreach ($this->getCurrentFlowObjects() as $currentFlowObject) {
-            if ($activity->equals($currentFlowObject)) {
+        foreach ($this->getActiveFlowObjects() as $activeFlowObject) {
+            if ($activity->equals($activeFlowObject)) {
                 return true;
             }
         }
 
-        throw new UnexpectedActivityException(sprintf('The current flow object is not equal to the expected activity "%s".', $activity->getId()));
+        throw new UnexpectedActivityException(sprintf('The activity "%s" is not found in the active flow objects.', $activity->getId()));
     }
 
     /**
