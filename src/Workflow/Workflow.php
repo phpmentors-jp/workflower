@@ -279,6 +279,8 @@ class Workflow implements \Serializable
 
     /**
      * @return FlowObjectInterface|null
+     *
+     * @deprecated 2.0.0
      */
     public function getCurrentFlowObject(): ?FlowObjectInterface
     {
@@ -305,6 +307,8 @@ class Workflow implements \Serializable
 
     /**
      * @return FlowObjectInterface|null
+     *
+     * @deprecated 2.0.0
      */
     public function getPreviousFlowObject(): ?FlowObjectInterface
     {

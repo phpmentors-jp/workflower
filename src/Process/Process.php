@@ -143,14 +143,14 @@ class Process
         if ($activity->isAllocatable()) {
             $this->allocateWorkItem($workItemContext);
             $nextWorkItemContext = new WorkItemContext($workItemContext->getParticipant());
-            $nextWorkItemContext->setActivityId($workItemContext->getProcessContext()->getWorkflow()->getCurrentFlowObject()->getId());
+            $nextWorkItemContext->setActivityId($workItemContext->getActivityId());
             $nextWorkItemContext->setProcessContext($workItemContext->getProcessContext());
 
             return $this->executeWorkItem($nextWorkItemContext);
         } elseif ($activity->isStartable()) {
             $this->startWorkItem($workItemContext);
             $nextWorkItemContext = new WorkItemContext($workItemContext->getParticipant());
-            $nextWorkItemContext->setActivityId($workItemContext->getProcessContext()->getWorkflow()->getCurrentFlowObject()->getId());
+            $nextWorkItemContext->setActivityId($workItemContext->getActivityId());
             $nextWorkItemContext->setProcessContext($workItemContext->getProcessContext());
 
             return $this->executeWorkItem($nextWorkItemContext);
