@@ -98,11 +98,11 @@ class Workflow implements \Serializable
     private $operationRunner;
 
     /**
-     * @var Token[]
+     * @var TokenRegistry
      *
      * @since 2.0.0
      */
-    private $tokens = [];
+    private $tokenRegistry;
 
     /**
      * @var ActivityLogCollection
@@ -122,6 +122,7 @@ class Workflow implements \Serializable
         $this->connectingObjectCollection = new ConnectingObjectCollection();
         $this->flowObjectCollection = new FlowObjectCollection();
         $this->roleCollection = new RoleCollection();
+        $this->tokenRegistry = new TokenRegistry();
         $this->activityLogCollection = new ActivityLogCollection();
     }
 
@@ -138,7 +139,7 @@ class Workflow implements \Serializable
             'roleCollection' => $this->roleCollection,
             'startEvent' => $this->startEvent,
             'endEvents' => $this->endEvents,
-            'tokens' => $this->tokens,
+            'tokenRegistry' => $this->tokenRegistry,
             'activityLogCollection' => $this->activityLogCollection,
         ]);
     }
@@ -252,17 +253,7 @@ class Workflow implements \Serializable
      */
     public function isActive()
     {
-        if (count($this->tokens) == 0) {
-            return false;
-        }
-
-        foreach ($this->tokens as $token) {
-            if (!($token->getCurrentFlowObject() instanceof EndEvent)) {
-                return true;
-            }
-        }
-
-        return false;
+        return count($this->tokenRegistry->getTokens()) > 0 && count($this->tokenRegistry->getActiveTokens()) > 0;
     }
 
     /**
@@ -270,19 +261,7 @@ class Workflow implements \Serializable
      */
     public function isEnded()
     {
-        if (count($this->tokens) == 0) {
-            return false;
-        }
-
-        foreach ($this->tokens as $token) {
-            if ($token->getCurrentFlowObject() instanceof EndEvent) {
-                continue;
-            }
-
-            return false;
-        }
-
-        return true;
+        return count($this->tokenRegistry->getTokens()) > 0 && count($this->tokenRegistry->getActiveTokens()) == 0;
     }
 
     /**
@@ -303,11 +282,11 @@ class Workflow implements \Serializable
      *
      * @since 2.0.0
      */
-    public function getCurrentFlowObjects(): iterable
+    public function getCurrentFlowObjects(): array
     {
         return array_map(function (Token $token) {
             return $token->getCurrentFlowObject();
-        }, $this->tokens
+        }, $this->tokenRegistry->getTokens()
         );
     }
 
@@ -329,11 +308,11 @@ class Workflow implements \Serializable
      *
      * @since 2.0.0
      */
-    public function getPreviousFlowObjects(): iterable
+    public function getPreviousFlowObjects(): array
     {
         return array_map(function (Token $token) {
             return $token->getPreviousFlowObject();
-        }, $this->tokens
+        }, $this->tokenRegistry->getTokens()
         );
     }
 
@@ -343,7 +322,7 @@ class Workflow implements \Serializable
     public function start(StartEvent $event)
     {
         $this->startEvent = $event;
-        $this->tokens[] = $this->generateToken($this->startEvent);
+        $this->tokenRegistry->register($this->generateToken($this->startEvent));
         $this->selectSequenceFlow($this->startEvent);
     }
 
@@ -556,18 +535,6 @@ class Workflow implements \Serializable
 
     /**
      * @param Token $token
-     *
-     * @since 2.0.0
-     */
-    private function removeToken(Token $token): void
-    {
-        $this->tokens = array_filter($this->tokens, function (Token $currentToken) use ($token) {
-            return $currentToken !== $token;
-        });
-    }
-
-    /**
-     * @param Token $token
      * @param FlowObjectInterface $flowObject
      * @throws \Exception
      *
@@ -586,12 +553,12 @@ class Workflow implements \Serializable
             if (count($incomingTokens) == count($incomings)) {
                 foreach ($incomingTokens as $incomingToken) {
                     $parallelGateway->detachToken($incomingToken);
-                    $this->removeToken($incomingToken);
+                    $this->tokenRegistry->remove($incomingToken);
                 }
 
                 foreach ($this->connectingObjectCollection->filterBySource($parallelGateway) as $outgoing) {
                     $outgoingToken = $this->generateToken($parallelGateway);
-                    $this->tokens[] = $outgoingToken;
+                    $this->tokenRegistry->register($outgoingToken);
                     $this->flow($outgoingToken, $outgoing->getDestination());
                 }
             }
