@@ -44,8 +44,9 @@ class WorkflowTest extends TestCase
 
         $this->assertThat($workflow->isActive(), $this->isFalse());
         $this->assertThat($workflow->isEnded(), $this->isFalse());
-        $this->assertThat($workflow->getCurrentFlowObject(), $this->isNull());
-        $this->assertThat($workflow->getPreviousFlowObject(), $this->isNull());
+        $this->assertThat(count($workflow->getCurrentFlowObjects()), $this->equalTo(0));
+        $this->assertThat(count($workflow->getPreviousFlowObjects()), $this->equalTo(0));
+        $this->assertThat(count($workflow->getActiveFlowObjects()), $this->equalTo(0));
     }
 
     /**
