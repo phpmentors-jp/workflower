@@ -324,4 +324,3 @@ In addition, software development by BPMS can be said to be the practice of [Gen
 
 - [phpmentors-jp/workflower-bundle](https://github.com/phpmentors-jp/workflower-bundle)
 - [phpmentors-jp/workflower](https://github.com/phpmentors-jp/workflower)
-- [Q-BPM](http://en.q-bpm.org/mediawiki/index.php?title=Main_Page)
