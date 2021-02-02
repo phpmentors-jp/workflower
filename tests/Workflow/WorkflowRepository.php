@@ -119,7 +119,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     /**
      * @return Workflow
      *
-     * @since Method available since Release 1.2.0
+     * @since 1.2.0
      */
     private function createServiceTasksProcess()
     {
@@ -131,7 +131,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     /**
      * @return Workflow
      *
-     * @since Method available since Release 1.3.0
+     * @since 1.3.0
      */
     private function createNoLanesProcess()
     {
@@ -143,7 +143,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     /**
      * @return Workflow
      *
-     * @since Method available since Release 1.3.0
+     * @since 1.3.0
      */
     private function createSendTasksProcess()
     {
@@ -155,7 +155,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     /**
      * @return Workflow
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     private function createParallelGatewayProcess(): Workflow
     {
@@ -167,7 +167,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     /**
      * @return Workflow
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     private function createMultipleEndEventsProcess(): Workflow
     {

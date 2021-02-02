@@ -102,7 +102,7 @@ class ConnectingObjectCollection implements \Countable, \IteratorAggregate, \Ser
      *
      * @return ConnectingObjectCollection
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     public function filterByDestination(TransitionalInterface $flowObject): ConnectingObjectCollection
     {

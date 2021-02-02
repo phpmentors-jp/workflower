@@ -40,7 +40,7 @@ class WorkflowBuilder
     /**
      * @var array
      *
-     * @since Property available since Release 2.0.0
+     * @since 2.0.0
      */
     private $parallelGateways = [];
 
@@ -67,14 +67,14 @@ class WorkflowBuilder
     /**
      * @var array
      *
-     * @since Property available since Release 1.2.0
+     * @since 1.2.0
      */
     private $serviceTasks = [];
 
     /**
      * @var array
      *
-     * @since Property available since Release 1.3.0
+     * @since 1.3.0
      */
     private $sendTasks = [];
 
@@ -219,7 +219,7 @@ class WorkflowBuilder
      * @param string     $name
      * @param int|string $defaultSequenceFlow
      *
-     * @since Method available since Release 1.2.0
+     * @since 1.2.0
      */
     public function addServiceTask($id, $participant, $operation, $name = null, $defaultSequenceFlow = null)
     {
@@ -238,7 +238,7 @@ class WorkflowBuilder
      * @param string     $name
      * @param int|string $defaultSequenceFlow
      *
-     * @since Method available since Release 1.3.0
+     * @since 1.3.0
      */
     public function addSendTask($id, $participant, $message, $operation, $name = null, $defaultSequenceFlow = null)
     {

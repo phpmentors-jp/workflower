@@ -19,21 +19,21 @@ class EndEvent extends Event implements EventInterface
     /**
      * @var Token
      *
-     * @since Property available since Release 2.0.0
+     * @since 2.0.0
      */
     private $token;
 
     /**
      * @var \DateTime
      *
-     * @since Property available since Release 2.0.0
+     * @since 2.0.0
      */
     private $endDate;
 
     /**
      * {@inheritdoc}
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     public function serialize()
     {

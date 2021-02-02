@@ -32,7 +32,7 @@ class Bpmn2ReaderTest extends TestCase
     /**
      * @test
      *
-     * @since Method available since Release 1.3.0
+     * @since 1.3.0
      */
     public function readSource()
     {

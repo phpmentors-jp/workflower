@@ -20,21 +20,21 @@ class StartEvent extends Event implements EventInterface, TransitionalInterface,
     /**
      * @var Token
      *
-     * @since Property available since Release 2.0.0
+     * @since 2.0.0
      */
     private $token;
 
     /**
      * @var \DateTime
      *
-     * @since Property available since Release 2.0.0
+     * @since 2.0.0
      */
     private $startDate;
 
     /**
      * {@inheritdoc}
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     public function serialize()
     {

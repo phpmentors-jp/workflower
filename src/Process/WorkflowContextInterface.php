@@ -13,7 +13,7 @@
 namespace PHPMentors\Workflower\Process;
 
 /**
- * @since Interface available since Release 1.1.0
+ * @since 1.1.0
  */
 interface WorkflowContextInterface
 {

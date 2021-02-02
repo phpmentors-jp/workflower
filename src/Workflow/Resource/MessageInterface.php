@@ -13,7 +13,7 @@
 namespace PHPMentors\Workflower\Workflow\Resource;
 
 /**
- * @since Interface available since Release 1.3.0
+ * @since 1.3.0
  */
 interface MessageInterface
 {

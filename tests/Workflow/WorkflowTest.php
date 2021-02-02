@@ -44,8 +44,9 @@ class WorkflowTest extends TestCase
 
         $this->assertThat($workflow->isActive(), $this->isFalse());
         $this->assertThat($workflow->isEnded(), $this->isFalse());
-        $this->assertThat($workflow->getCurrentFlowObject(), $this->isNull());
-        $this->assertThat($workflow->getPreviousFlowObject(), $this->isNull());
+        $this->assertThat(count($workflow->getCurrentFlowObjects()), $this->equalTo(0));
+        $this->assertThat(count($workflow->getPreviousFlowObjects()), $this->equalTo(0));
+        $this->assertThat(count($workflow->getActiveFlowObjects()), $this->equalTo(0));
     }
 
     /**
@@ -376,7 +377,7 @@ class WorkflowTest extends TestCase
     /**
      * @test
      *
-     * @since Method available since Release 1.2.0
+     * @since 1.2.0
      */
     public function executeServiceTasks()
     {
@@ -405,7 +406,7 @@ class WorkflowTest extends TestCase
     /**
      * @test
      *
-     * @since Method available since Release 1.3.0
+     * @since 1.3.0
      */
     public function provideDefaultRoleForWorkflowWithoutLanes()
     {
@@ -426,7 +427,7 @@ class WorkflowTest extends TestCase
     /**
      * @test
      *
-     * @since Method available since Release 1.3.0
+     * @since 1.3.0
      */
     public function executeSendTasks()
     {
@@ -457,7 +458,7 @@ class WorkflowTest extends TestCase
     /**
      * @test
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     public function parallelGateway()
     {
@@ -515,7 +516,7 @@ class WorkflowTest extends TestCase
      * "All the tokens that were generated within the Process MUST be consumed by an End Event before the Process has been completed."
      * --Business Process Model and Notation, v2.0 https://www.omg.org/spec/BPMN/2.0 p.246
      *
-     * @since Method available since Release 2.0.0
+     * @since 2.0.0
      */
     public function multipleEndEvents()
     {
@@ -524,55 +525,56 @@ class WorkflowTest extends TestCase
 
         $workflow = $this->workflowRepository->findById('MultipleEndEventsProcess');
         $workflow->start($workflow->getFlowObject('Start'));
-        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+        $activeFlowObjects = $workflow->getActiveFlowObjects();
 
-        $this->assertThat(count($currentFlowObjects), $this->equalTo(3));
+        $this->assertThat(count($activeFlowObjects), $this->equalTo(3));
 
-        foreach ($workflow->getCurrentFlowObjects() as $currentFlowObject) {
-            if ($currentFlowObject->getId() == 'Task1') {
-                $workflow->allocateWorkItem($currentFlowObject, $participant);
-                $workflow->startWorkItem($currentFlowObject, $participant);
-                $workflow->completeWorkItem($currentFlowObject, $participant);
+        foreach ($activeFlowObjects as $activeFlowObject) {
+            if ($activeFlowObject->getId() == 'Task1') {
+                $workflow->allocateWorkItem($activeFlowObject, $participant);
+                $workflow->startWorkItem($activeFlowObject, $participant);
+                $workflow->completeWorkItem($activeFlowObject, $participant);
 
                 break;
             }
         }
+
+        $activeFlowObjects = $workflow->getActiveFlowObjects();
 
         $this->assertThat($workflow->isActive(), $this->isTrue());
         $this->assertThat($workflow->isEnded(), $this->isFalse());
+        $this->assertThat(count($activeFlowObjects), $this->equalTo(2));
 
-        $currentFlowObjects = $workflow->getCurrentFlowObjects();
-
-        $this->assertThat(count($currentFlowObjects), $this->equalTo(3));
-
-        foreach ($workflow->getCurrentFlowObjects() as $currentFlowObject) {
-            if ($currentFlowObject->getId() == 'Task2') {
-                $workflow->allocateWorkItem($currentFlowObject, $participant);
-                $workflow->startWorkItem($currentFlowObject, $participant);
-                $workflow->completeWorkItem($currentFlowObject, $participant);
+        foreach ($activeFlowObjects as $activeFlowObject) {
+            if ($activeFlowObject->getId() == 'Task2') {
+                $workflow->allocateWorkItem($activeFlowObject, $participant);
+                $workflow->startWorkItem($activeFlowObject, $participant);
+                $workflow->completeWorkItem($activeFlowObject, $participant);
 
                 break;
             }
         }
+
+        $activeFlowObjects = $workflow->getActiveFlowObjects();
 
         $this->assertThat($workflow->isActive(), $this->isTrue());
         $this->assertThat($workflow->isEnded(), $this->isFalse());
+        $this->assertThat(count($activeFlowObjects), $this->equalTo(1));
 
-        $currentFlowObjects = $workflow->getCurrentFlowObjects();
-
-        $this->assertThat(count($currentFlowObjects), $this->equalTo(3));
-
-        foreach ($workflow->getCurrentFlowObjects() as $currentFlowObject) {
-            if ($currentFlowObject->getId() == 'Task3') {
-                $workflow->allocateWorkItem($currentFlowObject, $participant);
-                $workflow->startWorkItem($currentFlowObject, $participant);
-                $workflow->completeWorkItem($currentFlowObject, $participant);
+        foreach ($activeFlowObjects as $activeFlowObject) {
+            if ($activeFlowObject->getId() == 'Task3') {
+                $workflow->allocateWorkItem($activeFlowObject, $participant);
+                $workflow->startWorkItem($activeFlowObject, $participant);
+                $workflow->completeWorkItem($activeFlowObject, $participant);
 
                 break;
             }
         }
+
+        $activeFlowObjects = $workflow->getActiveFlowObjects();
 
         $this->assertThat($workflow->isActive(), $this->isFalse());
         $this->assertThat($workflow->isEnded(), $this->isTrue());
+        $this->assertThat(count($activeFlowObjects), $this->equalTo(0));
     }
 }
