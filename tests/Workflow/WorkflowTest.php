@@ -575,4 +575,103 @@ class WorkflowTest extends TestCase
         $this->assertThat($workflow->isActive(), $this->isFalse());
         $this->assertThat($workflow->isEnded(), $this->isTrue());
     }
+
+    /**
+     * @test
+     *
+     * A sequence flow can have a condition defined on it. When a BPMN 2.0 activity is left,
+     * the default behavior is to evaluate the conditions on the outgoing sequence flows.
+     * When a condition evaluates to ‘true’, that outgoing sequence flow is selected.
+     * When multiple sequence flows are selected that way, multiple executions will
+     * be generated and the process is continued in a parallel way.
+     *
+     * Correct usage of conditional sequence flows:
+     * https://www.modeling-guidelines.org/guidelines/correct-usage-of-conditional-and-default-flows/
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function parallelSequenceFlowsTrueCondition()
+    {
+        $participant = $this->createMock(ParticipantInterface::class);
+        $participant->method('hasRole')->willReturn(true);
+
+        $workflow = $this->workflowRepository->findById('ParallelSequenceFlows');
+        $workflow->setProcessData(['stock' => 4]);
+        $workflow->start($workflow->getFlowObject('Start'));
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(1));
+        $this->assertThat($workflow->isActive(), $this->isTrue());
+        $this->assertThat($workflow->isEnded(), $this->isFalse());
+
+        $workflow->allocateWorkItem($currentFlowObjects[0], $participant);
+        $workflow->startWorkItem($currentFlowObjects[0], $participant);
+        $workflow->completeWorkItem($currentFlowObjects[0], $participant);
+
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(2));
+        $this->assertThat($workflow->isActive(), $this->isTrue());
+        $this->assertThat($workflow->isEnded(), $this->isFalse());
+        $this->assertEquals('Task 3', $currentFlowObjects[0]->getName());
+        $this->assertEquals('Task 2', $currentFlowObjects[1]->getName());
+
+        $workflow->allocateWorkItem($currentFlowObjects[0], $participant);
+        $workflow->startWorkItem($currentFlowObjects[0], $participant);
+        $workflow->completeWorkItem($currentFlowObjects[0], $participant);
+
+        $workflow->allocateWorkItem($currentFlowObjects[1], $participant);
+        $workflow->startWorkItem($currentFlowObjects[1], $participant);
+        $workflow->completeWorkItem($currentFlowObjects[1], $participant);
+
+        $this->assertThat($workflow->isActive(), $this->isFalse());
+        $this->assertThat($workflow->isEnded(), $this->isTrue());
+    }
+
+    /**
+     * @test
+     *
+     * A sequence flow can have a condition defined on it. When a BPMN 2.0 activity is left,
+     * the default behavior is to evaluate the conditions on the outgoing sequence flows.
+     * When a condition evaluates to ‘true’, that outgoing sequence flow is selected.
+     * When multiple sequence flows are selected that way, multiple executions will
+     * be generated and the process is continued in a parallel way.
+     *
+     * Correct usage of conditional sequence flows:
+     * https://www.modeling-guidelines.org/guidelines/correct-usage-of-conditional-and-default-flows/
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function parallelSequenceFlowsFalseCondition()
+    {
+        $participant = $this->createMock(ParticipantInterface::class);
+        $participant->method('hasRole')->willReturn(true);
+
+        $workflow = $this->workflowRepository->findById('ParallelSequenceFlows');
+        $workflow->setProcessData(['stock' => 14]);
+        $workflow->start($workflow->getFlowObject('Start'));
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(1));
+        $this->assertThat($workflow->isActive(), $this->isTrue());
+        $this->assertThat($workflow->isEnded(), $this->isFalse());
+
+        $workflow->allocateWorkItem($currentFlowObjects[0], $participant);
+        $workflow->startWorkItem($currentFlowObjects[0], $participant);
+        $workflow->completeWorkItem($currentFlowObjects[0], $participant);
+
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(1));
+        $this->assertThat($workflow->isActive(), $this->isTrue());
+        $this->assertThat($workflow->isEnded(), $this->isFalse());
+        $this->assertEquals('Task 2', $currentFlowObjects[0]->getName());
+
+        $workflow->allocateWorkItem($currentFlowObjects[0], $participant);
+        $workflow->startWorkItem($currentFlowObjects[0], $participant);
+        $workflow->completeWorkItem($currentFlowObjects[0], $participant);
+
+        $this->assertThat($workflow->isActive(), $this->isFalse());
+        $this->assertThat($workflow->isEnded(), $this->isTrue());
+    }
 }

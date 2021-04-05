@@ -467,36 +467,55 @@ class Workflow implements \Serializable
      */
     private function selectSequenceFlow(TransitionalInterface $currentFlowObject)
     {
+        $selectedSequenceFlows = [];
+
         foreach ($this->connectingObjectCollection->filterBySource($currentFlowObject) as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
             if ($connectingObject instanceof SequenceFlow) {
                 if (!($currentFlowObject instanceof ConditionalInterface) || $connectingObject->getId() !== $currentFlowObject->getDefaultSequenceFlowId()) {
                     $condition = $connectingObject->getCondition();
                     if ($condition === null) {
-                        $selectedSequenceFlow = $connectingObject;
-                        break;
+                        $selectedSequenceFlows[] = $connectingObject;
                     } else {
                         $expressionLanguage = $this->expressionLanguage ?: new ExpressionLanguage();
                         if ($expressionLanguage->evaluate($condition, $this->processData)) {
-                            $selectedSequenceFlow = $connectingObject;
-                            break;
+                            $selectedSequenceFlows[] = $connectingObject;
                         }
                     }
                 }
             }
         }
 
-        if (!isset($selectedSequenceFlow)) {
-            if (!($currentFlowObject instanceof ConditionalInterface) || $currentFlowObject->getDefaultSequenceFlowId() === null) {
-                throw new SequenceFlowNotSelectedException(sprintf('No sequence flow can be selected on "%s".', $currentFlowObject->getId()));
-            }
+        if (count($selectedSequenceFlows) == 0 && $currentFlowObject instanceof ConditionalInterface) {
+            $nextFlowObject = $this->connectingObjectCollection->get($currentFlowObject->getDefaultSequenceFlowId());
 
-            $selectedSequenceFlow = $this->connectingObjectCollection->get($currentFlowObject->getDefaultSequenceFlowId());
+            if ($nextFlowObject) {
+                $selectedSequenceFlows[] = $nextFlowObject;
+            }
+        }
+
+        if (count($selectedSequenceFlows) == 0) {
+            throw new SequenceFlowNotSelectedException(sprintf('No sequence flow can be selected on "%s".', $currentFlowObject->getId()));
         }
 
         $token = $currentFlowObject->getToken();
         assert(count($token) === 1);
+        $token = current($token);
 
-        $this->flow(current($token), $selectedSequenceFlow->getDestination());
+        if (count($selectedSequenceFlows) > 1) {
+            // remove the current token
+            $currentFlowObject->detachToken($token);
+            $this->removeToken($token);
+
+            // if there are multiple sequence flows available then the workflow runs in parallel
+            foreach ($selectedSequenceFlows as $selectedSequenceFlow) {
+                $token = $this->generateToken($currentFlowObject);
+                $this->tokens[] = $token;
+
+                $this->flow($token, $selectedSequenceFlow->getDestination());
+            }
+        } else {
+            $this->flow($token, $selectedSequenceFlows[0]->getDestination());
+        }
     }
 
     /**
