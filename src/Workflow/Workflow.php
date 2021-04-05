@@ -468,17 +468,36 @@ class Workflow implements \Serializable
     private function selectSequenceFlow(TransitionalInterface $currentFlowObject)
     {
         $selectedSequenceFlows = [];
+        $exclusive = $currentFlowObject instanceof ExclusiveGateway;
+
+        // Only one sequence flow is selected when using the exclusive gateway.
+        // In case multiple sequence flow have a condition that evaluates to ‘true’,
+        // the first one defined is exclusively selected for continuing the process.
+        // If no sequence flow can be selected (no condition evaluates to ‘true’)
+        // this will result in a runtime exception, unless you have a default flow
+        // defined. One default flow can be set on the gateway itself in case
+        // no other condition matches.
 
         foreach ($this->connectingObjectCollection->filterBySource($currentFlowObject) as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
             if ($connectingObject instanceof SequenceFlow) {
                 if (!($currentFlowObject instanceof ConditionalInterface) || $connectingObject->getId() !== $currentFlowObject->getDefaultSequenceFlowId()) {
                     $condition = $connectingObject->getCondition();
                     if ($condition === null) {
+                        if ($exclusive) {
+                            // find the next one that has a condition
+                            continue;
+                        }
                         $selectedSequenceFlows[] = $connectingObject;
                     } else {
                         $expressionLanguage = $this->expressionLanguage ?: new ExpressionLanguage();
                         if ($expressionLanguage->evaluate($condition, $this->processData)) {
                             $selectedSequenceFlows[] = $connectingObject;
+
+                            if ($exclusive) {
+                                // stop; we found the first exclusive route that has a
+                                // condition that evaluates to 'true'
+                                break;
+                            }
                         }
                     }
                 }
