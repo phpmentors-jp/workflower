@@ -47,6 +47,23 @@ class EndEvent extends Event implements EventInterface
     /**
      * {@inheritdoc}
      */
+    public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if ($name == get_parent_class($this)) {
+                parent::unserialize($value);
+                continue;
+            }
+
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getToken(): Token
     {
         return $this->token;
