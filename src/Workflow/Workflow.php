@@ -448,7 +448,7 @@ class Workflow implements \Serializable
     public function getEndDate()
     {
         if ($this->isEnded()) {
-            return $this->endEvents[ count($this->endEvents) - 1 ]->getEndDate();
+            return $this->endEvents[count($this->endEvents) - 1]->getEndDate();
         }
     }
 
@@ -544,7 +544,9 @@ class Workflow implements \Serializable
 
     /**
      * @param FlowObjectInterface $flowObject
+     *
      * @return Token
+     *
      * @throws \Exception
      *
      * @since Method available since Release 2.0.0
@@ -567,8 +569,9 @@ class Workflow implements \Serializable
     }
 
     /**
-     * @param Token $token
+     * @param Token               $token
      * @param FlowObjectInterface $flowObject
+     *
      * @throws \Exception
      *
      * @since Method available since Release 2.0.0

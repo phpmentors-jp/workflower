@@ -476,7 +476,7 @@ class WorkflowTest extends TestCase
             $this->assertThat($concurrentFlowObjects, $this->contains($currentFlowObject->getId()));
             $this->assertThat(current($currentFlowObject->getToken())->getPreviousFlowObject()->getId(), $this->equalTo('ParallelGateway1'));
 
-            unset($concurrentFlowObjects[ array_search($currentFlowObject->getId(), $concurrentFlowObjects) ]);
+            unset($concurrentFlowObjects[array_search($currentFlowObject->getId(), $concurrentFlowObjects)]);
             $concurrentFlowObjects = array_values($concurrentFlowObjects);
         }
 
@@ -502,7 +502,7 @@ class WorkflowTest extends TestCase
 
         $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(0)->getActivity()->getId()));
 
-        unset($concurrentFlowObjects[ array_search($activityLog->get(0)->getActivity()->getId(), $concurrentFlowObjects) ]);
+        unset($concurrentFlowObjects[array_search($activityLog->get(0)->getActivity()->getId(), $concurrentFlowObjects)]);
 
         $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(1)->getActivity()->getId()));
 

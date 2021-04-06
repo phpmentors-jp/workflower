@@ -81,7 +81,7 @@ class Process
         $eventContext->getProcessContext()->setWorkflow($workflow);
         $workflow->setProcessData($eventContext->getProcessContext()->getProcessData());
         $flowObject = $workflow->getFlowObject($eventContext->getEventId());
-        $workflow->start(/* @var $flowObject StartEvent */$flowObject);
+        $workflow->start(/* @var $flowObject StartEvent */ $flowObject);
     }
 
     /**
@@ -95,7 +95,7 @@ class Process
 
         $workflow = $this->configureWorkflow($workItemContext->getProcessContext()->getWorkflow());
         $flowObject = $workflow->getFlowObject($workItemContext->getActivityId());
-        $workflow->allocateWorkItem(/* @var $flowObject ActivityInterface */$flowObject, $workItemContext->getParticipant());
+        $workflow->allocateWorkItem(/* @var $flowObject ActivityInterface */ $flowObject, $workItemContext->getParticipant());
     }
 
     /**
@@ -109,7 +109,7 @@ class Process
 
         $workflow = $this->configureWorkflow($workItemContext->getProcessContext()->getWorkflow());
         $flowObject = $workflow->getFlowObject($workItemContext->getActivityId());
-        $workflow->startWorkItem(/* @var $flowObject ActivityInterface */$flowObject, $workItemContext->getParticipant());
+        $workflow->startWorkItem(/* @var $flowObject ActivityInterface */ $flowObject, $workItemContext->getParticipant());
     }
 
     /**
@@ -124,7 +124,7 @@ class Process
         $workflow = $this->configureWorkflow($workItemContext->getProcessContext()->getWorkflow());
         $workflow->setProcessData($workItemContext->getProcessContext()->getProcessData());
         $flowObject = $workflow->getFlowObject($workItemContext->getActivityId());
-        $workflow->completeWorkItem(/* @var $flowObject ActivityInterface */$flowObject, $workItemContext->getParticipant());
+        $workflow->completeWorkItem(/* @var $flowObject ActivityInterface */ $flowObject, $workItemContext->getParticipant());
     }
 
     /**

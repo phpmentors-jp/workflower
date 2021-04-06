@@ -324,7 +324,7 @@ class WorkflowBuilder
 
             if (array_key_exists($id, $this->defaultableFlowObjects)) {
                 $flowObject = $workflow->getFlowObject($this->defaultableFlowObjects[$id]);
-                /* @var $flowObject ConditionalInterface */$flowObject->setDefaultSequenceFlowId($id);
+                /* @var $flowObject ConditionalInterface */ $flowObject->setDefaultSequenceFlowId($id);
             }
         }
 
