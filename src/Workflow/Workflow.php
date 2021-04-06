@@ -416,8 +416,7 @@ class Workflow implements \Serializable
         $this->endEvents[] = $event;
 
         $token = $event->getToken();
-        $event->detachToken($token);
-        $this->removeToken($token);
+        $this->removeToken($event, $token);
 
         if (count($this->tokens) == 0) {
             $this->endDate = $event->getEndDate();
@@ -514,8 +513,7 @@ class Workflow implements \Serializable
 
         if (count($selectedSequenceFlows) > 1) {
             // remove the current token
-            $currentFlowObject->detachToken($token);
-            $this->removeToken($token);
+            $this->removeToken($currentFlowObject, $token);
 
             // if there are multiple sequence flows available then the workflow runs in parallel
             foreach ($selectedSequenceFlows as $selectedSequenceFlow) {
@@ -587,12 +585,14 @@ class Workflow implements \Serializable
     }
 
     /**
-     * @param Token $token
+     * @param FlowObjectInterface $flowObject
+     * @param Token               $token
      *
      * @since Method available since Release 2.0.0
      */
-    private function removeToken(Token $token): void
+    private function removeToken(FlowObjectInterface $flowObject, Token $token): void
     {
+        $flowObject->detachToken($token);
         $this->tokens = array_filter($this->tokens, function (Token $currentToken) use ($token) {
             return $currentToken !== $token;
         });
@@ -618,8 +618,7 @@ class Workflow implements \Serializable
             $incomingTokens = $parallelGateway->getToken();
             if (count($incomingTokens) == count($incomings)) {
                 foreach ($incomingTokens as $incomingToken) {
-                    $parallelGateway->detachToken($incomingToken);
-                    $this->removeToken($incomingToken);
+                    $this->removeToken($parallelGateway, $incomingToken);
                 }
 
                 foreach ($this->connectingObjectCollection->filterBySource($parallelGateway) as $outgoing) {
