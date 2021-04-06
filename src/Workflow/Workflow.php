@@ -459,36 +459,74 @@ class Workflow implements \Serializable
      */
     private function selectSequenceFlow(TransitionalInterface $currentFlowObject)
     {
+        $selectedSequenceFlows = [];
+        $exclusive = $currentFlowObject instanceof ExclusiveGateway;
+
+        // Only one sequence flow is selected when using the exclusive gateway.
+        // In case multiple sequence flow have a condition that evaluates to ‘true’,
+        // the first one defined is exclusively selected for continuing the process.
+        // If no sequence flow can be selected (no condition evaluates to ‘true’)
+        // this will result in a runtime exception, unless you have a default flow
+        // defined. One default flow can be set on the gateway itself in case
+        // no other condition matches.
+
         foreach ($this->connectingObjectCollection->filterBySource($currentFlowObject) as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
             if ($connectingObject instanceof SequenceFlow) {
                 if (!($currentFlowObject instanceof ConditionalInterface) || $connectingObject->getId() !== $currentFlowObject->getDefaultSequenceFlowId()) {
                     $condition = $connectingObject->getCondition();
                     if ($condition === null) {
-                        $selectedSequenceFlow = $connectingObject;
-                        break;
+                        if ($exclusive) {
+                            // find the next one that has a condition
+                            continue;
+                        }
+                        $selectedSequenceFlows[] = $connectingObject;
                     } else {
                         $expressionLanguage = $this->expressionLanguage ?: new ExpressionLanguage();
                         if ($expressionLanguage->evaluate($condition, $this->processData)) {
-                            $selectedSequenceFlow = $connectingObject;
-                            break;
+                            $selectedSequenceFlows[] = $connectingObject;
+
+                            if ($exclusive) {
+                                // stop; we found the first exclusive route that has a
+                                // condition that evaluates to 'true'
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
 
-        if (!isset($selectedSequenceFlow)) {
-            if (!($currentFlowObject instanceof ConditionalInterface) || $currentFlowObject->getDefaultSequenceFlowId() === null) {
-                throw new SequenceFlowNotSelectedException(sprintf('No sequence flow can be selected on "%s".', $currentFlowObject->getId()));
-            }
+        if (count($selectedSequenceFlows) == 0 && $currentFlowObject instanceof ConditionalInterface) {
+            $nextFlowObject = $this->connectingObjectCollection->get($currentFlowObject->getDefaultSequenceFlowId());
 
-            $selectedSequenceFlow = $this->connectingObjectCollection->get($currentFlowObject->getDefaultSequenceFlowId());
+            if ($nextFlowObject) {
+                $selectedSequenceFlows[] = $nextFlowObject;
+            }
+        }
+
+        if (count($selectedSequenceFlows) == 0) {
+            throw new SequenceFlowNotSelectedException(sprintf('No sequence flow can be selected on "%s".', $currentFlowObject->getId()));
         }
 
         $token = $currentFlowObject->getToken();
         assert(count($token) === 1);
+        $token = current($token);
 
-        $this->flow(current($token), $selectedSequenceFlow->getDestination());
+        if (count($selectedSequenceFlows) > 1) {
+            // remove the current token
+            $currentFlowObject->detachToken($token);
+            $this->removeToken($token);
+
+            // if there are multiple sequence flows available then the workflow runs in parallel
+            foreach ($selectedSequenceFlows as $selectedSequenceFlow) {
+                $token = $this->generateToken($currentFlowObject);
+                $this->tokens[] = $token;
+
+                $this->flow($token, $selectedSequenceFlow->getDestination());
+            }
+        } else {
+            $this->flow($token, $selectedSequenceFlows[0]->getDestination());
+        }
     }
 
     /**
@@ -536,7 +574,9 @@ class Workflow implements \Serializable
 
     /**
      * @param FlowObjectInterface $flowObject
+     *
      * @return Token
+     *
      * @throws \Exception
      *
      * @since Method available since Release 2.0.0
@@ -559,8 +599,9 @@ class Workflow implements \Serializable
     }
 
     /**
-     * @param Token $token
+     * @param Token               $token
      * @param FlowObjectInterface $flowObject
+     *
      * @throws \Exception
      *
      * @since Method available since Release 2.0.0
