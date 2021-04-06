@@ -260,7 +260,7 @@ class Workflow implements \Serializable
      */
     public function isActive()
     {
-        return (count($this->tokens) > 0 && isset($this->startEvent));
+        return count($this->tokens) > 0 && isset($this->startEvent);
     }
 
     /**
@@ -268,7 +268,7 @@ class Workflow implements \Serializable
      */
     public function isEnded()
     {
-        return (count($this->tokens) == 0 && count($this->endEvents) > 0);
+        return count($this->tokens) == 0 && count($this->endEvents) > 0;
     }
 
     /**
