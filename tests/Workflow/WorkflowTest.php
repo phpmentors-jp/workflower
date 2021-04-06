@@ -150,7 +150,7 @@ class WorkflowTest extends TestCase
     public function completeActivityOnConditionalSequenceFlowsData()
     {
         return [
-            [true, 'End'],
+            [true, null],
             [false, 'LoanStudy'],
         ];
     }
@@ -182,7 +182,7 @@ class WorkflowTest extends TestCase
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
 
-        $this->assertThat($currentFlowObject->getId(), $this->equalTo($nextFlowObjectId));
+        $this->assertThat($currentFlowObject ? $currentFlowObject->getId() : $currentFlowObject, $nextFlowObjectId == null ? $this->isNull() : $this->equalTo($nextFlowObjectId));
     }
 
     /**
@@ -265,13 +265,8 @@ class WorkflowTest extends TestCase
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
 
-        $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Event\EndEvent'));
-        $this->assertThat($currentFlowObject->getId(), $this->equalTo('End'));
-
-        $previousFlowObject = $workflow->getPreviousFlowObject();
-
-        $this->assertThat($previousFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
-        $this->assertThat($previousFlowObject->getId(), $this->equalTo('Disbursement'));
+        $this->assertThat($currentFlowObject, $this->isNull());
+        $this->assertThat($workflow->isEnded(), $this->isTrue());
     }
 
     /**
@@ -543,7 +538,7 @@ class WorkflowTest extends TestCase
 
         $currentFlowObjects = $workflow->getCurrentFlowObjects();
 
-        $this->assertThat(count($currentFlowObjects), $this->equalTo(3));
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(2));
 
         foreach ($workflow->getCurrentFlowObjects() as $currentFlowObject) {
             if ($currentFlowObject->getId() == 'Task2') {
@@ -560,7 +555,7 @@ class WorkflowTest extends TestCase
 
         $currentFlowObjects = $workflow->getCurrentFlowObjects();
 
-        $this->assertThat(count($currentFlowObjects), $this->equalTo(3));
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(1));
 
         foreach ($workflow->getCurrentFlowObjects() as $currentFlowObject) {
             if ($currentFlowObject->getId() == 'Task3') {
