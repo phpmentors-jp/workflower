@@ -8,6 +8,6 @@
 /composer.phar
 /docker-compose.yml
 /docker/php.ini
-/php-cs-fixer-v2.phar
+/php-cs-fixer.phar
 /vendor/
 *.iml
