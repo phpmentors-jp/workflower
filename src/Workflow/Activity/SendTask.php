@@ -12,24 +12,18 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use PHPMentors\Workflower\Workflow\Resource\MessageInterface;
 
 /**
  * @since Class available since Release 1.3.0
  */
-class SendTask extends Task implements MessageInterface, OperationalInterface
+class SendTask extends OperationalTask implements MessageInterface
 {
     /**
      * @var int|string
      */
     private $message;
-
-    /**
-     * @var int|string
-     */
-    private $operation;
 
     /**
      * @param int|string $id
@@ -53,7 +47,6 @@ class SendTask extends Task implements MessageInterface, OperationalInterface
         return serialize([
             get_parent_class($this) => parent::serialize(),
             'message' => $this->message,
-            'operation' => $this->operation,
         ]);
     }
 
@@ -80,13 +73,5 @@ class SendTask extends Task implements MessageInterface, OperationalInterface
     public function getMessage()
     {
         return $this->message;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getOperation()
-    {
-        return $this->operation;
     }
 }

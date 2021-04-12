@@ -12,19 +12,13 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
 /**
  * @since Class available since Release 1.2.0
  */
-class ServiceTask extends Task implements OperationalInterface
+class ServiceTask extends OperationalTask
 {
-    /**
-     * @var int|string
-     */
-    private $operation;
-
     /**
      * @param int|string $id
      * @param Role       $role
@@ -38,39 +32,4 @@ class ServiceTask extends Task implements OperationalInterface
         $this->operation = $operation;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
-    {
-        return serialize([
-            get_parent_class($this) => parent::serialize(),
-            'operation' => $this->operation,
-        ]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if ($name == get_parent_class($this)) {
-                parent::unserialize($value);
-                continue;
-            }
-
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getOperation()
-    {
-        return $this->operation;
-    }
 }

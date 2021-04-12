@@ -141,11 +141,82 @@ class Bpmn2Reader
                 throw $this->createIdAttributeNotFoundException($element, $workflowId);
             }
 
+            $multiInstance = false;
+            $sequential = false;
+            $completionCondition = null;
+
+            foreach ($element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'multiInstanceLoopCharacteristics') as $childElement) {
+                $multiInstance = true;
+                $sequential = $childElement->hasAttribute('isSequential') ? ($childElement->getAttribute('isSequential') === 'true') : false;
+                foreach ($childElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'completionCondition') as $conditionElement) {
+                    $completionCondition = $conditionElement->nodeValue;
+                }
+            }
+
             $workflowBuilder->addTask(
                 $element->getAttribute('id'),
                 $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
                 $element->hasAttribute('name') ? $element->getAttribute('name') : null,
-                $element->hasAttribute('default') ? $element->getAttribute('default') : null
+                $element->hasAttribute('default') ? $element->getAttribute('default') : null,
+                $multiInstance,
+                $sequential,
+                $completionCondition
+            );
+        }
+
+        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'userTask') as $element) {
+            if (!$element->hasAttribute('id')) {
+                throw $this->createIdAttributeNotFoundException($element, $workflowId);
+            }
+
+            $multiInstance = false;
+            $sequential = false;
+            $completionCondition = null;
+
+            foreach ($element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'multiInstanceLoopCharacteristics') as $childElement) {
+                $multiInstance = true;
+                $sequential = $childElement->hasAttribute('isSequential') ? ($childElement->getAttribute('isSequential') === 'true') : false;
+                foreach ($childElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'completionCondition') as $conditionElement) {
+                    $completionCondition = $conditionElement->nodeValue;
+                }
+            }
+
+            $workflowBuilder->addUserTask(
+                $element->getAttribute('id'),
+                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
+                $element->hasAttribute('name') ? $element->getAttribute('name') : null,
+                $element->hasAttribute('default') ? $element->getAttribute('default') : null,
+                $multiInstance,
+                $sequential,
+                $completionCondition
+            );
+        }
+
+        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'manualTask') as $element) {
+            if (!$element->hasAttribute('id')) {
+                throw $this->createIdAttributeNotFoundException($element, $workflowId);
+            }
+
+            $multiInstance = false;
+            $sequential = false;
+            $completionCondition = null;
+
+            foreach ($element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'multiInstanceLoopCharacteristics') as $childElement) {
+                $multiInstance = true;
+                $sequential = $childElement->hasAttribute('isSequential') ? ($childElement->getAttribute('isSequential') === 'true') : false;
+                foreach ($childElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'completionCondition') as $conditionElement) {
+                    $completionCondition = $conditionElement->nodeValue;
+                }
+            }
+
+            $workflowBuilder->addManualTask(
+                $element->getAttribute('id'),
+                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
+                $element->hasAttribute('name') ? $element->getAttribute('name') : null,
+                $element->hasAttribute('default') ? $element->getAttribute('default') : null,
+                $multiInstance,
+                $sequential,
+                $completionCondition
             );
         }
 
@@ -154,12 +225,27 @@ class Bpmn2Reader
                 throw $this->createIdAttributeNotFoundException($element, $workflowId);
             }
 
+            $multiInstance = false;
+            $sequential = false;
+            $completionCondition = null;
+
+            foreach ($element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'multiInstanceLoopCharacteristics') as $childElement) {
+                $multiInstance = true;
+                $sequential = $childElement->hasAttribute('isSequential') ? ($childElement->getAttribute('isSequential') === 'true') : false;
+                foreach ($childElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'completionCondition') as $conditionElement) {
+                    $completionCondition = $conditionElement->nodeValue;
+                }
+            }
+
             $workflowBuilder->addServiceTask(
                 $element->getAttribute('id'),
                 $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
                 $element->hasAttribute('operationRef') ? $operations[$element->getAttribute('operationRef')] : null,
                 $element->hasAttribute('name') ? $element->getAttribute('name') : null,
-                $element->hasAttribute('default') ? $element->getAttribute('default') : null
+                $element->hasAttribute('default') ? $element->getAttribute('default') : null,
+                $multiInstance,
+                $sequential,
+                $completionCondition
             );
         }
 
@@ -168,13 +254,28 @@ class Bpmn2Reader
                 throw $this->createIdAttributeNotFoundException($element, $workflowId);
             }
 
+            $multiInstance = false;
+            $sequential = false;
+            $completionCondition = null;
+
+            foreach ($element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'multiInstanceLoopCharacteristics') as $childElement) {
+                $multiInstance = true;
+                $sequential = $childElement->hasAttribute('isSequential') ? ($childElement->getAttribute('isSequential') === 'true') : false;
+                foreach ($childElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'completionCondition') as $conditionElement) {
+                    $completionCondition = $conditionElement->nodeValue;
+                }
+            }
+
             $workflowBuilder->addSendTask(
                 $element->getAttribute('id'),
                 $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
                 $element->hasAttribute('messageRef') ? $messages[$element->getAttribute('messageRef')] : null,
                 $element->hasAttribute('operationRef') ? $operations[$element->getAttribute('operationRef')] : null,
                 $element->hasAttribute('name') ? $element->getAttribute('name') : null,
-                $element->hasAttribute('default') ? $element->getAttribute('default') : null
+                $element->hasAttribute('default') ? $element->getAttribute('default') : null,
+                $multiInstance,
+                $sequential,
+                $completionCondition
             );
         }
 

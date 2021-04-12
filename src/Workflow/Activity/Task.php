@@ -12,348 +12,120 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-use PHPMentors\Workflower\Workflow\Element\Token;
-use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
-use PHPMentors\Workflower\Workflow\Participant\Role;
+use PHPMentors\Workflower\Workflow\Provider\DataNotFoundException;
+use PHPMentors\Workflower\Workflow\Provider\ProviderNotFoundException;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
-class Task implements ActivityInterface, \Serializable
+class Task extends AbstractTask
 {
-    /**
-     * @var int|string
-     */
-    private $id;
-
-    /**
-     * @var Role
-     */
-    private $role;
-
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var WorkItemInterface[]
-     */
-    private $workItems = [];
-
-    /**
-     * @var int|string
-     */
-    private $defaultSequenceFlowId;
-
-    /**
-     * @var Token
-     *
-     * @since Property available since Release 2.0.0
-     */
-    private $token;
-
-    /**
-     * @param int|string $id
-     * @param Role       $role
-     * @param string     $name
-     */
-    public function __construct($id, Role $role, $name = null)
-    {
-        $this->id = $id;
-        $this->role = $role;
-        $this->name = $name;
-    }
+    private $completing = false;
 
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    protected function createWorkItem($data)
     {
-        return serialize([
-            'id' => $this->id,
-            'role' => $this->role,
-            'name' => $this->name,
-            'workItems' => $this->workItems,
-            'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
-            'token' => $this->token,
-        ]);
+        if ($this->isClosed()) {
+            throw new UnexpectedActivityStateException(sprintf('The activity "%s" is closed.', $this->getId()));
+        }
+
+        $workItem = $this->getWorkflow()->generateWorkItem($this);
+        $workItem->setData($data);
+        $this->getWorkItems()->add($workItem);
+
+        return $workItem;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unserialize($serialized)
+    public function createWork(): void
     {
-        foreach (unserialize($serialized) as $name => $value) {
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
+        $provider = $this->getWorkflow()->getDataProvider();
+
+        if ($this->isMultiInstance()) {
+            // If not sequential then create parallel work items.
+            // If it's sequential then create a work item and when it's completed create
+            // the next one if required.
+            // After completing each work item check "completionCondition" to see if we
+            // cancel all remaining work items.
+
+            if (!$provider) {
+                throw new ProviderNotFoundException();
             }
+
+            if ($this->isSequential()) {
+                $this->createWorkItem($provider->getSequentialInstanceData($this));
+            } else {
+                // calculate how many parallel instances we have to create
+                $parallelData = $provider->getParallelInstancesData($this);
+
+                if (count($parallelData) === 0) {
+                    throw new DataNotFoundException();
+                }
+
+                foreach ($parallelData as $data) {
+                    $this->createWorkItem($data);
+                }
+            }
+        } else {
+            // just one work item has be to created
+            $this->createWorkItem($provider ? $provider->getSingleInstanceData($this) : []);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return int|string
-     */
-    public function getId()
+    public function completeWork(): void
     {
-        return $this->id;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRole()
-    {
-        return $this->role;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function equals($target)
-    {
-        if (!($target instanceof self)) {
-            return false;
+        if ($this->completing) {
+            return;
         }
 
-        return $this->id === $target->getId();
-    }
+        if ($this->isMultiInstance()) {
+            $workItems = $this->getWorkItems();
+            $workflow = $this->getWorkflow();
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setDefaultSequenceFlowId($sequenceFlowId)
-    {
-        $this->defaultSequenceFlowId = $sequenceFlowId;
-    }
+            $completed = $workItems->countOfCompletedInstances();
+            $active = $workItems->countOfActiveInstances();
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefaultSequenceFlowId()
-    {
-        return $this->defaultSequenceFlowId;
-    }
+            $expression = $workflow->getExpressionLanguage() ?: new ExpressionLanguage();
+            $condition = $this->getCompletionCondition();
+            $stop = false;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCurrentState()
-    {
-        if (count($this->workItems) == 0) {
-            return null;
+            if ($condition) {
+                // check if we have to stop processing the other active work items
+                $conditionData = [
+                    'nrOfInstances' => $workItems->count(),
+                    'nrOfCompletedInstances' => $completed,
+                    'nrOfActiveInstances' => $active
+                ];
+
+                $conditionData = array_merge($conditionData, $workflow->getProcessData() ?: []);
+                $stop = $expression->evaluate($condition, $conditionData);
+            }
+
+            if ($stop) {
+                // we need to cancel all active work items left
+                foreach ($workItems->getActiveInstances() as $workiItem) {
+                    // we don't want to come back to this function while instances are cancelled
+                    $this->completing = true;
+                    $workiItem->cancel();
+                    $this->completing = false;
+                }
+            } else {
+                if ($this->isSequential()) {
+                    $this->createWork();
+                    return;
+                } else {
+                    if ($completed !== $active) {
+                        // we have to wait until all work items are completed
+                        return;
+                    }
+                }
+            }
+
+            // merge all instances data
+            $provider = $workflow->getDataProvider();
+            $provider->mergeInstancesData($this);
         }
 
-        return $this->workItems[count($this->workItems) - 1]->getCurrentState();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getParticipant()
-    {
-        if (count($this->workItems) == 0) {
-            return null;
-        }
-
-        return $this->workItems[count($this->workItems) - 1]->getParticipant();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCreationDate()
-    {
-        if (count($this->workItems) == 0) {
-            return null;
-        }
-
-        return $this->workItems[count($this->workItems) - 1]->getCreationDate();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAllocationDate()
-    {
-        if (count($this->workItems) == 0) {
-            return null;
-        }
-
-        return $this->workItems[count($this->workItems) - 1]->getAllocationDate();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStartDate()
-    {
-        if (count($this->workItems) == 0) {
-            return null;
-        }
-
-        return $this->workItems[count($this->workItems) - 1]->getStartDate();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getEndDate()
-    {
-        if (count($this->workItems) == 0) {
-            return null;
-        }
-
-        return $this->workItems[count($this->workItems) - 1]->getEndDate();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getEndParticipant()
-    {
-        if (count($this->workItems) == 0) {
-            return null;
-        }
-
-        return $this->workItems[count($this->workItems) - 1]->getEndParticipant();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getEndResult()
-    {
-        if (count($this->workItems) == 0) {
-            return null;
-        }
-
-        return $this->workItems[count($this->workItems) - 1]->getEndResult();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createWorkItem()
-    {
-        if (!(count($this->workItems) == 0 || $this->isEnded())) {
-            throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not ended.', $this->getId()));
-        }
-
-        $this->workItems[] = new WorkItem();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function allocate(ParticipantInterface $participant)
-    {
-        if (!$this->isAllocatable()) {
-            throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not allocatable.', $this->getId()));
-        }
-
-        $this->workItems[count($this->workItems) - 1]->allocate($participant);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function start()
-    {
-        if (!$this->isStartable()) {
-            throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not startable.', $this->getId()));
-        }
-
-        $this->workItems[count($this->workItems) - 1]->start();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function complete(ParticipantInterface $participant)
-    {
-        if (!$this->isCompletable()) {
-            throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not completable.', $this->getId()));
-        }
-
-        $this->workItems[count($this->workItems) - 1]->complete($participant);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isAllocatable()
-    {
-        return count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_CREATED;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isStartable()
-    {
-        return count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_ALLOCATED;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isCompletable()
-    {
-        return count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_STARTED;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isEnded()
-    {
-        return count($this->workItems) > 0 && $this->workItems[count($this->workItems) - 1]->getCurrentState() == WorkItem::STATE_ENDED;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getWorkItem($index)
-    {
-        if (!array_key_exists($index, $this->workItems)) {
-            throw new \OutOfBoundsException(sprintf('The index "%d" is not in the range [0, %d].', $index, count($this->workItems) - 1));
-        }
-
-        return $this->workItems[$index];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getToken(): iterable
-    {
-        return [$this->token];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attachToken(Token $token): void
-    {
-        $this->token = $token;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function detachToken(Token $token): void
-    {
-        assert($this->token->getId() == $token->getId());
-
-        $this->token = null;
+        // if no more instance needs to be created then end the activity
+        $this->end();
     }
 }

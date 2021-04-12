@@ -12,6 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Operation;
 
+use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Workflow;
 
@@ -33,4 +34,10 @@ interface OperationRunnerInterface
      * @param Workflow             $workflow
      */
     public function run(OperationalInterface $operational, Workflow $workflow);
+
+    /**
+     * @param WorkItemInterface $workItem
+     * @return void
+     */
+    public function runWorkItem(WorkItemInterface $workItem);
 }

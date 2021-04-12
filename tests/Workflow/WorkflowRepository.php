@@ -31,6 +31,8 @@ class WorkflowRepository implements WorkflowRepositoryInterface
         $this->add($this->createParallelGatewayProcess());
         $this->add($this->createMultipleEndEventsProcess());
         $this->add($this->createParallelSequenceFlowsProcess());
+        $this->add($this->createParallelUserTasksProcess());
+        $this->add($this->createSequentialUserTasksProcess());
     }
 
     /**
@@ -187,5 +189,29 @@ class WorkflowRepository implements WorkflowRepositoryInterface
         $bpmn2Reader = new Bpmn2Reader();
 
         return $bpmn2Reader->read(dirname(__DIR__).'/Resources/config/workflower/ParallelSequenceFlows.bpmn');
+    }
+
+    /**
+     * @return Workflow
+     *
+     * @since Method available since Release 2.0.0
+     */
+    private function createParallelUserTasksProcess(): Workflow
+    {
+        $bpmn2Reader = new Bpmn2Reader();
+
+        return $bpmn2Reader->read(dirname(__DIR__).'/Resources/config/workflower/ParallelUserTasks.bpmn');
+    }
+
+    /**
+     * @return Workflow
+     *
+     * @since Method available since Release 2.0.0
+     */
+    private function createSequentialUserTasksProcess(): Workflow
+    {
+        $bpmn2Reader = new Bpmn2Reader();
+
+        return $bpmn2Reader->read(dirname(__DIR__).'/Resources/config/workflower/SequentialUserTasks.bpmn');
     }
 }

@@ -12,17 +12,9 @@
 
 namespace PHPMentors\Workflower\Workflow\Event;
 
-use PHPMentors\Workflower\Workflow\Element\Token;
 
-class EndEvent extends Event implements EventInterface
+class EndEvent extends Event
 {
-    /**
-     * @var Token
-     *
-     * @since Property available since Release 2.0.0
-     */
-    private $token;
-
     /**
      * @var \DateTime
      *
@@ -39,7 +31,6 @@ class EndEvent extends Event implements EventInterface
     {
         return serialize([
             get_parent_class($this) => parent::serialize(),
-            'token' => $this->token,
             'endDate' => $this->endDate,
         ]);
     }
@@ -62,35 +53,19 @@ class EndEvent extends Event implements EventInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getToken(): Token
-    {
-        return $this->token;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attachToken(Token $token): void
-    {
-        $this->token = $token;
-        $this->endDate = new \DateTime();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function detachToken(Token $token): void
-    {
-        assert($this->token->getId() == $token->getId());
-    }
-
-    /**
      * @return \DateTime|null
      */
     public function getEndDate(): ?\DateTime
     {
         return $this->endDate;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function end(): void
+    {
+        $this->endDate = new \DateTime();
+        $this->getWorkflow()->end($this);
     }
 }

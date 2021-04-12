@@ -12,18 +12,13 @@
 
 namespace PHPMentors\Workflower\Workflow\Event;
 
-use PHPMentors\Workflower\Workflow\Element\Token;
+use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
+use PHPMentors\Workflower\Workflow\Element\ConnectingObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
+use PHPMentors\Workflower\Workflow\SequenceFlowNotSelectedException;
 
-class StartEvent extends Event implements EventInterface, TransitionalInterface, \Serializable
+class StartEvent extends Event implements TransitionalInterface, \Serializable
 {
-    /**
-     * @var Token
-     *
-     * @since Property available since Release 2.0.0
-     */
-    private $token;
-
     /**
      * @var \DateTime
      *
@@ -40,7 +35,6 @@ class StartEvent extends Event implements EventInterface, TransitionalInterface,
     {
         return serialize([
             get_parent_class($this) => parent::serialize(),
-            'token' => $this->token,
             'startDate' => $this->startDate,
         ]);
     }
@@ -63,37 +57,48 @@ class StartEvent extends Event implements EventInterface, TransitionalInterface,
     }
 
     /**
-     * {@inheritdoc}
+     * @return \DateTime|null
      */
-    public function getToken(): iterable
+    public function getStartDate(): ?\DateTime
     {
-        return [$this->token];
+        return $this->startDate;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attachToken(Token $token): void
+    public function start(): void
     {
-        $this->token = $token;
+        parent::start();
         $this->startDate = new \DateTime();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function detachToken(Token $token): void
+    public function end(): void
     {
-        assert($this->token->getId() == $token->getId());
+        $selectedSequenceFlows = [];
+        $workflow = $this->getWorkflow();
 
-        $this->token = null;
-    }
+        // for each sequence flow that leaves a start event start a parallel token
+        foreach ($workflow->getConnectingObjectCollectionBySource($this) as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
+            if ($connectingObject instanceof SequenceFlow) {
+                $selectedSequenceFlows[] = $connectingObject;
+            }
+        }
 
-    /**
-     * @return \DateTime|null
-     */
-    public function getStartDate(): ?\DateTime
-    {
-        return $this->startDate;
+        if (count($selectedSequenceFlows) == 0) {
+            throw new SequenceFlowNotSelectedException(sprintf('No sequence flow can be selected on "%s".', $this->getId()));
+        }
+
+        foreach ($this->getToken() as $token) {
+            $workflow->removeToken($this, $token);
+        }
+
+        // if there are multiple sequence flows available then the workflow runs in parallel
+        foreach ($selectedSequenceFlows as $selectedSequenceFlow) {
+            $token = $workflow->generateToken($this);
+            $selectedSequenceFlow->getDestination()->run($token);
+        }
+
+        parent::end();
     }
 }

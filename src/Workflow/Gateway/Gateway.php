@@ -1,24 +1,13 @@
 <?php
-/*
- * Copyright (c) Atsuhiro Kubo <kubo@iteman.jp> and contributors,
- * All rights reserved.
- *
- * This file is part of Workflower.
- *
- * This program and the accompanying materials are made available under
- * the terms of the BSD 2-Clause License which accompanies this
- * distribution, and is available at http://opensource.org/licenses/BSD-2-Clause
- */
 
-namespace PHPMentors\Workflower\Workflow\Event;
+
+namespace PHPMentors\Workflower\Workflow\Gateway;
+
 
 use PHPMentors\Workflower\Workflow\Element\FlowObject;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
-/**
- * @since Class available since Release 2.0.0
- */
-abstract class Event extends FlowObject implements EventInterface
+abstract class Gateway extends FlowObject implements GatewayInterface
 {
     /**
      * @var int|string
@@ -81,19 +70,11 @@ abstract class Event extends FlowObject implements EventInterface
     /**
      * {@inheritdoc}
      *
-     * @return string
+     * @return int|string
      */
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 
     /**
@@ -102,6 +83,14 @@ abstract class Event extends FlowObject implements EventInterface
     public function getRole()
     {
         return $this->role;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**

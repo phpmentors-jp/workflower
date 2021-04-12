@@ -12,45 +12,13 @@
 
 namespace PHPMentors\Workflower\Workflow\Gateway;
 
-use PHPMentors\Workflower\Workflow\Element\Token;
-use PHPMentors\Workflower\Workflow\Participant\Role;
+use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
 
 /**
  * @since Class available since Release 2.0.0
  */
-class ParallelGateway implements GatewayInterface, \Serializable
+class ParallelGateway extends Gateway
 {
-    /**
-     * @var int|string
-     */
-    private $id;
-
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var Role
-     */
-    private $role;
-
-    /**
-     * @var Token
-     */
-    private $token;
-
-    /**
-     * @param int|string $id
-     * @param Role       $role
-     * @param string     $name
-     */
-    public function __construct($id, Role $role, $name = null)
-    {
-        $this->id = $id;
-        $this->role = $role;
-        $this->name = $name;
-    }
 
     /**
      * {@inheritdoc}
@@ -58,10 +26,7 @@ class ParallelGateway implements GatewayInterface, \Serializable
     public function serialize()
     {
         return serialize([
-            'id' => $this->id,
-            'name' => $this->name,
-            'role' => $this->role,
-            'token' => $this->token,
+            get_parent_class($this) => parent::serialize(),
         ]);
     }
 
@@ -71,6 +36,11 @@ class ParallelGateway implements GatewayInterface, \Serializable
     public function unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
+            if ($name == get_parent_class($this)) {
+                parent::unserialize($value);
+                continue;
+            }
+
             if (property_exists($this, $name)) {
                 $this->$name = $value;
             }
@@ -79,65 +49,35 @@ class ParallelGateway implements GatewayInterface, \Serializable
 
     /**
      * {@inheritdoc}
-     *
-     * @return int|string
      */
-    public function getId()
+    public function end(): void
     {
-        return $this->id;
-    }
+        $workflow = $this->getWorkflow();
+        $incoming = $workflow->getConnectingObjectCollectionByDestination($this);
+        $incomingTokens = $this->getToken();
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getRole()
-    {
-        return $this->role;
-    }
+        // The Parallel Gateway is activated if there is at least one token on each
+        // incoming Sequence Flow.
+        // The Parallel Gateway consumes exactly one token from each incoming
+        // Sequence Flow and produces exactly one token at each outgoing Sequence
+        // Flow.
+        // If there are excess tokens at an incoming Sequence Flow, these tokens remain at
+        // this Sequence Flow after execution of the Gateway.
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+        if (count($incomingTokens) == count($incoming)) {
+            foreach ($incomingTokens as $incomingToken) {
+                $workflow->removeToken($this, $incomingToken);
+            }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function equals($target)
-    {
-        if (!($target instanceof self)) {
-            return false;
+            foreach ($workflow->getConnectingObjectCollectionBySource($this) as $outgoing) {
+                if ($outgoing instanceof SequenceFlow) {
+                    $token = $workflow->generateToken($this);
+                    $destination = $outgoing->getDestination();
+                    $destination->run($token);
+                }
+            }
         }
 
-        return $this->id === $target->getId();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getToken(): iterable
-    {
-        return new \ArrayIterator($this->token);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attachToken(Token $token): void
-    {
-        $this->token[$token->getId()] = $token;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function detachToken(Token $token): void
-    {
-        assert(array_key_exists($token->getId(), $this->token));
-
-        unset($this->token[$token->getId()]);
+        parent::end();
     }
 }

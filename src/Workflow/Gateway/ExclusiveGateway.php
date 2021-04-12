@@ -12,50 +12,20 @@
 
 namespace PHPMentors\Workflower\Workflow\Gateway;
 
+use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
 use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
-use PHPMentors\Workflower\Workflow\Element\Token;
-use PHPMentors\Workflower\Workflow\Participant\Role;
+use PHPMentors\Workflower\Workflow\SequenceFlowNotSelectedException;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
-class ExclusiveGateway implements GatewayInterface, ConditionalInterface, \Serializable
+/**
+ * @since Class available since Release 2.0.0
+ */
+class ExclusiveGateway extends Gateway implements ConditionalInterface
 {
-    /**
-     * @var int|string
-     */
-    private $id;
-
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var Role
-     */
-    private $role;
-
-    /**
+     /**
      * @var int|string
      */
     private $defaultSequenceFlowId;
-
-    /**
-     * @var Token
-     *
-     * @since Property available since Release 2.0.0
-     */
-    private $token;
-
-    /**
-     * @param int|string $id
-     * @param Role       $role
-     * @param string     $name
-     */
-    public function __construct($id, Role $role, $name = null)
-    {
-        $this->id = $id;
-        $this->role = $role;
-        $this->name = $name;
-    }
 
     /**
      * {@inheritdoc}
@@ -63,11 +33,8 @@ class ExclusiveGateway implements GatewayInterface, ConditionalInterface, \Seria
     public function serialize()
     {
         return serialize([
-            'id' => $this->id,
-            'name' => $this->name,
-            'role' => $this->role,
+            get_parent_class($this) => parent::serialize(),
             'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
-            'token' => $this->token,
         ]);
     }
 
@@ -77,48 +44,15 @@ class ExclusiveGateway implements GatewayInterface, ConditionalInterface, \Seria
     public function unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
+            if ($name == get_parent_class($this)) {
+                parent::unserialize($value);
+                continue;
+            }
+
             if (property_exists($this, $name)) {
                 $this->$name = $value;
             }
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return int|string
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRole()
-    {
-        return $this->role;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function equals($target)
-    {
-        if (!($target instanceof self)) {
-            return false;
-        }
-
-        return $this->id === $target->getId();
     }
 
     /**
@@ -140,26 +74,52 @@ class ExclusiveGateway implements GatewayInterface, ConditionalInterface, \Seria
     /**
      * {@inheritdoc}
      */
-    public function getToken(): iterable
+    public function end(): void
     {
-        return [$this->token];
+        $workflow = $this->getWorkflow();
+        $selectedSequenceFlow = null;
+
+        // Each token arriving at any incoming Sequence Flows activates the
+        // gateway and is routed to exactly one of the outgoing Sequence Flows.
+        // In order to determine the outgoing Sequence Flows that receives the
+        // token, the conditions are evaluated in order. The first condition that
+        // evaluates to true determines the Sequence Flow the token is sent to.
+        // No more conditions are henceforth evaluated.
+        // If and only if none of the conditions evaluates to true, the token is passed
+        // on the default Sequence Flow.
+        // In case all conditions evaluate to false and a default flow has not been
+        // specified, an exception is thrown.
+
+        foreach ($workflow->getConnectingObjectCollectionBySource($this) as $outgoing) {
+            if ($outgoing instanceof SequenceFlow && $outgoing->getId() !== $this->getDefaultSequenceFlowId()) {
+                $condition = $outgoing->getCondition();
+                if ($condition === null) {
+                    // find the next one that has a condition
+                    continue;
+                } else {
+                    $expressionLanguage = $workflow->getExpressionLanguage() ?: new ExpressionLanguage();
+                    if ($expressionLanguage->evaluate($condition, $workflow->getProcessData())) {
+                        $selectedSequenceFlow = $outgoing;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!$selectedSequenceFlow) {
+            $selectedSequenceFlow = $workflow->getConnectingObject($this->getDefaultSequenceFlowId());
+        }
+
+        if (!$selectedSequenceFlow) {
+            throw new SequenceFlowNotSelectedException(sprintf('No sequence flow can be selected on "%s".', $this->getId()));
+        }
+
+        $token = $this->getToken();
+        assert(count($token) === 1);
+        $token = current($token);
+
+        $selectedSequenceFlow->getDestination()->run($token);
+        parent::end();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attachToken(Token $token): void
-    {
-        $this->token = $token;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function detachToken(Token $token): void
-    {
-        assert($this->token->getId() == $token->getId());
-
-        $this->token = null;
-    }
 }

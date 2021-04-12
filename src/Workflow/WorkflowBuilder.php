@@ -12,9 +12,11 @@
 
 namespace PHPMentors\Workflower\Workflow;
 
+use PHPMentors\Workflower\Workflow\Activity\ManualTask;
 use PHPMentors\Workflower\Workflow\Activity\SendTask;
 use PHPMentors\Workflower\Workflow\Activity\ServiceTask;
 use PHPMentors\Workflower\Workflow\Activity\Task;
+use PHPMentors\Workflower\Workflow\Activity\UserTask;
 use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
 use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
@@ -63,6 +65,16 @@ class WorkflowBuilder
      * @var array
      */
     private $tasks = [];
+
+    /**
+     * @var array
+     */
+    private $userTasks = [];
+
+    /**
+     * @var array
+     */
+    private $manualTasks = [];
 
     /**
      * @var array
@@ -198,14 +210,53 @@ class WorkflowBuilder
     }
 
     /**
-     * @param string     $id
-     * @param string     $participant
-     * @param string     $name
-     * @param int|string $defaultSequenceFlow
+     * @param           $id
+     * @param           $participant
+     * @param null      $name
+     * @param null      $defaultSequenceFlow
+     * @param false     $multiInstance
+     * @param false     $sequential
+     * @param null      $completionCondition
      */
-    public function addTask($id, $participant, $name = null, $defaultSequenceFlow = null)
+    public function addTask($id, $participant, $name = null, $defaultSequenceFlow = null, $multiInstance = false, $sequential = false, $completionCondition = null)
     {
-        $this->tasks[$id] = [$participant, $name];
+        $this->tasks[$id] = [$participant, $name, $multiInstance, $sequential, $completionCondition];
+
+        if ($defaultSequenceFlow !== null) {
+            $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
+        }
+    }
+
+    /**
+     * @param           $id
+     * @param           $participant
+     * @param null      $name
+     * @param null      $defaultSequenceFlow
+     * @param false     $multiInstance
+     * @param false     $sequential
+     * @param null      $completionCondition
+     */
+    public function addUserTask($id, $participant, $name = null, $defaultSequenceFlow = null, $multiInstance = false, $sequential = false, $completionCondition = null)
+    {
+        $this->userTasks[$id] = [$participant, $name, $multiInstance, $sequential, $completionCondition];
+
+        if ($defaultSequenceFlow !== null) {
+            $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
+        }
+    }
+
+    /**
+     * @param           $id
+     * @param           $participant
+     * @param null      $name
+     * @param null      $defaultSequenceFlow
+     * @param false     $multiInstance
+     * @param false     $sequential
+     * @param null      $completionCondition
+     */
+    public function addManualTask($id, $participant, $name = null, $defaultSequenceFlow = null, $multiInstance = false, $sequential = false, $completionCondition = null)
+    {
+        $this->manualTasks[$id] = [$participant, $name, $multiInstance, $sequential, $completionCondition];
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
@@ -217,13 +268,15 @@ class WorkflowBuilder
      * @param string     $participant
      * @param string     $operation
      * @param string     $name
-     * @param int|string $defaultSequenceFlow
+     * @param false     $multiInstance
+     * @param false     $sequential
+     * @param null      $completionCondition
      *
      * @since Method available since Release 1.2.0
      */
-    public function addServiceTask($id, $participant, $operation, $name = null, $defaultSequenceFlow = null)
+    public function addServiceTask($id, $participant, $operation, $name = null, $defaultSequenceFlow = null, $multiInstance = false, $sequential = false, $completionCondition = null)
     {
-        $this->serviceTasks[$id] = [$participant, $operation, $name];
+        $this->serviceTasks[$id] = [$participant, $operation, $name, $multiInstance, $sequential, $completionCondition];
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
@@ -237,12 +290,15 @@ class WorkflowBuilder
      * @param string     $operation
      * @param string     $name
      * @param int|string $defaultSequenceFlow
+     * @param false     $multiInstance
+     * @param false     $sequential
+     * @param null      $completionCondition
      *
      * @since Method available since Release 1.3.0
      */
-    public function addSendTask($id, $participant, $message, $operation, $name = null, $defaultSequenceFlow = null)
+    public function addSendTask($id, $participant, $message, $operation, $name = null, $defaultSequenceFlow = null, $multiInstance = false, $sequential = false, $completionCondition = null)
     {
-        $this->sendTasks[$id] = [$participant, $message, $operation, $name];
+        $this->sendTasks[$id] = [$participant, $message, $operation, $name, $multiInstance, $sequential, $completionCondition];
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
@@ -278,24 +334,59 @@ class WorkflowBuilder
         }
 
         foreach ($this->tasks as $id => $task) {
-            list($roleId, $name) = $task;
+            list($roleId, $name, $multiInstance, $sequential, $completionCondition) = $task;
             $this->assertWorkflowHasRole($workflow, $roleId);
 
-            $workflow->addFlowObject(new Task($id, $workflow->getRole($roleId), $name));
+            $task = new Task($id, $workflow->getRole($roleId), $name);
+            $task->setMultiInstance($multiInstance);
+            $task->setSequential($sequential);
+            $task->setCompletionCondition($completionCondition);
+            $workflow->addFlowObject($task);
+        }
+
+        foreach ($this->userTasks as $id => $task) {
+            list($roleId, $name, $multiInstance, $sequential, $completionCondition) = $task;
+            $this->assertWorkflowHasRole($workflow, $roleId);
+
+            $task = new UserTask($id, $workflow->getRole($roleId), $name);
+            $task->setMultiInstance($multiInstance);
+            $task->setSequential($sequential);
+            $task->setCompletionCondition($completionCondition);
+            $workflow->addFlowObject($task);
+        }
+
+        foreach ($this->manualTasks as $id => $task) {
+            list($roleId, $name, $multiInstance, $sequential, $completionCondition) = $task;
+            $this->assertWorkflowHasRole($workflow, $roleId);
+
+            $task = new ManualTask($id, $workflow->getRole($roleId), $name);
+            $task->setMultiInstance($multiInstance);
+            $task->setSequential($sequential);
+            $task->setCompletionCondition($completionCondition);
+            $workflow->addFlowObject($task);
         }
 
         foreach ($this->serviceTasks as $id => $task) {
-            list($roleId, $operation, $name) = $task;
+            list($roleId, $operation, $name, $multiInstance, $sequential, $completionCondition) = $task;
             $this->assertWorkflowHasRole($workflow, $roleId);
 
-            $workflow->addFlowObject(new ServiceTask($id, $workflow->getRole($roleId), $operation, $name));
+            $task = new ServiceTask($id, $workflow->getRole($roleId), $operation, $name);
+            $task->setMultiInstance($multiInstance);
+            $task->setSequential($sequential);
+            $task->setCompletionCondition($completionCondition);
+            $workflow->addFlowObject($task);
+            $workflow->addFlowObject($task);
         }
 
         foreach ($this->sendTasks as $id => $task) {
-            list($roleId, $message, $operation, $name) = $task;
+            list($roleId, $message, $operation, $name, $multiInstance, $sequential, $completionCondition) = $task;
             $this->assertWorkflowHasRole($workflow, $roleId);
 
-            $workflow->addFlowObject(new SendTask($id, $workflow->getRole($roleId), $message, $operation, $name));
+            $task = new SendTask($id, $workflow->getRole($roleId), $message, $operation, $name);
+            $task->setMultiInstance($multiInstance);
+            $task->setSequential($sequential);
+            $task->setCompletionCondition($completionCondition);
+            $workflow->addFlowObject($task);
         }
 
         foreach ($this->exclusiveGateways as $id => $gateway) {
