@@ -293,7 +293,5 @@ class WorkItem implements WorkItemInterface, \Serializable
     {
         $this->currentState = self::STATE_CANCELLED;
         $this->endDate = new \DateTime();
-
-        $this->getParentActivity()->completeWork();
     }
 }

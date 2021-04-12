@@ -18,8 +18,6 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 class Task extends AbstractTask
 {
-    private $completing = false;
-
     /**
      * {@inheritdoc}
      */
@@ -73,10 +71,6 @@ class Task extends AbstractTask
 
     public function completeWork(): void
     {
-        if ($this->completing) {
-            return;
-        }
-
         if ($this->isMultiInstance()) {
             $workItems = $this->getWorkItems();
             $workflow = $this->getWorkflow();
@@ -102,12 +96,7 @@ class Task extends AbstractTask
 
             if ($stop) {
                 // we need to cancel all active work items left
-                foreach ($workItems->getActiveInstances() as $workiItem) {
-                    // we don't want to come back to this function while instances are cancelled
-                    $this->completing = true;
-                    $workiItem->cancel();
-                    $this->completing = false;
-                }
+                $this->cancelActiveInstances();
             } else {
                 if ($this->isSequential()) {
                     $this->createWork();

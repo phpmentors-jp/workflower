@@ -26,6 +26,7 @@ use PHPMentors\Workflower\Workflow\Element\Token;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 use PHPMentors\Workflower\Workflow\Event\EndEvent;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
+use PHPMentors\Workflower\Workflow\Event\TerminateEndEvent;
 use PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
@@ -472,6 +473,13 @@ class Workflow implements \Serializable
         // when it's a Terminate End Event cancel all other tokens available
         // otherwise wait for all other tokens to arrive in End Events to end
         // the process instance
+
+        if ($event instanceof TerminateEndEvent) {
+            // cancel all remaining work items
+            foreach ($this->getCurrentFlowObjects() as $flowObject) {
+                $flowObject->cancel();
+            }
+        }
 
         if (count($this->tokens) == 0) {
             $this->endDate = $event->getEndDate();

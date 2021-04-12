@@ -337,4 +337,27 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
         $this->createWork();
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function cancel()
+    {
+        $this->cancelActiveInstances();
+        $workflow = $this->getWorkflow();
+
+        foreach ($this->getToken() as $token) {
+            $workflow->removeToken($this, $token);
+        }
+
+        $this->currentState = self::STATE_FAILED;
+    }
+
+    protected function cancelActiveInstances()
+    {
+        // cancel all active work items
+        foreach ($this->getWorkItems()->getActiveInstances() as $workiItem) {
+            $workiItem->cancel();
+        }
+    }
+
 }

@@ -60,4 +60,11 @@ interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, 
      * @return bool
      */
     public function isFailed();
+
+    /**
+     * @return void
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function cancel();
 }
