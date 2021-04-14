@@ -124,13 +124,4 @@ interface WorkItemInterface extends ItemInterface
      */
     public function cancel(): void;
 
-    /**
-     * @param ActivityInterface $activity
-     */
-    public function setParentActivity(ActivityInterface $activity);
-
-    /**
-     * @return ActivityInterface
-     */
-    public function getParentActivity();
 }
