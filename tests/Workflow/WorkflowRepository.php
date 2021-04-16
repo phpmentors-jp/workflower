@@ -89,7 +89,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
             ],
             'tasks' => [
                 ['id' => 'RecordLoanApplicationInformation', 'name' => 'Record Loan Application Information', 'roleId' => 'ROLE_BRANCH'],
-                ['id' => 'CheckApplicantInformation', 'name' => 'Check Applicant Information', 'roleId' => 'ROLE_BRANCH'],
+                ['id' => 'CheckApplicantInformation', 'name' => 'Check Applicant Information', 'roleId' => 'ROLE_BRANCH', 'defaultSequenceFlowId' => 'ResultOfVerification.LoanStudy'],
                 ['id' => 'LoanStudy', 'name' => 'Loan Study', 'roleId' => 'ROLE_CREDIT_FACTORY'],
                 ['id' => 'InformRejection', 'name' => 'Inform Rejection', 'roleId' => 'ROLE_CREDIT_FACTORY'],
                 ['id' => 'Disbursement', 'name' => 'Disbursement', 'roleId' => 'ROLE_BACK_OFFICE']

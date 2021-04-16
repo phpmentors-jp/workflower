@@ -199,8 +199,8 @@ class Bpmn2Reader
         $operation = $element->hasAttribute('operationRef') ? $globalData['operations'][$element->getAttribute('operationRef')] : null;
         $defaultSequenceFlowId = $element->hasAttribute('default') ? $element->getAttribute('default') : null;
         $calledElement = $element->hasAttribute('calledElement') ? $element->getAttribute('calledElement') : null;
-        $multiInstance = false;
-        $sequential = false;
+        $multiInstance = null;
+        $sequential = null;
         $completionCondition = null;
 
         foreach ($element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'multiInstanceLoopCharacteristics') as $childElement) {
@@ -214,22 +214,28 @@ class Bpmn2Reader
         $config = [
             'id' => $id,
             'name' => $element->hasAttribute('name') ? $element->getAttribute('name') : null,
-            'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id),
-            'multiInstance' => $multiInstance,
-            'sequential' => $sequential,
-            'completionCondition' => $completionCondition
+            'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id)
         ];
 
+        if ($multiInstance !== null) {
+            $config['multiInstance'] = $multiInstance;
+        }
+        if ($sequential !== null) {
+            $config['sequential'] = $sequential;
+        }
+        if ($completionCondition !== null) {
+            $config['completionCondition'] = $completionCondition;
+        }
         if ($defaultSequenceFlowId !== null) {
             $config['defaultSequenceFlowId'] = $defaultSequenceFlowId;
         }
-        if ($message) {
+        if ($message !== null) {
             $config['message'] = $message;
         }
-        if ($operation) {
+        if ($operation !== null) {
             $config['operation'] = $operation;
         }
-        if ($calledElement) {
+        if ($calledElement !== null) {
             $config['calledElement'] = $calledElement;
         }
 
@@ -285,13 +291,16 @@ class Bpmn2Reader
 
             $id = $element->getAttribute('id');
             $defaultSequenceFlowId = $element->hasAttribute('default') ? $element->getAttribute('default') : null;
+            $name = $element->hasAttribute('name') ? $element->getAttribute('name') : null;
 
             $config = [
                 'id' => $id,
-                'name' => $element->hasAttribute('name') ? $element->getAttribute('name') : null,
                 'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id)
             ];
 
+            if ($name !== null) {
+                $config['name'] = $name;
+            }
             if ($defaultSequenceFlowId !== null) {
                 $config['defaultSequenceFlowId'] = $defaultSequenceFlowId;
             }
@@ -317,19 +326,27 @@ class Bpmn2Reader
             }
 
             $id = $element->getAttribute('id');
+            $name = $element->hasAttribute('name') ? $element->getAttribute('name') : null;
             $condition = null;
             foreach ($element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'conditionExpression') as $childElement) {
                 $condition = $childElement->nodeValue;
                 break;
             }
 
-            $items[] = [
+            $config = [
                 'id' => $id,
-                'name' => $element->hasAttribute('name') ? $element->getAttribute('name') : null,
                 'source' => $element->getAttribute('sourceRef'),
                 'destination' => $element->getAttribute('targetRef'),
-                'condition' => $condition === null ? null : $condition
             ];
+
+            if ($name !== null) {
+                $config['name'] = $name;
+            }
+            if ($condition !== null) {
+                $config['condition'] = $condition;
+            }
+
+            $items[] = $config;
         }
 
         return $items;
