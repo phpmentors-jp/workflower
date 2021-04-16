@@ -13,6 +13,17 @@ abstract class OperationalTask extends Task implements OperationalInterface
      */
     protected $operation;
 
+    public function __construct(array $config = [])
+    {
+        parent::__construct($config);
+
+        foreach ($config as $name => $value) {
+            if (property_exists(self::class, $name)) {
+                $this->{$name} = $value;
+            }
+        }
+    }
+
     /**
      * {@inheritdoc}
      */

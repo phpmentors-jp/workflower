@@ -19,17 +19,5 @@ use PHPMentors\Workflower\Workflow\Participant\Role;
  */
 class ServiceTask extends OperationalTask
 {
-    /**
-     * @param int|string $id
-     * @param Role       $role
-     * @param int|string $operation
-     * @param string     $name
-     */
-    public function __construct($id, Role $role, $operation, $name = null)
-    {
-        parent::__construct($id, $role, $name);
-
-        $this->operation = $operation;
-    }
 
 }

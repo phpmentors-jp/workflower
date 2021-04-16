@@ -44,20 +44,13 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
      */
     private $condition;
 
-    /**
-     * @param int|string
-     * @param TransitionalInterface $source
-     * @param FlowObjectInterface   $destination
-     * @param string                $name
-     * @param Expression            $condition
-     */
-    public function __construct($id, TransitionalInterface $source, FlowObjectInterface $destination, $name = null, Expression $condition = null)
+    public function __construct(array $config = [])
     {
-        $this->id = $id;
-        $this->source = $source;
-        $this->destination = $destination;
-        $this->name = $name;
-        $this->condition = $condition;
+        foreach ($config as $name => $value) {
+            if (property_exists(self::class, $name)) {
+                $this->{$name} = $value;
+            }
+        }
     }
 
     /**

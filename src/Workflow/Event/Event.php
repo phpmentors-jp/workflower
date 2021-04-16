@@ -35,17 +35,15 @@ abstract class Event extends FlowObject implements EventInterface
      */
     private $role;
 
-    /**
-     * @param int|string $id
-     * @param Role       $role
-     * @param string     $name
-     */
-    public function __construct($id, Role $role, $name = null)
+    public function __construct(array $config = [])
     {
-        parent::__construct();
-        $this->id = $id;
-        $this->role = $role;
-        $this->name = $name;
+        parent::__construct($config);
+
+        foreach ($config as $name => $value) {
+            if (property_exists(self::class, $name)) {
+                $this->{$name} = $value;
+            }
+        }
     }
 
     /**

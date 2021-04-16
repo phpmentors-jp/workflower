@@ -4,16 +4,52 @@
 namespace PHPMentors\Workflower\Workflow\Activity;
 
 
+use PHPMentors\Workflower\Workflow\ProcessDefinitionInterface;
+
 /**
  * @since Class available since Release 2.0.0
  */
-class SubProcessTask extends Task
+class SubProcessTask extends ProcessTask
 {
-    // @todo on setWorkflow generate a new WorkItemsCollection that stores all sub-process instances
+    private $triggeredByEvent = false;
 
-
-    protected function createWorkItem($data)
+    public function __construct(array $config = [])
     {
-        // create a new process instance for the specified sub-process definition
+        parent::__construct($config);
+
+        foreach ($config as $name => $value) {
+            if (property_exists(self::class, $name)) {
+                $this->{$name} = $value;
+            }
+        }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
+    {
+        return serialize([
+            get_parent_class($this) => parent::serialize(),
+            'triggeredByEvent' => $this->triggeredByEvent,
+        ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if ($name == get_parent_class($this)) {
+                parent::unserialize($value);
+                continue;
+            }
+
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
+    }
+
 }

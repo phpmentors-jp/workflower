@@ -4,6 +4,7 @@ namespace PHPMentors\Workflower\Workflow\Activity;
 
 use PHPMentors\Workflower\Workflow\Participant\LoggedParticipant;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
+use PHPMentors\Workflower\Workflow\ProcessInstanceInterface;
 
 class WorkItem implements WorkItemInterface, \Serializable
 {
@@ -13,9 +14,19 @@ class WorkItem implements WorkItemInterface, \Serializable
     private $id;
 
     /**
+     * @var ProcessInstanceInterface
+     */
+    private $parentProcessInstance;
+
+    /**
+     * @var ActivityInterface
+     */
+    private $parentActivity;
+
+    /**
      * @var string
      */
-    private $currentState = self::STATE_CREATED;
+    private $state = self::STATE_CREATED;
 
     /**
      * @var ParticipantInterface
@@ -53,19 +64,13 @@ class WorkItem implements WorkItemInterface, \Serializable
     private $endResult;
 
     /**
-     * @var ActivityInterface
-     */
-    private $parentActivity;
-
-    /**
      * @var array
      */
     private $data;
 
-    public function __construct($id, ActivityInterface $parentActivity)
+    public function __construct($id)
     {
         $this->id = $id;
-        $this->parentActivity = $parentActivity;
         $this->creationDate = new \DateTime();
     }
 
@@ -76,7 +81,9 @@ class WorkItem implements WorkItemInterface, \Serializable
     {
         return serialize([
             'id' => $this->id,
-            'currentState' => $this->currentState,
+            'parentProcessInstance' => $this->parentProcessInstance,
+            'parentActivity' => $this->parentActivity,
+            'state' => $this->state,
             'participant' => $this->participant === null ? null : ($this->participant instanceof LoggedParticipant ? $this->participant : new LoggedParticipant($this->participant)),
             'creationDate' => $this->creationDate,
             'allocationDate' => $this->allocationDate,
@@ -102,17 +109,25 @@ class WorkItem implements WorkItemInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function setData(array $data)
+    public function getId()
     {
-        $this->data = $data;
+        return $this->id;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getData()
+    public function setParentProcessInstance(ProcessInstanceInterface $processInstance)
     {
-        return $this->data;
+        $this->parentProcessInstance = $processInstance;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParentProcessInstance()
+    {
+        return $this->parentProcessInstance;
     }
 
     /**
@@ -134,9 +149,17 @@ class WorkItem implements WorkItemInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function setData($data)
     {
-        return $this->id;
+        $this->data = $data;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 
     /**
@@ -144,7 +167,7 @@ class WorkItem implements WorkItemInterface, \Serializable
      */
     public function isAllocatable()
     {
-        return $this->getCurrentState() == WorkItem::STATE_CREATED;
+        return $this->getState() == WorkItem::STATE_CREATED;
     }
 
     /**
@@ -152,7 +175,7 @@ class WorkItem implements WorkItemInterface, \Serializable
      */
     public function isStartable()
     {
-        return $this->getCurrentState() == WorkItem::STATE_ALLOCATED;
+        return $this->getState() == WorkItem::STATE_ALLOCATED;
     }
 
     /**
@@ -160,7 +183,7 @@ class WorkItem implements WorkItemInterface, \Serializable
      */
     public function isCompletable()
     {
-        return $this->getCurrentState() == WorkItem::STATE_STARTED;
+        return $this->getState() == WorkItem::STATE_STARTED;
     }
 
     /**
@@ -168,7 +191,7 @@ class WorkItem implements WorkItemInterface, \Serializable
      */
     public function isCancelled()
     {
-        return $this->getCurrentState() == WorkItem::STATE_CANCELLED;
+        return $this->getState() == WorkItem::STATE_CANCELLED;
     }
 
     /**
@@ -176,7 +199,7 @@ class WorkItem implements WorkItemInterface, \Serializable
      */
     public function isEnded()
     {
-        $state = $this->getCurrentState();
+        $state = $this->getState();
 
         return $state == WorkItem::STATE_ENDED || $state == WorkItem::STATE_CANCELLED;
     }
@@ -184,9 +207,9 @@ class WorkItem implements WorkItemInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function getCurrentState()
+    public function getState()
     {
-        return $this->currentState;
+        return $this->state;
     }
 
     /**
@@ -254,7 +277,7 @@ class WorkItem implements WorkItemInterface, \Serializable
             throw new UnexpectedWorkItemStateException(sprintf('The current work item of the activity "%s" is not allocatable.', $this->getId()));
         }
 
-        $this->currentState = self::STATE_ALLOCATED;
+        $this->state = self::STATE_ALLOCATED;
         $this->allocationDate = new \DateTime();
         $this->participant = $participant;
     }
@@ -268,7 +291,7 @@ class WorkItem implements WorkItemInterface, \Serializable
             throw new UnexpectedWorkItemStateException(sprintf('The current work item of the activity "%s" is not startable.', $this->getId()));
         }
 
-        $this->currentState = self::STATE_STARTED;
+        $this->state = self::STATE_STARTED;
         $this->startDate = new \DateTime();
     }
 
@@ -281,7 +304,7 @@ class WorkItem implements WorkItemInterface, \Serializable
             throw new UnexpectedWorkItemStateException(sprintf('The current work item of the activity "%s" is not completable.', $this->getId()));
         }
 
-        $this->currentState = self::STATE_ENDED;
+        $this->state = self::STATE_ENDED;
         $this->endDate = new \DateTime();
         $this->endParticipant = $participant === null ? $this->participant : $participant;
         $this->endResult = self::END_RESULT_COMPLETION;
@@ -291,7 +314,7 @@ class WorkItem implements WorkItemInterface, \Serializable
 
     public function cancel(): void
     {
-        $this->currentState = self::STATE_CANCELLED;
+        $this->state = self::STATE_CANCELLED;
         $this->endDate = new \DateTime();
     }
 }

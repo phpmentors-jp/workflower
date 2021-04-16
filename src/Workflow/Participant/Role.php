@@ -24,14 +24,13 @@ class Role implements \Serializable
      */
     private $name;
 
-    /**
-     * @param int|string $id
-     * @param string     $name
-     */
-    public function __construct($id, $name = null)
+    public function __construct(array $config = [])
     {
-        $this->id = $id;
-        $this->name = $name;
+        foreach ($config as $name => $value) {
+            if (property_exists(self::class, $name)) {
+                $this->{$name} = $value;
+            }
+        }
     }
 
     /**

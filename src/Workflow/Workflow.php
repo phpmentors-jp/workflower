@@ -13,11 +13,11 @@
 namespace PHPMentors\Workflower\Workflow;
 
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
-use PHPMentors\Workflower\Workflow\Activity\ItemsCollectionInterface;
+use PHPMentors\Workflower\Workflow\Activity\CallTask;
+use PHPMentors\Workflower\Workflow\Activity\SubProcessTask;
 use PHPMentors\Workflower\Workflow\Activity\UnexpectedActivityException;
 use PHPMentors\Workflower\Workflow\Activity\WorkItem;
 use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
-use PHPMentors\Workflower\Workflow\Activity\WorkItemsCollection;
 use PHPMentors\Workflower\Workflow\Element\ConnectingObjectCollection;
 use PHPMentors\Workflower\Workflow\Element\ConnectingObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\FlowObjectCollection;
@@ -32,9 +32,10 @@ use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
 use PHPMentors\Workflower\Workflow\Provider\DataProviderInterface;
+use PHPMentors\Workflower\Workflow\ProcessDefinitionInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
-class Workflow implements \Serializable
+class Workflow implements ProcessInstanceInterface, \Serializable
 {
     const DEFAULT_ROLE_ID = '__ROLE__';
 
@@ -46,9 +47,24 @@ class Workflow implements \Serializable
     private $id;
 
     /**
+     * @var ProcessInstanceInterface
+     */
+    private $parentProcessInstance;
+
+    /**
+     * @var ActivityInterface
+     */
+    private $parentActivity;
+
+    /**
      * @var string
      */
     private $name;
+
+    /**
+     * @var string
+     */
+    private $state = self::STATE_STARTED;
 
     /**
      * @var ConnectingObjectCollection
@@ -127,6 +143,11 @@ class Workflow implements \Serializable
     private $activityLogCollection;
 
     /**
+     * @var ProcessDefinitionInterface
+     */
+    private $processDefinition;
+
+    /**
      * @param int|string $id
      * @param string     $name
      */
@@ -147,6 +168,9 @@ class Workflow implements \Serializable
     {
         return serialize([
             'id' => $this->id,
+            'parentProcessInstance' => $this->parentProcessInstance,
+            'parentActivity' => $this->parentActivity,
+            'state' => $this->state,
             'name' => $this->name,
             'endDate' => $this->endDate,
             'connectingObjectCollection' => $this->connectingObjectCollection,
@@ -187,6 +211,56 @@ class Workflow implements \Serializable
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setParentProcessInstance(ProcessInstanceInterface $processInstance)
+    {
+        $this->parentProcessInstance = $processInstance;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParentProcessInstance()
+    {
+        return $this->parentProcessInstance;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setParentActivity(ActivityInterface $activity)
+    {
+        $this->parentActivity = $activity;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParentActivity()
+    {
+        return $this->parentActivity;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    public function setProcessDefinition(ProcessDefinitionInterface $definition)
+    {
+        $this->processDefinition = $definition;
+    }
+
+    public function getProcessDefinition()
+    {
+        return $this->processDefinition;
     }
 
     /**
@@ -287,7 +361,10 @@ class Workflow implements \Serializable
      */
     public function isEnded()
     {
-        return count($this->tokens) == 0 && count($this->endEvents) > 0;
+        $state = $this->state;
+
+        return count($this->tokens) == 0 &&
+            ($state === self::STATE_ENDED || $state === self::STATE_CANCELLED || $state === self::STATE_ABNORMAL);
     }
 
     /**
@@ -475,14 +552,41 @@ class Workflow implements \Serializable
         // the process instance
 
         if ($event instanceof TerminateEndEvent) {
-            // cancel all remaining work items
+            $this->cancel();
+            $this->state = self::STATE_ABNORMAL;
+
+        } else if (count($this->tokens) == 0) {
+
+            $this->endDate = $event->getEndDate();
+            $this->state = self::STATE_ENDED;
+
+            $parentActivity = $this->getParentActivity();
+
+            if ($parentActivity !== null) {
+                $parentActivity->completeWork();
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function cancel()
+    {
+        if (!$this->isEnded()) {
+            // cancel the process instance and change the state
             foreach ($this->getCurrentFlowObjects() as $flowObject) {
                 $flowObject->cancel();
             }
-        }
 
-        if (count($this->tokens) == 0) {
-            $this->endDate = $event->getEndDate();
+            $this->state = self::STATE_CANCELLED;
+
+            $parentActivity = $this->getParentActivity();
+
+            if ($parentActivity !== null) {
+                $parentActivity->completeWork();
+            }
+
         }
     }
 
@@ -580,7 +684,9 @@ class Workflow implements \Serializable
      */
     public function generateWorkItem(ActivityInterface $activity): WorkItemInterface
     {
-        $workItem = new WorkItem($this->generateId(), $activity);
+        $workItem = new WorkItem($this->generateId());
+        $workItem->setParentProcessInstance($this);
+        $workItem->setParentActivity($activity);
         $this->getActivityLog()->add(new ActivityLog($workItem));
         return $workItem;
     }
@@ -593,7 +699,10 @@ class Workflow implements \Serializable
      */
     public function generateWorkItemsCollection(ActivityInterface $activity)
     {
-        $activity->setWorkItems(new WorkItemsCollection());
+        $isSubProcess = ($activity instanceof SubProcessTask || $activity instanceof CallTask);
+        $collection = $isSubProcess ? new ProcessInstancesCollection() : new WorkItemsCollection();
+
+        return $collection;
     }
 
     /**
@@ -609,4 +718,19 @@ class Workflow implements \Serializable
             return $currentToken !== $token;
         });
     }
+
+    /**
+     * @return StartEvent
+     */
+    public function getFirstStartEvent()
+    {
+        foreach ($this->flowObjectCollection as $flowObject) {
+            if ($flowObject instanceof StartEvent) {
+                return $flowObject;
+            }
+        }
+
+        return null;
+    }
+
 }

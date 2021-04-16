@@ -25,18 +25,15 @@ class SendTask extends OperationalTask implements MessageInterface
      */
     private $message;
 
-    /**
-     * @param int|string $id
-     * @param Role       $role
-     * @param int|string $operation
-     * @param string     $name
-     */
-    public function __construct($id, Role $role, $message, $operation, $name = null)
+    public function __construct(array $config = [])
     {
-        parent::__construct($id, $role, $name);
+        parent::__construct($config);
 
-        $this->message = $message;
-        $this->operation = $operation;
+        foreach ($config as $name => $value) {
+            if (property_exists(self::class, $name)) {
+                $this->{$name} = $value;
+            }
+        }
     }
 
     /**

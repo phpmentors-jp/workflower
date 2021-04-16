@@ -20,16 +20,20 @@ abstract class FlowObject implements FlowObjectInterface, TransitionalInterface,
      *
      * @since Property available since Release 2.0.0
      */
-    private $token;
+    private $token = [];
 
     /**
      * @var Workflow
      */
     private $workflow;
 
-    public function __construct()
+    public function __construct(array $config = [])
     {
-        $this->token = [];
+        foreach ($config as $name => $value) {
+            if (property_exists(self::class, $name)) {
+                $this->{$name} = $value;
+            }
+        }
     }
 
     /**

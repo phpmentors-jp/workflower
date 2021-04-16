@@ -12,6 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
+use PHPMentors\Workflower\Workflow\ItemInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 
 interface WorkItemInterface extends ItemInterface
@@ -27,7 +28,7 @@ interface WorkItemInterface extends ItemInterface
      * @param array $data
      * @return void
      */
-    public function setData(array $data);
+    public function setData($data);
 
     /**
      * @return array
@@ -58,16 +59,6 @@ interface WorkItemInterface extends ItemInterface
      * @return bool
      */
     public function isEnded();
-
-    /**
-     * @return string
-     */
-    public function getId();
-
-    /**
-     * @return string
-     */
-    public function getCurrentState();
 
     /**
      * @return ParticipantInterface

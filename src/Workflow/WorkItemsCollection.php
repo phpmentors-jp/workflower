@@ -1,12 +1,14 @@
 <?php
 
 
-namespace PHPMentors\Workflower\Workflow\Activity;
+namespace PHPMentors\Workflower\Workflow;
 
+
+use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
 
 class WorkItemsCollection implements ItemsCollectionInterface
 {
-    private $items = [];
+    protected $items = [];
 
     public function serialize()
     {
@@ -78,7 +80,7 @@ class WorkItemsCollection implements ItemsCollectionInterface
     public function getActiveInstances()
     {
         return array_filter($this->items, function (ItemInterface $item) {
-            $state = $item->getCurrentState();
+            $state = $item->getState();
             return $state !== WorkItemInterface::STATE_ENDED && $state !== WorkItemInterface::STATE_CANCELLED;
         });
     }
@@ -86,7 +88,7 @@ class WorkItemsCollection implements ItemsCollectionInterface
     public function getCompletedInstances()
     {
         return array_filter($this->items, function (ItemInterface $item) {
-            $state = $item->getCurrentState();
+            $state = $item->getState();
             return $state === WorkItemInterface::STATE_ENDED || $state === WorkItemInterface::STATE_CANCELLED;
         });
     }

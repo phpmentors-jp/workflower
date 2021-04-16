@@ -7,6 +7,7 @@ namespace PHPMentors\Workflower\Workflow\Activity;
 use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
 use PHPMentors\Workflower\Workflow\Element\FlowObject;
 use PHPMentors\Workflower\Workflow\Element\Token;
+use PHPMentors\Workflower\Workflow\ItemsCollectionInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use PHPMentors\Workflower\Workflow\SequenceFlowNotSelectedException;
 use PHPMentors\Workflower\Workflow\Workflow;
@@ -60,24 +61,22 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
     /**
      * @var string
      */
-    private $currentState = self::STATE_INACTIVE;
+    private $state = self::STATE_INACTIVE;
 
     /**
      * @var ItemsCollectionInterface
      */
     protected $workItems;
 
-    /**
-     * @param int|string $id
-     * @param Role       $role
-     * @param string     $name
-     */
-    public function __construct($id, Role $role, $name = null)
+    public function __construct(array $config = [])
     {
-        parent::__construct();
-        $this->id = $id;
-        $this->role = $role;
-        $this->name = $name;
+        parent::__construct($config);
+
+        foreach ($config as $name => $value) {
+            if (property_exists(self::class, $name)) {
+                $this->{$name} = $value;
+            }
+        }
     }
 
     /**
@@ -90,7 +89,7 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
             'id' => $this->id,
             'role' => $this->role,
             'name' => $this->name,
-            'currentState' => $this->currentState,
+            'state' => $this->state,
             'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
             'multiInstance' => $this->multiInstance,
             'sequential' => $this->sequential,
@@ -138,15 +137,16 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
     public function setWorkflow(Workflow $workflow): void
     {
         parent::setWorkflow($workflow);
-        $workflow->generateWorkItemsCollection($this);
+        $this->setWorkItems($workflow->generateWorkItemsCollection($this));
+
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getCurrentState()
+    public function getState()
     {
-        return $this->currentState;
+        return $this->state;
     }
 
     /**
@@ -208,7 +208,7 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
      */
     public function isClosed()
     {
-        return $this->getCurrentState() === self::STATE_CLOSED;
+        return $this->getState() === self::STATE_CLOSED;
     }
 
     /**
@@ -216,7 +216,7 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
      */
     public function isFailed()
     {
-        return $this->getCurrentState() === self::STATE_FAILED;
+        return $this->getState() === self::STATE_FAILED;
     }
 
     /**
@@ -273,7 +273,7 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
     public function start(): void
     {
         parent::start();
-        $this->currentState = self::STATE_ACTIVE;
+        $this->state = self::STATE_ACTIVE;
     }
 
     /**
@@ -322,7 +322,7 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
             $selectedSequenceFlow->getDestination()->run($token);
         }
 
-        $this->currentState = self::STATE_CLOSED;
+        $this->state = self::STATE_CLOSED;
     }
 
     /**
@@ -332,7 +332,7 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
     {
         $token->flow($this);
 
-        $this->currentState = self::STATE_READY;
+        $this->state = self::STATE_READY;
         $this->start();
         $this->createWork();
     }
@@ -342,14 +342,18 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
      */
     public function cancel()
     {
-        $this->cancelActiveInstances();
-        $workflow = $this->getWorkflow();
+        $state = $this->getState();
 
-        foreach ($this->getToken() as $token) {
-            $workflow->removeToken($this, $token);
+        if ($state === self::STATE_INACTIVE || $state === self::STATE_READY || $state === self::STATE_ACTIVE) {
+            $this->cancelActiveInstances();
+            $workflow = $this->getWorkflow();
+
+            foreach ($this->getToken() as $token) {
+                $workflow->removeToken($this, $token);
+            }
+
+            $this->state = self::STATE_FAILED;
         }
-
-        $this->currentState = self::STATE_FAILED;
     }
 
     protected function cancelActiveInstances()

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace PHPMentors\Workflower\Workflow\Activity;
+namespace PHPMentors\Workflower\Workflow;
 
 
 interface ItemsCollectionInterface extends \Countable, \IteratorAggregate, \Serializable

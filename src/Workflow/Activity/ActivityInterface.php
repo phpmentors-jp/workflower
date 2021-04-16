@@ -15,6 +15,7 @@ namespace PHPMentors\Workflower\Workflow\Activity;
 use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
 use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
+use PHPMentors\Workflower\Workflow\ItemsCollectionInterface;
 
 interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, ConditionalInterface
 {
@@ -49,7 +50,7 @@ interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, 
     /**
      * @return string
      */
-    public function getCurrentState();
+    public function getState();
 
     /**
      * @return bool
