@@ -25,13 +25,21 @@ class ProcessTask extends Task
         }
     }
 
+    /**
+     * @return ProcessDefinitionInterface
+     */
+    public function getProcessDefinition()
+    {
+        return $this->processDefinition;
+    }
+
     protected function createWorkItem($data)
     {
         if ($this->isClosed()) {
             throw new UnexpectedActivityStateException(sprintf('The activity "%s" is closed.', $this->getId()));
         }
 
-        $instance = $this->processDefinition->createProcessInstance();
+        $instance = $this->getProcessDefinition()->createProcessInstance();
         $instance->setParentProcessInstance($this->getWorkflow());
         $instance->setParentActivity($this);
 

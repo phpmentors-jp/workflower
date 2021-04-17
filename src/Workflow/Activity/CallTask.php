@@ -63,10 +63,19 @@ class CallTask extends ProcessTask
         return $this->calledElement;
     }
 
-    public function setWorkflow(Workflow $workflow): void
+    /**
+     * {@inheritdoc}
+     */
+    public function getProcessDefinition()
     {
-        parent::setWorkflow($workflow);
-        $this->processDefinition = $workflow->getProcessDefinition()->getProcessDefinitions()->getLatestById($this->calledElement);
+        if ($this->processDefinition === null) {
+            // by the time this is called we assume that our process definition
+            // is already in our repository. Maybe we should throw an error
+            // if we don't find it there
+            $this->processDefinition = $this->getWorkflow()->getProcessDefinition()->getProcessDefinitions()->getLatestById($this->calledElement);
+        }
+
+        return $this->processDefinition;
     }
 
 }
