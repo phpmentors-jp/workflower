@@ -883,4 +883,105 @@ class WorkflowTest extends TestCase
         $this->assertThat($workflow->isEnded(), $this->isTrue());
     }
 
+    /**
+     * @test
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function inclusiveGateway()
+    {
+        $participant = $this->createMock(ParticipantInterface::class);
+        $participant->method('hasRole')->willReturn(true);
+
+        $workflow = $this->workflowRepository->findById('InclusiveGateway');
+        $workflow->setProcessData([
+            'paymentReceived' => false,
+            'shipOrder' => true
+        ]);
+        $workflow->start($workflow->getFlowObject('Start'));
+
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(2));
+
+        foreach ($currentFlowObjects as $currentFlowObject) {
+            $this->assertThat(current($currentFlowObject->getToken())->getPreviousFlowObject()->getId(), $this->equalTo('InclusiveGateway1'));
+        }
+
+        $workitem = $currentFlowObjects[0]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
+
+        $this->assertThat(count($workflow->getCurrentFlowObjects()), $this->equalTo(2));
+
+        $workitem = $currentFlowObjects[1]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
+
+        $this->assertThat(count($workflow->getCurrentFlowObjects()), $this->equalTo(1));
+        $this->assertThat(current($workflow->getCurrentFlowObjects())->getId(), $this->equalTo('ArchiveOrder'));
+        $this->assertThat(current(current($workflow->getCurrentFlowObjects())->getToken())->getPreviousFlowObject()->getId(), $this->equalTo('InclusiveGateway2'));
+
+        $activityLog = $workflow->getActivityLog();
+
+        $this->assertThat(count($activityLog), $this->equalTo(3));
+
+        $concurrentFlowObjects = ['ReceiveOrder', 'ShipOrder'];
+
+        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(0)->getActivity()->getId()));
+
+        unset($concurrentFlowObjects[array_search($activityLog->get(0)->getActivity()->getId(), $concurrentFlowObjects)]);
+
+        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(1)->getActivity()->getId()));
+
+        $this->assertThat($activityLog->get(2)->getActivity()->getId(), $this->equalTo('ArchiveOrder'));
+    }
+
+    /**
+     * @test
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function inclusiveGateway2()
+    {
+        $participant = $this->createMock(ParticipantInterface::class);
+        $participant->method('hasRole')->willReturn(true);
+
+        $workflow = $this->workflowRepository->findById('InclusiveGateway');
+        $workflow->setProcessData([
+            'paymentReceived' => true,
+            'shipOrder' => true
+        ]);
+        $workflow->start($workflow->getFlowObject('Start'));
+
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(1));
+
+        foreach ($currentFlowObjects as $currentFlowObject) {
+            $this->assertThat(current($currentFlowObject->getToken())->getPreviousFlowObject()->getId(), $this->equalTo('InclusiveGateway1'));
+        }
+
+        $workitem = $currentFlowObjects[0]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
+
+        $this->assertThat(count($workflow->getCurrentFlowObjects()), $this->equalTo(1));
+        $this->assertThat(current($workflow->getCurrentFlowObjects())->getId(), $this->equalTo('ArchiveOrder'));
+        $this->assertThat(current(current($workflow->getCurrentFlowObjects())->getToken())->getPreviousFlowObject()->getId(), $this->equalTo('InclusiveGateway2'));
+
+        $activityLog = $workflow->getActivityLog();
+
+        $this->assertThat(count($activityLog), $this->equalTo(2));
+
+        $concurrentFlowObjects = ['ShipOrder'];
+
+        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(0)->getActivity()->getId()));
+
+        $this->assertThat($activityLog->get(1)->getActivity()->getId(), $this->equalTo('ArchiveOrder'));
+    }
+
 }

@@ -160,7 +160,7 @@ class Bpmn2Reader
 
         $process['exclusiveGateways'] = $this->readGateways($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'exclusiveGateway'));
         $process['parallelGateways'] = $this->readGateways($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'parallelGateway'));
-        //$process['inclusiveGateways'] = $this->readGateways($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'inclusiveGateway'));
+        $process['inclusiveGateways'] = $this->readGateways($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'inclusiveGateway'));
 
         $process['sequenceFlows'] = $this->readSequenceFlows($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'sequenceFlow'));
 

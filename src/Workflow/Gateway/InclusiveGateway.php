@@ -5,6 +5,7 @@ namespace PHPMentors\Workflower\Workflow\Gateway;
 
 
 use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
+use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
 use PHPMentors\Workflower\Workflow\SequenceFlowNotSelectedException;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
@@ -82,6 +83,20 @@ class InclusiveGateway extends Gateway
         $incoming = $workflow->getConnectingObjectCollectionByDestination($this);
         $incomingTokens = $this->getToken();
 
+        $valid = count($incomingTokens) === count($incoming);
+
+        if (!$valid) {
+            $tokensToWait = 0;
+            // check if there is another token that can arrive here
+            foreach ($workflow->getCurrentFlowObjects() as $flowObject) {
+                if ($flowObject !== $this && $this->isPathLeadingOurWay($flowObject)) {
+                    $tokensToWait++;
+                    break;
+                }
+            }
+            $valid = $tokensToWait === 0;
+        }
+
         // Upon execution, a token is consumed from each incoming Sequence Flow that
         // has a token. A token will be produced on some of the outgoing Sequence
         // Flows.
@@ -95,7 +110,7 @@ class InclusiveGateway extends Gateway
         // In case all conditions evaluate to false and a default flow has not been specified,
         // the Inclusive Gateway throws an exception.
 
-        if (count($incomingTokens) == count($incoming)) {
+        if ($valid) {
             $selectedSequenceFlows = [];
 
             foreach ($workflow->getConnectingObjectCollectionBySource($this) as $outgoing) {
@@ -108,7 +123,6 @@ class InclusiveGateway extends Gateway
                         $expressionLanguage = $workflow->getExpressionLanguage() ?: new ExpressionLanguage();
                         if ($expressionLanguage->evaluate($condition, $workflow->getProcessData())) {
                             $selectedSequenceFlows[] = $outgoing;
-                            break;
                         }
                     }
                 }
@@ -137,6 +151,29 @@ class InclusiveGateway extends Gateway
 
             parent::end();
         }
+    }
+
+    private function isPathLeadingOurWay($flowObject)
+    {
+        $found = false;
+        $flows = $this->getWorkflow()->getConnectingObjectCollectionBySource($flowObject);
+
+        foreach ($flows as $flow) {
+            if ($flow instanceof SequenceFlow) {
+                $next = $flow->getDestination();
+                if ($next === $this) {
+                    $found = true;
+                } else {
+                    $found = $this->isPathLeadingOurWay($next);
+                }
+
+                if ($found) {
+                    break;
+                }
+            }
+        }
+
+        return $found;
     }
 
 }

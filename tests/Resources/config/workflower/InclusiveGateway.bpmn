@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ext="http://org.eclipse.bpmn2/ext" id="Definitions_1" targetNamespace="http://org.eclipse.bpmn2/default/process" exporter="org.eclipse.bpmn2.modeler.core" exporterVersion="1.3.1.Final-v20160914-1606-B56">
+  <bpmn2:process id="InclusiveGateway" name="InclusiveGateway" isExecutable="false">
+    <bpmn2:startEvent id="Start" name="Start">
+      <bpmn2:outgoing>Flow_1bdkzxf</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:endEvent id="End" name="End">
+      <bpmn2:incoming>Flow_024hmut</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:userTask id="ReceiveOrder" name="Receive Order">
+      <bpmn2:incoming>Flow_0ullg0q</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_0uuwfkd</bpmn2:outgoing>
+    </bpmn2:userTask>
+    <bpmn2:manualTask id="ShipOrder" name="Ship Order">
+      <bpmn2:incoming>Flow_1r2muxu</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_0inmxft</bpmn2:outgoing>
+    </bpmn2:manualTask>
+    <bpmn2:sequenceFlow id="Flow_1bdkzxf" sourceRef="Start" targetRef="InclusiveGateway1" />
+    <bpmn2:inclusiveGateway id="InclusiveGateway1">
+      <bpmn2:incoming>Flow_1bdkzxf</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_0ullg0q</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_1r2muxu</bpmn2:outgoing>
+    </bpmn2:inclusiveGateway>
+    <bpmn2:sequenceFlow id="Flow_0ullg0q" name="paymentReceived == false" sourceRef="InclusiveGateway1" targetRef="ReceiveOrder">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">paymentReceived == false</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_1r2muxu" name="shipOrder == true" sourceRef="InclusiveGateway1" targetRef="ShipOrder">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">shipOrder == true</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:inclusiveGateway id="InclusiveGateway2" default="Flow_197saqg">
+      <bpmn2:incoming>Flow_0uuwfkd</bpmn2:incoming>
+      <bpmn2:incoming>Flow_0inmxft</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_197saqg</bpmn2:outgoing>
+    </bpmn2:inclusiveGateway>
+    <bpmn2:sequenceFlow id="Flow_197saqg" sourceRef="InclusiveGateway2" targetRef="ArchiveOrder" />
+    <bpmn2:sequenceFlow id="Flow_024hmut" sourceRef="ArchiveOrder" targetRef="End" />
+    <bpmn2:sequenceFlow id="Flow_0uuwfkd" sourceRef="ReceiveOrder" targetRef="InclusiveGateway2" />
+    <bpmn2:sequenceFlow id="Flow_0inmxft" sourceRef="ShipOrder" targetRef="InclusiveGateway2" />
+    <bpmn2:userTask id="ArchiveOrder" name="Archive Order">
+      <bpmn2:incoming>Flow_197saqg</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_024hmut</bpmn2:outgoing>
+    </bpmn2:userTask>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Default Process Diagram">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="InclusiveGateway">
+      <bpmndi:BPMNEdge id="Flow_1bdkzxf_di" bpmnElement="Flow_1bdkzxf">
+        <di:waypoint x="128" y="200" />
+        <di:waypoint x="175" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ullg0q_di" bpmnElement="Flow_0ullg0q">
+        <di:waypoint x="200" y="175" />
+        <di:waypoint x="200" y="133" />
+        <di:waypoint x="340" y="133" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="205" y="96" width="89" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1r2muxu_di" bpmnElement="Flow_1r2muxu">
+        <di:waypoint x="200" y="225" />
+        <di:waypoint x="200" y="270" />
+        <di:waypoint x="340" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="216" y="245" width="87" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0uuwfkd_di" bpmnElement="Flow_0uuwfkd">
+        <di:waypoint x="440" y="133" />
+        <di:waypoint x="510" y="133" />
+        <di:waypoint x="510" y="175" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0inmxft_di" bpmnElement="Flow_0inmxft">
+        <di:waypoint x="440" y="270" />
+        <di:waypoint x="510" y="270" />
+        <di:waypoint x="510" y="225" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_197saqg_di" bpmnElement="Flow_197saqg">
+        <di:waypoint x="535" y="200" />
+        <di:waypoint x="590" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_024hmut_di" bpmnElement="Flow_024hmut">
+        <di:waypoint x="690" y="200" />
+        <di:waypoint x="752" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BPMNShape_1" bpmnElement="Start">
+        <dc:Bounds x="92" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel id="BPMNLabel_1" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds x="98" y="158" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_07hdxn3_di" bpmnElement="InclusiveGateway1">
+        <dc:Bounds x="175" y="175" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1tsji45_di" bpmnElement="ReceiveOrder">
+        <dc:Bounds x="340" y="93" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1v4p13v_di" bpmnElement="ShipOrder">
+        <dc:Bounds x="340" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0do0rm4_di" bpmnElement="InclusiveGateway2">
+        <dc:Bounds x="485" y="175" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_2" bpmnElement="End">
+        <dc:Bounds x="752" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel id="BPMNLabel_3" labelStyle="BPMNLabelStyle_1">
+          <dc:Bounds x="760" y="158" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_031rs54_di" bpmnElement="ArchiveOrder">
+        <dc:Bounds x="590" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+    <bpmndi:BPMNLabelStyle id="BPMNLabelStyle_1">
+      <dc:Font name="arial" size="9" />
+    </bpmndi:BPMNLabelStyle>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

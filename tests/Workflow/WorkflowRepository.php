@@ -39,6 +39,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
         $this->add($this->createSequentialUserTasksProcess());
         $this->add($this->createSubProcessTaskProcess());
         $this->add($this->createCallActivityProcess());
+        $this->add($this->createInclusiveGatewayProcess());
     }
 
     /**
@@ -261,4 +262,16 @@ class WorkflowRepository implements WorkflowRepositoryInterface
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/CallActivity.bpmn');
         return $this->definitions->getLatestById('CallActivity')->createProcessInstance();
     }
+
+    /**
+     * @return Workflow
+     *
+     * @since Method available since Release 2.0.0
+     */
+    private function createInclusiveGatewayProcess(): Workflow
+    {
+        $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/InclusiveGateway.bpmn');
+        return $this->definitions->getLatestById('InclusiveGateway')->createProcessInstance();
+    }
+
 }

@@ -16,6 +16,7 @@ use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
 use PHPMentors\Workflower\Workflow\Event\EndEvent;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
 use PHPMentors\Workflower\Workflow\Gateway\ExclusiveGateway;
+use PHPMentors\Workflower\Workflow\Gateway\InclusiveGateway;
 use PHPMentors\Workflower\Workflow\Gateway\ParallelGateway;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -63,6 +64,13 @@ class ProcessDefinition implements ProcessDefinitionInterface
      * @since Property available since Release 2.0.0
      */
     private $parallelGateways = [];
+
+    /**
+     * @var array
+     *
+     * @since Property available since Release 2.0.0
+     */
+    private $inclusiveGateways = [];
 
     /**
      * @var array
@@ -180,6 +188,12 @@ class ProcessDefinition implements ProcessDefinitionInterface
                 case 'parallelGateways':
                     foreach ($definitions as $definition) {
                         $this->addParallelGateway($definition);
+                    }
+                    break;
+
+                case 'inclusiveGateways':
+                    foreach ($definitions as $definition) {
+                        $this->addInclusiveGateway($definition);
                     }
                     break;
 
@@ -399,6 +413,13 @@ class ProcessDefinition implements ProcessDefinitionInterface
             $workflow->addFlowObject(new ParallelGateway($clone));
         }
 
+        foreach ($this->inclusiveGateways as $config) {
+            $clone = array_merge([], $config);
+            $this->replaceRoleInConfig($workflow, $clone);
+
+            $workflow->addFlowObject(new InclusiveGateway($clone));
+        }
+
         foreach ($this->sequenceFlows as $config) {
             $clone = array_merge([], $config);
             $id = $this->getParamFromConfig($clone, 'id');
@@ -471,6 +492,20 @@ class ProcessDefinition implements ProcessDefinitionInterface
     {
         $id = $this->getParamFromConfig($config, 'id');
         $this->parallelGateways[$id] = $config;
+    }
+
+    /**
+     * @param array $config Array containing the necessary params.
+     *    $config = [
+     *      'id' => (string)
+     *      'roleId' => (string)
+     *      'name' => (string)
+     *    ]
+     */
+    public function addInclusiveGateway(array $config): void
+    {
+        $id = $this->getParamFromConfig($config, 'id');
+        $this->inclusiveGateways[$id] = $config;
     }
 
     /**
