@@ -117,7 +117,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function setParentProcessInstance(ProcessInstanceInterface $processInstance)
+    public function setProcessInstance(ProcessInstanceInterface $processInstance)
     {
         $this->parentProcessInstance = $processInstance;
     }
@@ -125,7 +125,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function getParentProcessInstance()
+    public function getProcessInstance()
     {
         return $this->parentProcessInstance;
     }
@@ -133,7 +133,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function setParentActivity(ActivityInterface $activity)
+    public function setActivity(ActivityInterface $activity)
     {
         $this->parentActivity = $activity;
     }
@@ -141,7 +141,7 @@ class WorkItem implements WorkItemInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function getParentActivity()
+    public function getActivity()
     {
         return $this->parentActivity;
     }
@@ -309,7 +309,7 @@ class WorkItem implements WorkItemInterface, \Serializable
         $this->endParticipant = $participant === null ? $this->participant : $participant;
         $this->endResult = self::END_RESULT_COMPLETION;
 
-        $this->getParentActivity()->completeWork();
+        $this->getActivity()->completeWork();
     }
 
     public function cancel(): void

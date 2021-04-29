@@ -16,22 +16,22 @@ interface ItemInterface
      *
      * @return void
      */
-    public function setParentProcessInstance(ProcessInstanceInterface $processInstance);
+    public function setProcessInstance(ProcessInstanceInterface $processInstance);
 
     /**
      * @return ProcessInstanceInterface|null
      */
-    public function getParentProcessInstance();
+    public function getProcessInstance();
 
     /**
      * @param ActivityInterface $activity
      */
-    public function setParentActivity(ActivityInterface $activity);
+    public function setActivity(ActivityInterface $activity);
 
     /**
      * @return ActivityInterface
      */
-    public function getParentActivity();
+    public function getActivity();
 
     /**
      * @return string

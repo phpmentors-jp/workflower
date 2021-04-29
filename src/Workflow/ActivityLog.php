@@ -33,7 +33,7 @@ class ActivityLog
     public function __construct(WorkItemInterface $workItem)
     {
         $this->workItem = $workItem;
-        $this->activity = $workItem->getParentActivity();
+        $this->activity = $workItem->getActivity();
     }
 
     /**

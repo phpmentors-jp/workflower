@@ -215,7 +215,7 @@ class Workflow implements ProcessInstanceInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function setParentProcessInstance(ProcessInstanceInterface $processInstance)
+    public function setProcessInstance(ProcessInstanceInterface $processInstance)
     {
         $this->parentProcessInstance = $processInstance;
     }
@@ -223,7 +223,7 @@ class Workflow implements ProcessInstanceInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function getParentProcessInstance()
+    public function getProcessInstance()
     {
         return $this->parentProcessInstance;
     }
@@ -231,7 +231,7 @@ class Workflow implements ProcessInstanceInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function setParentActivity(ActivityInterface $activity)
+    public function setActivity(ActivityInterface $activity)
     {
         $this->parentActivity = $activity;
     }
@@ -239,7 +239,7 @@ class Workflow implements ProcessInstanceInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function getParentActivity()
+    public function getActivity()
     {
         return $this->parentActivity;
     }
@@ -433,7 +433,7 @@ class Workflow implements ProcessInstanceInterface, \Serializable
      */
     public function allocateWorkItem(WorkItemInterface $workItem, ParticipantInterface $participant)
     {
-        $activity = $workItem->getParentActivity();
+        $activity = $workItem->getActivity();
         $this->assertParticipantHasRole($activity, $participant);
         $this->assertCurrentFlowObjectIsExpectedActivity($activity);
 
@@ -446,7 +446,7 @@ class Workflow implements ProcessInstanceInterface, \Serializable
      */
     public function startWorkItem(WorkItemInterface $workItem, ParticipantInterface $participant)
     {
-        $activity = $workItem->getParentActivity();
+        $activity = $workItem->getActivity();
         $this->assertParticipantHasRole($activity, $participant);
         $this->assertCurrentFlowObjectIsExpectedActivity($activity);
 
@@ -459,7 +459,7 @@ class Workflow implements ProcessInstanceInterface, \Serializable
      */
     public function completeWorkItem(WorkItemInterface $workItem, ParticipantInterface $participant)
     {
-        $activity = $workItem->getParentActivity();
+        $activity = $workItem->getActivity();
         $this->assertParticipantHasRole($activity, $participant);
         $this->assertCurrentFlowObjectIsExpectedActivity($activity);
 
@@ -557,7 +557,7 @@ class Workflow implements ProcessInstanceInterface, \Serializable
             $this->endDate = $event->getEndDate();
             $this->state = self::STATE_ENDED;
 
-            $parentActivity = $this->getParentActivity();
+            $parentActivity = $this->getActivity();
 
             if ($parentActivity !== null) {
                 $parentActivity->completeWork();
@@ -578,7 +578,7 @@ class Workflow implements ProcessInstanceInterface, \Serializable
 
             $this->state = self::STATE_CANCELLED;
 
-            $parentActivity = $this->getParentActivity();
+            $parentActivity = $this->getActivity();
 
             if ($parentActivity !== null) {
                 $parentActivity->completeWork();
@@ -683,8 +683,8 @@ class Workflow implements ProcessInstanceInterface, \Serializable
     public function generateWorkItem(ActivityInterface $activity): WorkItemInterface
     {
         $workItem = new WorkItem($this->generateId());
-        $workItem->setParentProcessInstance($this);
-        $workItem->setParentActivity($activity);
+        $workItem->setProcessInstance($this);
+        $workItem->setActivity($activity);
         $this->getActivityLog()->add(new ActivityLog($workItem));
 
         return $workItem;

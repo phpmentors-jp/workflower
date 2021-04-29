@@ -409,7 +409,7 @@ class WorkflowTest extends TestCase
             static $calls = 0;
 
             ++$calls;
-            $operational = $workItem->getParentActivity();
+            $operational = $workItem->getActivity();
             $self->assertThat($operational, $self->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ServiceTask'));
             $self->assertThat($operational->getOperation(), $self->equalTo('phpmentors_workflower.service'.$calls));
         });
@@ -462,7 +462,7 @@ class WorkflowTest extends TestCase
             static $calls = 0;
 
             ++$calls;
-            $operational = $workItem->getParentActivity();
+            $operational = $workItem->getActivity();
             $self->assertThat($operational, $self->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\SendTask'));
             $self->assertThat($operational->getOperation(), $self->equalTo('phpmentors_workflower.service'.$calls));
             $self->assertThat($operational, $self->isInstanceOf('PHPMentors\Workflower\Workflow\Resource\MessageInterface'));
