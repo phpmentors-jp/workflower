@@ -14,11 +14,12 @@ A BPMN 2.0 workflow engine for PHP
 * Workflow
   * The workflow engine and domain model
 * Process
-  * Some interfaces to work with `Workflow` objects
+  * Some interfaces to work with `ProcessInstance` objects
 * Definition
-  * BPMN 2.0 process definitions
+  * `ProcessDefinitionRepository` to store all process definitions
+  * BPMN 2.0 process definitions importer
 * Persistence
-  * Serialize/deserialize interfaces for `Workflow` objects
+  * Serialize/deserialize interfaces for `ProcessInstance` objects
 
 ### Supported workflow elements
 
@@ -29,11 +30,18 @@ A BPMN 2.0 workflow engine for PHP
     * Tasks
     * Service tasks
     * Send tasks
+    * User tasks
+    * Manual tasks
+    * CallActivity tasks
+    * SubProcess tasks
   * Events
     * Start events
     * End events
+    * TerminateEnd events
   * Gateways
     * Exclusive gateways
+    * Inclusive gateways
+    * Parallel gateways
 * Swimlanes
   * Lanes
 
