@@ -401,11 +401,11 @@ class WorkflowTest extends TestCase
         $participant = $this->createMock(ParticipantInterface::class);
         $participant->method('hasRole')->willReturn(true);
         $operationRunner = $this->getMockBuilder(OperationRunnerInterface::class)
-            ->setMethods(['provideParticipant', 'run', 'runWorkItem'])
+            ->setMethods(['provideParticipant', 'run'])
             ->getMock();
         $operationRunner->method('provideParticipant')->willReturn($participant);
         $self = $this;
-        $operationRunner->expects($this->exactly(2))->method('runWorkItem')->willReturnCallback(function (WorkItemInterface $workItem) use ($self) {
+        $operationRunner->expects($this->exactly(2))->method('run')->willReturnCallback(function (WorkItemInterface $workItem) use ($self) {
             static $calls = 0;
 
             ++$calls;
@@ -454,11 +454,11 @@ class WorkflowTest extends TestCase
         $participant = $this->createMock(ParticipantInterface::class);
         $participant->method('hasRole')->willReturn(true);
         $operationRunner = $this->getMockBuilder(OperationRunnerInterface::class)
-            ->setMethods(['provideParticipant', 'run', 'runWorkItem'])
+            ->setMethods(['provideParticipant', 'run'])
             ->getMock();
         $operationRunner->method('provideParticipant')->willReturn($participant);
         $self = $this;
-        $operationRunner->expects($this->exactly(2))->method('runWorkItem')->willReturnCallback(function (WorkItemInterface $workItem) use ($self) {
+        $operationRunner->expects($this->exactly(2))->method('run')->willReturnCallback(function (WorkItemInterface $workItem) use ($self) {
             static $calls = 0;
 
             ++$calls;

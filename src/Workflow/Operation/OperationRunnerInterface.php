@@ -30,15 +30,9 @@ interface OperationRunnerInterface
     public function provideParticipant(OperationalInterface $operational, Workflow $workflow);
 
     /**
-     * @param OperationalInterface $operational
-     * @param Workflow             $workflow
-     */
-    public function run(OperationalInterface $operational, Workflow $workflow);
-
-    /**
      * @param WorkItemInterface $workItem
      *
      * @return void
      */
-    public function runWorkItem(WorkItemInterface $workItem);
+    public function run(WorkItemInterface $workItem);
 }
