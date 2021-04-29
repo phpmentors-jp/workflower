@@ -20,7 +20,7 @@ use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Provider\DataProviderInterface;
 use PHPUnit\Framework\TestCase;
 
-class WorkflowTest extends TestCase
+class ProcessInstanceTest extends TestCase
 {
     /**
      * @var WorkflowRepositoryInterface
