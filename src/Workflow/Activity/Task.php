@@ -87,7 +87,7 @@ class Task extends AbstractTask
                 $conditionData = [
                     'nrOfInstances' => $workItems->count(),
                     'nrOfCompletedInstances' => $completed,
-                    'nrOfActiveInstances' => $active
+                    'nrOfActiveInstances' => $active,
                 ];
 
                 $conditionData = array_merge($conditionData, $workflow->getProcessData() ?: []);
@@ -100,6 +100,7 @@ class Task extends AbstractTask
             } else {
                 if ($this->isSequential()) {
                     $this->createWork();
+
                     return;
                 } else {
                     if ($completed !== $active) {

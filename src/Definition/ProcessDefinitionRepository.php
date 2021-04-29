@@ -1,8 +1,6 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Definition;
-
 
 use PHPMentors\Workflower\Workflow\ProcessDefinitionInterface;
 use PHPMentors\Workflower\Workflow\ProcessDefinitionRepositoryInterface;
@@ -18,6 +16,7 @@ class ProcessDefinitionRepository implements ProcessDefinitionRepositoryInterfac
     {
         $this->items[] = $definition;
         $definition->setProcessDefinitions($this);
+
         return $definition;
     }
 

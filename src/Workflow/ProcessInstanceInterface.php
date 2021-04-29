@@ -1,8 +1,6 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Workflow;
-
 
 interface ProcessInstanceInterface extends ItemInterface
 {
@@ -19,6 +17,7 @@ interface ProcessInstanceInterface extends ItemInterface
 
     /**
      * @param ProcessDefinitionInterface $definition
+     *
      * @return ProcessDefinitionInterface
      */
     public function setProcessDefinition(ProcessDefinitionInterface $definition);

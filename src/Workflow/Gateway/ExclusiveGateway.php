@@ -22,7 +22,7 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
  */
 class ExclusiveGateway extends Gateway implements ConditionalInterface
 {
-     /**
+    /**
      * @var int|string
      */
     private $defaultSequenceFlowId;
@@ -132,5 +132,4 @@ class ExclusiveGateway extends Gateway implements ConditionalInterface
         $selectedSequenceFlow->getDestination()->run($token);
         parent::end();
     }
-
 }

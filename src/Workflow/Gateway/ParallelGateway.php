@@ -19,7 +19,6 @@ use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
  */
 class ParallelGateway extends Gateway
 {
-
     /**
      * {@inheritdoc}
      */

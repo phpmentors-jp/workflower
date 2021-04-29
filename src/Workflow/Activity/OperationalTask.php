@@ -1,8 +1,6 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Workflow\Activity;
-
 
 use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
 
@@ -95,5 +93,4 @@ abstract class OperationalTask extends Task implements OperationalInterface
     {
         // do nothing here because we completed the work inside "createWork"
     }
-
 }

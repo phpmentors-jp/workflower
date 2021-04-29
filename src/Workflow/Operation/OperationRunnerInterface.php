@@ -37,6 +37,7 @@ interface OperationRunnerInterface
 
     /**
      * @param WorkItemInterface $workItem
+     *
      * @return void
      */
     public function runWorkItem(WorkItemInterface $workItem);

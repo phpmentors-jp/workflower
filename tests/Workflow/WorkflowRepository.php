@@ -12,7 +12,6 @@
 
 namespace PHPMentors\Workflower\Workflow;
 
-use PHPMentors\Workflower\Definition\Bpmn2Reader;
 use PHPMentors\Workflower\Definition\ProcessDefinitionRepository;
 
 class WorkflowRepository implements WorkflowRepositoryInterface
@@ -86,21 +85,21 @@ class WorkflowRepository implements WorkflowRepositoryInterface
                 ['id' => 'ROLE_BACK_OFFICE', 'name' => 'Back Office'],
             ],
             'startEvents' => [
-                ['id' => 'Start', 'roleId' => 'ROLE_BRANCH']
+                ['id' => 'Start', 'roleId' => 'ROLE_BRANCH'],
             ],
             'tasks' => [
                 ['id' => 'RecordLoanApplicationInformation', 'name' => 'Record Loan Application Information', 'roleId' => 'ROLE_BRANCH'],
                 ['id' => 'CheckApplicantInformation', 'name' => 'Check Applicant Information', 'roleId' => 'ROLE_BRANCH', 'defaultSequenceFlowId' => 'ResultOfVerification.LoanStudy'],
                 ['id' => 'LoanStudy', 'name' => 'Loan Study', 'roleId' => 'ROLE_CREDIT_FACTORY'],
                 ['id' => 'InformRejection', 'name' => 'Inform Rejection', 'roleId' => 'ROLE_CREDIT_FACTORY'],
-                ['id' => 'Disbursement', 'name' => 'Disbursement', 'roleId' => 'ROLE_BACK_OFFICE']
+                ['id' => 'Disbursement', 'name' => 'Disbursement', 'roleId' => 'ROLE_BACK_OFFICE'],
             ],
             'exclusiveGateways' => [
                 ['id' => 'ResultOfVerification', 'name' => 'Result of Verification', 'roleId' => 'ROLE_BRANCH', 'defaultSequenceFlowId' => 'ResultOfVerification.LoanStudy'],
-                ['id' => 'ApplicationApproved', 'name' => 'Application Approved?', 'roleId' => 'ROLE_CREDIT_FACTORY', 'defaultSequenceFlowId' => 'ApplicationApproved.Disbursement']
+                ['id' => 'ApplicationApproved', 'name' => 'Application Approved?', 'roleId' => 'ROLE_CREDIT_FACTORY', 'defaultSequenceFlowId' => 'ApplicationApproved.Disbursement'],
             ],
             'endEvents' => [
-                ['id' => 'End', 'roleId' => 'ROLE_CREDIT_FACTORY']
+                ['id' => 'End', 'roleId' => 'ROLE_CREDIT_FACTORY'],
             ],
             'sequenceFlows' => [
                 ['id' => 'Start.RecordLoanApplicationInformation', 'source' => 'Start', 'destination' => 'RecordLoanApplicationInformation'],
@@ -113,8 +112,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
                 ['id' => 'ApplicationApproved.InformRejection', 'source' => 'ApplicationApproved', 'destination' => 'InformRejection', 'name' => 'Rejected', 'condition' => 'rejected === true'],
                 ['id' => 'InformRejection.End', 'source' => 'InformRejection', 'destination' => 'End'],
                 ['id' => 'Disbursement.End', 'source' => 'Disbursement', 'destination' => 'End'],
-
-            ]
+            ],
         ]);
 
         $this->definitions->add($processDefinition);
@@ -130,24 +128,24 @@ class WorkflowRepository implements WorkflowRepositoryInterface
         $processDefinition = new ProcessDefinition([
             'id' => 'MultipleWorkItemsProcess',
             'roles' => [
-                ['id' => 'ROLE_USER', 'name' => 'User']
+                ['id' => 'ROLE_USER', 'name' => 'User'],
             ],
             'startEvents' => [
-                ['id' => 'Start', 'roleId' => 'ROLE_USER']
+                ['id' => 'Start', 'roleId' => 'ROLE_USER'],
             ],
             'tasks' => [
                 ['id' => 'Task1', 'roleId' => 'ROLE_USER'],
-                ['id' => 'Task2', 'roleId' => 'ROLE_USER', 'defaultSequenceFlowId' => 'Task2.End']
+                ['id' => 'Task2', 'roleId' => 'ROLE_USER', 'defaultSequenceFlowId' => 'Task2.End'],
             ],
             'endEvents' => [
-                ['id' => 'End', 'roleId' => 'ROLE_USER']
+                ['id' => 'End', 'roleId' => 'ROLE_USER'],
             ],
             'sequenceFlows' => [
                 ['source' => 'Start', 'destination' => 'Task1', 'id' => 'Start.Task1'],
                 ['source' => 'Task1', 'destination' => 'Task2', 'id' => 'Task1.Task2'],
                 ['source' => 'Task2', 'destination' => 'End', 'id' => 'Task2.End'],
                 ['source' => 'Task2', 'destination' => 'Task1', 'id' => 'Task2.Task1', 'condition' => 'satisfied !== true'],
-            ]
+            ],
         ]);
 
         return $processDefinition->createProcessInstance();
@@ -161,6 +159,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     private function createServiceTasksProcess()
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/ServiceTasksProcess.bpmn');
+
         return $this->definitions->getLatestById('ServiceTasksProcess')->createProcessInstance();
     }
 
@@ -172,6 +171,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     private function createNoLanesProcess()
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/NoLanesProcess.bpmn');
+
         return $this->definitions->getLatestById('NoLanesProcess')->createProcessInstance();
     }
 
@@ -183,6 +183,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     private function createSendTasksProcess()
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/SendTasksProcess.bpmn');
+
         return $this->definitions->getLatestById('SendTasksProcess')->createProcessInstance();
     }
 
@@ -194,6 +195,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     private function createParallelGatewayProcess(): Workflow
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/ParallelGatewayProcess.bpmn');
+
         return $this->definitions->getLatestById('ParallelGatewayProcess')->createProcessInstance();
     }
 
@@ -205,6 +207,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     private function createMultipleEndEventsProcess(): Workflow
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/MultipleEndEvents.bpmn');
+
         return $this->definitions->getLatestById('MultipleEndEventsProcess')->createProcessInstance();
     }
 
@@ -216,6 +219,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     private function createParallelSequenceFlowsProcess(): Workflow
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/ParallelSequenceFlows.bpmn');
+
         return $this->definitions->getLatestById('ParallelSequenceFlows')->createProcessInstance();
     }
 
@@ -227,6 +231,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     private function createParallelUserTasksProcess(): Workflow
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/ParallelUserTasks.bpmn');
+
         return $this->definitions->getLatestById('ParallelUserTasks')->createProcessInstance();
     }
 
@@ -238,6 +243,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     private function createSequentialUserTasksProcess(): Workflow
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/SequentialUserTasks.bpmn');
+
         return $this->definitions->getLatestById('SequentialUserTasks')->createProcessInstance();
     }
 
@@ -249,6 +255,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     private function createSubProcessTaskProcess(): Workflow
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/SubProcess.bpmn');
+
         return $this->definitions->getLatestById('SubProcess')->createProcessInstance();
     }
 
@@ -260,6 +267,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     private function createCallActivityProcess(): Workflow
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/CallActivity.bpmn');
+
         return $this->definitions->getLatestById('CallActivity')->createProcessInstance();
     }
 
@@ -271,7 +279,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     private function createInclusiveGatewayProcess(): Workflow
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/InclusiveGateway.bpmn');
+
         return $this->definitions->getLatestById('InclusiveGateway')->createProcessInstance();
     }
-
 }

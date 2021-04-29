@@ -12,8 +12,6 @@
 
 namespace PHPMentors\Workflower\Definition;
 
-use PHPMentors\Workflower\Workflow\ProcessDefinition;
-use PHPMentors\Workflower\Workflow\Workflow;
 use PHPMentors\Workflower\Workflow\WorkflowRepository;
 use PHPUnit\Framework\TestCase;
 

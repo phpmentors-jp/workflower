@@ -210,13 +210,13 @@ class WorkflowBuilder
     }
 
     /**
-     * @param           $id
-     * @param           $participant
-     * @param null      $name
-     * @param null      $defaultSequenceFlow
-     * @param false     $multiInstance
-     * @param false     $sequential
-     * @param null      $completionCondition
+     * @param       $id
+     * @param       $participant
+     * @param null  $name
+     * @param null  $defaultSequenceFlow
+     * @param false $multiInstance
+     * @param false $sequential
+     * @param null  $completionCondition
      */
     public function addTask($id, $participant, $name = null, $defaultSequenceFlow = null, $multiInstance = false, $sequential = false, $completionCondition = null)
     {
@@ -228,13 +228,13 @@ class WorkflowBuilder
     }
 
     /**
-     * @param           $id
-     * @param           $participant
-     * @param null      $name
-     * @param null      $defaultSequenceFlow
-     * @param false     $multiInstance
-     * @param false     $sequential
-     * @param null      $completionCondition
+     * @param       $id
+     * @param       $participant
+     * @param null  $name
+     * @param null  $defaultSequenceFlow
+     * @param false $multiInstance
+     * @param false $sequential
+     * @param null  $completionCondition
      */
     public function addUserTask($id, $participant, $name = null, $defaultSequenceFlow = null, $multiInstance = false, $sequential = false, $completionCondition = null)
     {
@@ -246,13 +246,13 @@ class WorkflowBuilder
     }
 
     /**
-     * @param           $id
-     * @param           $participant
-     * @param null      $name
-     * @param null      $defaultSequenceFlow
-     * @param false     $multiInstance
-     * @param false     $sequential
-     * @param null      $completionCondition
+     * @param       $id
+     * @param       $participant
+     * @param null  $name
+     * @param null  $defaultSequenceFlow
+     * @param false $multiInstance
+     * @param false $sequential
+     * @param null  $completionCondition
      */
     public function addManualTask($id, $participant, $name = null, $defaultSequenceFlow = null, $multiInstance = false, $sequential = false, $completionCondition = null)
     {
@@ -264,13 +264,13 @@ class WorkflowBuilder
     }
 
     /**
-     * @param string     $id
-     * @param string     $participant
-     * @param string     $operation
-     * @param string     $name
-     * @param false     $multiInstance
-     * @param false     $sequential
-     * @param null      $completionCondition
+     * @param string $id
+     * @param string $participant
+     * @param string $operation
+     * @param string $name
+     * @param false  $multiInstance
+     * @param false  $sequential
+     * @param null   $completionCondition
      *
      * @since Method available since Release 1.2.0
      */
@@ -290,9 +290,9 @@ class WorkflowBuilder
      * @param string     $operation
      * @param string     $name
      * @param int|string $defaultSequenceFlow
-     * @param false     $multiInstance
-     * @param false     $sequential
-     * @param null      $completionCondition
+     * @param false      $multiInstance
+     * @param false      $sequential
+     * @param null       $completionCondition
      *
      * @since Method available since Release 1.3.0
      */

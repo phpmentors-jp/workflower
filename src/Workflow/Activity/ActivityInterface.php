@@ -33,6 +33,7 @@ interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, 
 
     /**
      * @param ItemsCollectionInterface $collection
+     *
      * @return void
      */
     public function setWorkItems(ItemsCollectionInterface $collection);

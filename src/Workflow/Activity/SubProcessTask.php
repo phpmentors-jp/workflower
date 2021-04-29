@@ -1,10 +1,6 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Workflow\Activity;
-
-
-use PHPMentors\Workflower\Workflow\ProcessDefinitionInterface;
 
 /**
  * @since Class available since Release 2.0.0
@@ -51,5 +47,4 @@ class SubProcessTask extends ProcessTask
             }
         }
     }
-
 }

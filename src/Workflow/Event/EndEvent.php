@@ -12,7 +12,6 @@
 
 namespace PHPMentors\Workflower\Workflow\Event;
 
-
 class EndEvent extends Event
 {
     /**

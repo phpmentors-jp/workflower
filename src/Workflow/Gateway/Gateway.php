@@ -1,8 +1,6 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Workflow\Gateway;
-
 
 use PHPMentors\Workflower\Workflow\Element\FlowObject;
 use PHPMentors\Workflower\Workflow\Participant\Role;
@@ -102,5 +100,4 @@ abstract class Gateway extends FlowObject implements GatewayInterface
 
         return $this->id === $target->getId();
     }
-
 }

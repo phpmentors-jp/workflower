@@ -68,5 +68,4 @@ interface FlowObjectInterface extends RoleAwareInterface, WorkflowElementInterfa
      * @since Method available since Release 2.0.0
      */
     public function run(Token $token): void;
-
 }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Workflow;
-
 
 use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
 
@@ -81,6 +79,7 @@ class WorkItemsCollection implements ItemsCollectionInterface
     {
         return array_filter($this->items, function (ItemInterface $item) {
             $state = $item->getState();
+
             return $state !== WorkItemInterface::STATE_ENDED && $state !== WorkItemInterface::STATE_CANCELLED;
         });
     }
@@ -89,6 +88,7 @@ class WorkItemsCollection implements ItemsCollectionInterface
     {
         return array_filter($this->items, function (ItemInterface $item) {
             $state = $item->getState();
+
             return $state === WorkItemInterface::STATE_ENDED || $state === WorkItemInterface::STATE_CANCELLED;
         });
     }

@@ -12,12 +12,9 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-use PHPMentors\Workflower\Workflow\Participant\Role;
-
 /**
  * @since Class available since Release 1.2.0
  */
 class ServiceTask extends OperationalTask
 {
-
 }

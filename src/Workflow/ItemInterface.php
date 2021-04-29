@@ -1,8 +1,6 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Workflow;
-
 
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 
@@ -15,6 +13,7 @@ interface ItemInterface
 
     /**
      * @param ProcessInstanceInterface $processInstance
+     *
      * @return void
      */
     public function setParentProcessInstance(ProcessInstanceInterface $processInstance);

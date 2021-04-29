@@ -1,11 +1,8 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Workflow\Gateway;
 
-
 use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
-use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
 use PHPMentors\Workflower\Workflow\SequenceFlowNotSelectedException;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
@@ -90,7 +87,7 @@ class InclusiveGateway extends Gateway
             // check if there is another token that can arrive here
             foreach ($workflow->getCurrentFlowObjects() as $flowObject) {
                 if ($flowObject !== $this && $this->isPathLeadingOurWay($flowObject)) {
-                    $tokensToWait++;
+                    ++$tokensToWait;
                     break;
                 }
             }
@@ -175,5 +172,4 @@ class InclusiveGateway extends Gateway
 
         return $found;
     }
-
 }

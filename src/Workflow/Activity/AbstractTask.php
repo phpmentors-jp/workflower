@@ -1,8 +1,6 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Workflow\Activity;
-
 
 use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
 use PHPMentors\Workflower\Workflow\Element\FlowObject;
@@ -94,7 +92,7 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
             'multiInstance' => $this->multiInstance,
             'sequential' => $this->sequential,
             'completionCondition' => $this->completionCondition,
-            'workItems' => $this->workItems
+            'workItems' => $this->workItems,
         ]);
     }
 
@@ -138,7 +136,6 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
     {
         parent::setWorkflow($workflow);
         $this->setWorkItems($workflow->generateWorkItemsCollection($this));
-
     }
 
     /**
@@ -363,5 +360,4 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
             $workiItem->cancel();
         }
     }
-
 }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Workflow;
-
 
 use PHPMentors\Workflower\Workflow\Activity\CallTask;
 use PHPMentors\Workflower\Workflow\Activity\ManualTask;
@@ -138,24 +136,24 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'name' => (string)
-     *      'description' => (string)
-     *      'version' => (string)
-     *      'startEvents' => (array)
-     *      'endEvents' => (array)
-     *      'exclusiveGateways' => (array)
-     *      'parallelGateways' => (array)
-     *      'roles' => (array)
-     *      'sequenceFlows' => (array)
-     *      'tasks' => (array)
-     *      'userTasks' => (array)
-     *      'manualTasks' => (array)
-     *      'serviceTasks' => (array)
-     *      'sendTasks' => (array)
-     *      'subProcesses' => (array)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'name' => (string)
+     *                      'description' => (string)
+     *                      'version' => (string)
+     *                      'startEvents' => (array)
+     *                      'endEvents' => (array)
+     *                      'exclusiveGateways' => (array)
+     *                      'parallelGateways' => (array)
+     *                      'roles' => (array)
+     *                      'sequenceFlows' => (array)
+     *                      'tasks' => (array)
+     *                      'userTasks' => (array)
+     *                      'manualTasks' => (array)
+     *                      'serviceTasks' => (array)
+     *                      'sendTasks' => (array)
+     *                      'subProcesses' => (array)
+     *                      ]
      */
     public function __construct(array $config = [])
     {
@@ -310,7 +308,6 @@ class ProcessDefinition implements ProcessDefinitionInterface
         $this->processDefinitions = $collection;
     }
 
-
     /**
      * {@inheritdoc}
      */
@@ -447,11 +444,11 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'roleId' => (string)
-     *      'name' => (string)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'roleId' => (string)
+     *                      'name' => (string)
+     *                      ]
      */
     public function addEndEvent(array $config)
     {
@@ -461,12 +458,12 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'roleId' => (string)
-     *      'name' => (string)
-     *      'defaultSequenceFlow' => (int|string)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'roleId' => (string)
+     *                      'name' => (string)
+     *                      'defaultSequenceFlow' => (int|string)
+     *                      ]
      */
     public function addExclusiveGateway(array $config)
     {
@@ -482,11 +479,11 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'roleId' => (string)
-     *      'name' => (string)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'roleId' => (string)
+     *                      'name' => (string)
+     *                      ]
      */
     public function addParallelGateway(array $config): void
     {
@@ -496,11 +493,11 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'roleId' => (string)
-     *      'name' => (string)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'roleId' => (string)
+     *                      'name' => (string)
+     *                      ]
      */
     public function addInclusiveGateway(array $config): void
     {
@@ -510,10 +507,10 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'name' => (string)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'name' => (string)
+     *                      ]
      */
     public function addRole(array $config)
     {
@@ -523,13 +520,13 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'source' => (string)
-     *      'destination' => (string)
-     *      'name' => (string)
-     *      'condition' => (string)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'source' => (string)
+     *                      'destination' => (string)
+     *                      'name' => (string)
+     *                      'condition' => (string)
+     *                      ]
      */
     public function addSequenceFlow(array $config)
     {
@@ -537,8 +534,8 @@ class ProcessDefinition implements ProcessDefinitionInterface
         $id = $this->getParamFromConfig($config, 'id');
 
         if ($id === null) {
-            $id = $this->getParamFromConfig($config, 'source', 'source') .
-                '.' . $this->getParamFromConfig($config, 'destination', 'destination') . $i;
+            $id = $this->getParamFromConfig($config, 'source', 'source').
+                '.'.$this->getParamFromConfig($config, 'destination', 'destination').$i;
             ++$i;
         }
 
@@ -547,12 +544,12 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'roleId' => (string)
-     *      'name' => (string)
-     *      'defaultSequenceFlow' => (int|string)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'roleId' => (string)
+     *                      'name' => (string)
+     *                      'defaultSequenceFlow' => (int|string)
+     *                      ]
      */
     public function addStartEvent(array $config)
     {
@@ -568,15 +565,15 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'roleId' => (string)
-     *      'name' => (string)
-     *      'defaultSequenceFlow' => (int|string)
-     *      'multiInstance' => (bool)
-     *      'sequential' => (bool)
-     *      'completionCondition' => (string)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'roleId' => (string)
+     *                      'name' => (string)
+     *                      'defaultSequenceFlow' => (int|string)
+     *                      'multiInstance' => (bool)
+     *                      'sequential' => (bool)
+     *                      'completionCondition' => (string)
+     *                      ]
      */
     public function addTask(array $config)
     {
@@ -592,15 +589,15 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'roleId' => (string)
-     *      'name' => (string)
-     *      'defaultSequenceFlow' => (int|string)
-     *      'multiInstance' => (bool)
-     *      'sequential' => (bool)
-     *      'completionCondition' => (string)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'roleId' => (string)
+     *                      'name' => (string)
+     *                      'defaultSequenceFlow' => (int|string)
+     *                      'multiInstance' => (bool)
+     *                      'sequential' => (bool)
+     *                      'completionCondition' => (string)
+     *                      ]
      */
     public function addUserTask(array $config)
     {
@@ -616,15 +613,15 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'roleId' => (string)
-     *      'name' => (string)
-     *      'defaultSequenceFlow' => (int|string)
-     *      'multiInstance' => (bool)
-     *      'sequential' => (bool)
-     *      'completionCondition' => (string)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'roleId' => (string)
+     *                      'name' => (string)
+     *                      'defaultSequenceFlow' => (int|string)
+     *                      'multiInstance' => (bool)
+     *                      'sequential' => (bool)
+     *                      'completionCondition' => (string)
+     *                      ]
      */
     public function addManualTask(array $config)
     {
@@ -640,16 +637,16 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'roleId' => (string)
-     *      'name' => (string)
-     *      'operation' => (string)
-     *      'defaultSequenceFlow' => (int|string)
-     *      'multiInstance' => (bool)
-     *      'sequential' => (bool)
-     *      'completionCondition' => (string)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'roleId' => (string)
+     *                      'name' => (string)
+     *                      'operation' => (string)
+     *                      'defaultSequenceFlow' => (int|string)
+     *                      'multiInstance' => (bool)
+     *                      'sequential' => (bool)
+     *                      'completionCondition' => (string)
+     *                      ]
      */
     public function addServiceTask(array $config)
     {
@@ -665,17 +662,17 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'roleId' => (string)
-     *      'name' => (string)
-     *      'message' => (string)
-     *      'operation' => (string)
-     *      'defaultSequenceFlow' => (int|string)
-     *      'multiInstance' => (bool)
-     *      'sequential' => (bool)
-     *      'completionCondition' => (string)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'roleId' => (string)
+     *                      'name' => (string)
+     *                      'message' => (string)
+     *                      'operation' => (string)
+     *                      'defaultSequenceFlow' => (int|string)
+     *                      'multiInstance' => (bool)
+     *                      'sequential' => (bool)
+     *                      'completionCondition' => (string)
+     *                      ]
      */
     public function addSendTask(array $config)
     {
@@ -691,16 +688,16 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'roleId' => (string)
-     *      'name' => (string)
-     *      'defaultSequenceFlow' => (int|string)
-     *      'multiInstance' => (bool)
-     *      'sequential' => (bool)
-     *      'completionCondition' => (string)
-     *      'processDefinition' => []
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'roleId' => (string)
+     *                      'name' => (string)
+     *                      'defaultSequenceFlow' => (int|string)
+     *                      'multiInstance' => (bool)
+     *                      'sequential' => (bool)
+     *                      'completionCondition' => (string)
+     *                      'processDefinition' => []
+     *                      ]
      */
     public function addSubProcessTask(array $config)
     {
@@ -716,16 +713,16 @@ class ProcessDefinition implements ProcessDefinitionInterface
 
     /**
      * @param array $config Array containing the necessary params.
-     *    $config = [
-     *      'id' => (string)
-     *      'roleId' => (string)
-     *      'name' => (string)
-     *      'calledElement' => (string)
-     *      'defaultSequenceFlow' => (int|string)
-     *      'multiInstance' => (bool)
-     *      'sequential' => (bool)
-     *      'completionCondition' => (string)
-     *    ]
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'roleId' => (string)
+     *                      'name' => (string)
+     *                      'calledElement' => (string)
+     *                      'defaultSequenceFlow' => (int|string)
+     *                      'multiInstance' => (bool)
+     *                      'sequential' => (bool)
+     *                      'completionCondition' => (string)
+     *                      ]
      */
     public function addCallActivity(array $config)
     {
@@ -777,5 +774,4 @@ class ProcessDefinition implements ProcessDefinitionInterface
             $config['role'] = $workflow->getRole($roleId);
         }
     }
-
 }

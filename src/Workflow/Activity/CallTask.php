@@ -1,10 +1,6 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Workflow\Activity;
-
-
-use PHPMentors\Workflower\Workflow\Workflow;
 
 /**
  * @since Class available since Release 2.0.0
@@ -77,5 +73,4 @@ class CallTask extends ProcessTask
 
         return $this->processDefinition;
     }
-
 }

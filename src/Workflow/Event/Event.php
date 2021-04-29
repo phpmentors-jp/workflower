@@ -113,5 +113,4 @@ abstract class Event extends FlowObject implements EventInterface
 
         return $this->id === $target->getId();
     }
-
 }

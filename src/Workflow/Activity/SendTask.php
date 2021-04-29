@@ -12,7 +12,6 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-use PHPMentors\Workflower\Workflow\Participant\Role;
 use PHPMentors\Workflower\Workflow\Resource\MessageInterface;
 
 /**

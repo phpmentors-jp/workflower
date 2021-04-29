@@ -18,7 +18,6 @@ use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
 use PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Provider\DataProviderInterface;
-use PHPMentors\Workflower\Workflow\ProcessDefinition;
 use PHPUnit\Framework\TestCase;
 
 class WorkflowTest extends TestCase
@@ -718,12 +717,11 @@ class WorkflowTest extends TestCase
         $participant = $this->createMock(ParticipantInterface::class);
         $participant->method('hasRole')->willReturn(true);
 
-
         $parallelData = [
             ['test' => 1],
             ['test' => 2],
             ['test' => 3],
-            ['test' => 4]
+            ['test' => 4],
         ];
         $dataProvider = $this->getMockBuilder(DataProviderInterface::class)
             ->setMethods(['getParallelInstancesData', 'getSequentialInstanceData', 'getSingleInstanceData', 'mergeInstancesData'])
@@ -896,7 +894,7 @@ class WorkflowTest extends TestCase
         $workflow = $this->workflowRepository->findById('InclusiveGateway');
         $workflow->setProcessData([
             'paymentReceived' => false,
-            'shipOrder' => true
+            'shipOrder' => true,
         ]);
         $workflow->start($workflow->getFlowObject('Start'));
 
@@ -952,7 +950,7 @@ class WorkflowTest extends TestCase
         $workflow = $this->workflowRepository->findById('InclusiveGateway');
         $workflow->setProcessData([
             'paymentReceived' => true,
-            'shipOrder' => true
+            'shipOrder' => true,
         ]);
         $workflow->start($workflow->getFlowObject('Start'));
 
@@ -983,5 +981,4 @@ class WorkflowTest extends TestCase
 
         $this->assertThat($activityLog->get(1)->getActivity()->getId(), $this->equalTo('ArchiveOrder'));
     }
-
 }

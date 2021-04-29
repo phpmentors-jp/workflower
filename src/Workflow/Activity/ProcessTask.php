@@ -1,11 +1,8 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-
 use PHPMentors\Workflower\Workflow\ProcessDefinitionInterface;
-use PHPMentors\Workflower\Workflow\Workflow;
 
 class ProcessTask extends Task
 {
@@ -50,5 +47,4 @@ class ProcessTask extends Task
 
         return $instance;
     }
-
 }

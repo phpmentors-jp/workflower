@@ -26,6 +26,7 @@ interface WorkItemInterface extends ItemInterface
 
     /**
      * @param array $data
+     *
      * @return void
      */
     public function setData($data);
@@ -114,5 +115,4 @@ interface WorkItemInterface extends ItemInterface
      * @return void
      */
     public function cancel(): void;
-
 }

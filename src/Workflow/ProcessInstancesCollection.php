@@ -1,8 +1,6 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Workflow;
-
 
 class ProcessInstancesCollection extends WorkItemsCollection
 {
@@ -10,6 +8,7 @@ class ProcessInstancesCollection extends WorkItemsCollection
     {
         return array_filter($this->items, function (ItemInterface $item) {
             $state = $item->getState();
+
             return $state !== ProcessInstanceInterface::STATE_ENDED && $state !== ProcessInstanceInterface::STATE_CANCELLED;
         });
     }
@@ -18,8 +17,8 @@ class ProcessInstancesCollection extends WorkItemsCollection
     {
         return array_filter($this->items, function (ItemInterface $item) {
             $state = $item->getState();
+
             return $state === ProcessInstanceInterface::STATE_ENDED || $state === ProcessInstanceInterface::STATE_CANCELLED;
         });
     }
-
 }

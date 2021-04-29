@@ -1,6 +1,5 @@
 <?php
 
-
 namespace PHPMentors\Workflower\Workflow\Element;
 
 use PHPMentors\Workflower\Workflow\Workflow;
@@ -11,7 +10,7 @@ use PHPMentors\Workflower\Workflow\Workflow;
 abstract class FlowObject implements FlowObjectInterface, TransitionalInterface, \Serializable
 {
     /**
-     * @var boolean
+     * @var bool
      */
     private $started = false;
 
@@ -43,7 +42,7 @@ abstract class FlowObject implements FlowObjectInterface, TransitionalInterface,
     {
         return serialize([
             'token' => $this->token,
-            'started' => $this->started
+            'started' => $this->started,
         ]);
     }
 
@@ -138,5 +137,4 @@ abstract class FlowObject implements FlowObjectInterface, TransitionalInterface,
 
         $this->end();
     }
-
 }

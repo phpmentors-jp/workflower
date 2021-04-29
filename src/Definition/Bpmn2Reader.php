@@ -75,7 +75,7 @@ class Bpmn2Reader
         $processes = [];
         $globalData = [
             'messages' => [],
-            'operations' => []
+            'operations' => [],
         ];
 
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'message') as $element) {
@@ -102,8 +102,9 @@ class Bpmn2Reader
     }
 
     /**
-     * @param array $globalData
+     * @param array       $globalData
      * @param \DOMElement $element
+     *
      * @return array
      */
     private function readProcess(array $globalData, \DOMElement $rootElement)
@@ -116,7 +117,7 @@ class Bpmn2Reader
             'id' => $rootElement->getAttribute('id'),
             'name' => $rootElement->hasAttribute('name') ? $rootElement->getAttribute('name') : null,
             'roles' => [],
-            'objectRoles' => []
+            'objectRoles' => [],
         ];
 
         foreach ($rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'lane') as $element) {
@@ -128,7 +129,7 @@ class Bpmn2Reader
 
             $process['roles'][] = [
                 'id' => $id,
-                'name' => $element->hasAttribute('name') ? $element->getAttribute('name') : null
+                'name' => $element->hasAttribute('name') ? $element->getAttribute('name') : null,
             ];
 
             foreach ($element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'flowNodeRef') as $childElement) {
@@ -138,7 +139,7 @@ class Bpmn2Reader
 
         if (count($process['roles']) == 0) {
             $process['roles'][] = [
-                'id' => Workflow::DEFAULT_ROLE_ID
+                'id' => Workflow::DEFAULT_ROLE_ID,
             ];
         }
 
@@ -152,7 +153,7 @@ class Bpmn2Reader
         $process['sendTasks'] = $this->readTasks($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'sendTask'));
         $process['callActivities'] = $this->readTasks($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'callActivity'));
 
-        foreach($rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'subProcess') as $element) {
+        foreach ($rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'subProcess') as $element) {
             $task = $this->readTask($globalData, $process, $element);
             $task['processDefinition'] = $this->readProcess($globalData, $element);
             $process['subProcesses'][] = $task;
@@ -168,8 +169,8 @@ class Bpmn2Reader
     }
 
     /**
-     * @param array $globalData
-     * @param array $process
+     * @param array        $globalData
+     * @param array        $process
      * @param \DOMNodeList $nodes
      */
     private function readTasks(array $globalData, array $process, $nodes)
@@ -184,8 +185,8 @@ class Bpmn2Reader
     }
 
     /**
-     * @param array $globalData
-     * @param array $process
+     * @param array       $globalData
+     * @param array       $process
      * @param \DOMElement $element
      */
     private function readTask(array $globalData, array $process, $element)
@@ -214,7 +215,7 @@ class Bpmn2Reader
         $config = [
             'id' => $id,
             'name' => $element->hasAttribute('name') ? $element->getAttribute('name') : null,
-            'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id)
+            'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id),
         ];
 
         if ($multiInstance !== null) {
@@ -243,8 +244,8 @@ class Bpmn2Reader
     }
 
     /**
-     * @param array $globalData
-     * @param array $process
+     * @param array        $globalData
+     * @param array        $process
      * @param \DOMNodeList $nodes
      */
     private function readGateways(array $globalData, array $process, $nodes)
@@ -262,7 +263,7 @@ class Bpmn2Reader
             $config = [
                 'id' => $id,
                 'name' => $element->hasAttribute('name') ? $element->getAttribute('name') : null,
-                'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id)
+                'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id),
             ];
 
             if ($defaultSequenceFlowId !== null) {
@@ -276,8 +277,8 @@ class Bpmn2Reader
     }
 
     /**
-     * @param array $globalData
-     * @param array $process
+     * @param array        $globalData
+     * @param array        $process
      * @param \DOMNodeList $nodes
      */
     private function readEvents(array $globalData, array $process, $nodes)
@@ -295,7 +296,7 @@ class Bpmn2Reader
 
             $config = [
                 'id' => $id,
-                'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id)
+                'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id),
             ];
 
             if ($name !== null) {
@@ -312,8 +313,8 @@ class Bpmn2Reader
     }
 
     /**
-     * @param array $globalData
-     * @param array $process
+     * @param array        $globalData
+     * @param array        $process
      * @param \DOMNodeList $nodes
      */
     private function readSequenceFlows(array $globalData, array $process, $nodes)

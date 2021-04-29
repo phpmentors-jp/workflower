@@ -32,7 +32,6 @@ use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
 use PHPMentors\Workflower\Workflow\Provider\DataProviderInterface;
-use PHPMentors\Workflower\Workflow\ProcessDefinitionInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 class Workflow implements ProcessInstanceInterface, \Serializable
@@ -425,7 +424,7 @@ class Workflow implements ProcessInstanceInterface, \Serializable
     public function start(StartEvent $event)
     {
         $this->startEvent = $event;
-        $event->run( $this->generateToken($this->startEvent));
+        $event->run($this->generateToken($this->startEvent));
     }
 
     /**
@@ -554,9 +553,7 @@ class Workflow implements ProcessInstanceInterface, \Serializable
         if ($event instanceof TerminateEndEvent) {
             $this->cancel();
             $this->state = self::STATE_ABNORMAL;
-
-        } else if (count($this->tokens) == 0) {
-
+        } elseif (count($this->tokens) == 0) {
             $this->endDate = $event->getEndDate();
             $this->state = self::STATE_ENDED;
 
@@ -586,7 +583,6 @@ class Workflow implements ProcessInstanceInterface, \Serializable
             if ($parentActivity !== null) {
                 $parentActivity->completeWork();
             }
-
         }
     }
 
@@ -647,7 +643,8 @@ class Workflow implements ProcessInstanceInterface, \Serializable
         throw new UnexpectedActivityException(sprintf('The current flow object is not equal to the expected activity "%s".', $activity->getId()));
     }
 
-    private function generateId() {
+    private function generateId()
+    {
         // Generate 16 bytes (128 bits) of random data or use the data passed into the function.
         $data = random_bytes(16);
         assert(strlen($data) == 16);
@@ -678,6 +675,7 @@ class Workflow implements ProcessInstanceInterface, \Serializable
 
     /**
      * @param ActivityInterface $activity
+     *
      * @return WorkItemInterface
      *
      * @since Method available since Release 2.0.0
@@ -688,11 +686,13 @@ class Workflow implements ProcessInstanceInterface, \Serializable
         $workItem->setParentProcessInstance($this);
         $workItem->setParentActivity($activity);
         $this->getActivityLog()->add(new ActivityLog($workItem));
+
         return $workItem;
     }
 
     /**
      * @param ActivityInterface $activity
+     *
      * @return ItemsCollectionInterface
      *
      * @since Method available since Release 2.0.0
@@ -732,5 +732,4 @@ class Workflow implements ProcessInstanceInterface, \Serializable
 
         return null;
     }
-
 }
