@@ -30,5 +30,5 @@ interface WorkflowSerializableInterface extends WorkflowAwareInterface
     /**
      * @return ProcessInstance
      */
-    public function getWorkflow();
+    public function getProcessInstance();
 }

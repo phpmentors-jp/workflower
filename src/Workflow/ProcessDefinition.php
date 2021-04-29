@@ -321,100 +321,100 @@ class ProcessDefinition implements ProcessDefinitionInterface
      */
     public function createProcessInstance()
     {
-        $workflow = new ProcessInstance($this->getId(), $this->getName());
-        $workflow->setProcessDefinition($this);
+        $processInstance = new ProcessInstance($this->getId(), $this->getName());
+        $processInstance->setProcessDefinition($this);
 
         foreach ($this->roles as $config) {
-            $workflow->addRole(new Role($config));
+            $processInstance->addRole(new Role($config));
         }
 
         foreach ($this->startEvents as $config) {
             $clone = array_merge([], $config);
-            $this->replaceRoleInConfig($workflow, $clone);
+            $this->replaceRoleInConfig($processInstance, $clone);
 
-            $workflow->addFlowObject(new StartEvent($clone));
+            $processInstance->addFlowObject(new StartEvent($clone));
         }
 
         foreach ($this->endEvents as $config) {
             $clone = array_merge([], $config);
-            $this->replaceRoleInConfig($workflow, $clone);
+            $this->replaceRoleInConfig($processInstance, $clone);
 
-            $workflow->addFlowObject(new EndEvent($clone));
+            $processInstance->addFlowObject(new EndEvent($clone));
         }
 
         foreach ($this->tasks as $config) {
             $clone = array_merge([], $config);
-            $this->replaceRoleInConfig($workflow, $clone);
+            $this->replaceRoleInConfig($processInstance, $clone);
 
-            $workflow->addFlowObject(new Task($clone));
+            $processInstance->addFlowObject(new Task($clone));
         }
 
         foreach ($this->userTasks as $config) {
             $clone = array_merge([], $config);
-            $this->replaceRoleInConfig($workflow, $clone);
+            $this->replaceRoleInConfig($processInstance, $clone);
 
-            $workflow->addFlowObject(new UserTask($clone));
+            $processInstance->addFlowObject(new UserTask($clone));
         }
 
         foreach ($this->manualTasks as $config) {
             $clone = array_merge([], $config);
-            $this->replaceRoleInConfig($workflow, $clone);
+            $this->replaceRoleInConfig($processInstance, $clone);
 
-            $workflow->addFlowObject(new ManualTask($clone));
+            $processInstance->addFlowObject(new ManualTask($clone));
         }
 
         foreach ($this->serviceTasks as $config) {
             $clone = array_merge([], $config);
-            $this->replaceRoleInConfig($workflow, $clone);
+            $this->replaceRoleInConfig($processInstance, $clone);
 
-            $workflow->addFlowObject(new ServiceTask($clone));
+            $processInstance->addFlowObject(new ServiceTask($clone));
         }
 
         foreach ($this->sendTasks as $config) {
             $clone = array_merge([], $config);
-            $this->replaceRoleInConfig($workflow, $clone);
+            $this->replaceRoleInConfig($processInstance, $clone);
 
-            $workflow->addFlowObject(new SendTask($clone));
+            $processInstance->addFlowObject(new SendTask($clone));
         }
 
         foreach ($this->subProcesses as $config) {
             $clone = array_merge([], $config);
 
-            $this->replaceRoleInConfig($workflow, $clone);
+            $this->replaceRoleInConfig($processInstance, $clone);
             $definition = new ProcessDefinition($clone['processDefinition']);
             $definition->setProcessDefinitions($this->getProcessDefinitions());
             $clone['processDefinition'] = $definition;
 
-            $workflow->addFlowObject(new SubProcessTask($clone));
+            $processInstance->addFlowObject(new SubProcessTask($clone));
         }
 
         foreach ($this->callActivities as $config) {
             $clone = array_merge([], $config);
 
-            $this->replaceRoleInConfig($workflow, $config);
+            $this->replaceRoleInConfig($processInstance, $config);
 
-            $workflow->addFlowObject(new CallTask($config));
+            $processInstance->addFlowObject(new CallTask($config));
         }
 
         foreach ($this->exclusiveGateways as $config) {
             $clone = array_merge([], $config);
-            $this->replaceRoleInConfig($workflow, $clone);
+            $this->replaceRoleInConfig($processInstance, $clone);
 
-            $workflow->addFlowObject(new ExclusiveGateway($clone));
+            $processInstance->addFlowObject(new ExclusiveGateway($clone));
         }
 
         foreach ($this->parallelGateways as $config) {
             $clone = array_merge([], $config);
-            $this->replaceRoleInConfig($workflow, $clone);
+            $this->replaceRoleInConfig($processInstance, $clone);
 
-            $workflow->addFlowObject(new ParallelGateway($clone));
+            $processInstance->addFlowObject(new ParallelGateway($clone));
         }
 
         foreach ($this->inclusiveGateways as $config) {
             $clone = array_merge([], $config);
-            $this->replaceRoleInConfig($workflow, $clone);
+            $this->replaceRoleInConfig($processInstance, $clone);
 
-            $workflow->addFlowObject(new InclusiveGateway($clone));
+            $processInstance->addFlowObject(new InclusiveGateway($clone));
         }
 
         foreach ($this->sequenceFlows as $config) {
@@ -426,20 +426,20 @@ class ProcessDefinition implements ProcessDefinitionInterface
                 throw new \LogicException(sprintf('The sequence flow "%s" has the condition "%s". A condition cannot be set to the default sequence flow.', $id, $condition));
             }
 
-            $clone['source'] = $workflow->getFlowObject($this->getParamFromConfig($clone, 'source'));
-            $clone['destination'] = $workflow->getFlowObject($this->getParamFromConfig($clone, 'destination'));
+            $clone['source'] = $processInstance->getFlowObject($this->getParamFromConfig($clone, 'source'));
+            $clone['destination'] = $processInstance->getFlowObject($this->getParamFromConfig($clone, 'destination'));
             $clone['condition'] = $condition === null ? null : new Expression($condition);
 
-            $workflow->addConnectingObject(new SequenceFlow($clone));
+            $processInstance->addConnectingObject(new SequenceFlow($clone));
 
             if (array_key_exists($id, $this->defaultableFlowObjects)) {
-                $flowObject = $workflow->getFlowObject($this->defaultableFlowObjects[$id]);
+                $flowObject = $processInstance->getFlowObject($this->defaultableFlowObjects[$id]);
                 /* @var $flowObject ConditionalInterface */
                 $flowObject->setDefaultSequenceFlowId($id);
             }
         }
 
-        return $workflow;
+        return $processInstance;
     }
 
     /**
@@ -737,15 +737,15 @@ class ProcessDefinition implements ProcessDefinitionInterface
     }
 
     /**
-     * @param ProcessInstance $workflow
-     * @param int|string      $roleId
+     * @param ProcessInstance   $processInstance
+     * @param int|string $roleId
      *
      * @throws \LogicException
      */
-    private function assertWorkflowHasRole(ProcessInstance $workflow, $roleId)
+    private function assertWorkflowHasRole(ProcessInstance $processInstance, $roleId)
     {
-        if (!$workflow->hasRole($roleId)) {
-            throw new \LogicException(sprintf('The workflow "%s" does not have the role "%s".', $workflow->getId(), $roleId));
+        if (!$processInstance->hasRole($roleId)) {
+            throw new \LogicException(sprintf('The workflow "%s" does not have the role "%s".', $processInstance->getId(), $roleId));
         }
     }
 
@@ -764,14 +764,14 @@ class ProcessDefinition implements ProcessDefinitionInterface
         return $value;
     }
 
-    private function replaceRoleInConfig($workflow, &$config)
+    private function replaceRoleInConfig($processInstance, &$config)
     {
         $roleId = $this->getParamFromConfig($config, 'roleId');
 
         if ($roleId !== null) {
-            $this->assertWorkflowHasRole($workflow, $roleId);
+            $this->assertWorkflowHasRole($processInstance, $roleId);
             unset($config['roleId']);
-            $config['role'] = $workflow->getRole($roleId);
+            $config['role'] = $processInstance->getRole($roleId);
         }
     }
 }

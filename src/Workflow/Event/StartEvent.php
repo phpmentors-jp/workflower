@@ -76,10 +76,10 @@ class StartEvent extends Event implements TransitionalInterface, \Serializable
     public function end(): void
     {
         $selectedSequenceFlows = [];
-        $workflow = $this->getWorkflow();
+        $processInstance = $this->getProcessInstance();
 
         // for each sequence flow that leaves a start event start a parallel token
-        foreach ($workflow->getConnectingObjectCollectionBySource($this) as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
+        foreach ($processInstance->getConnectingObjectCollectionBySource($this) as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
             if ($connectingObject instanceof SequenceFlow) {
                 $selectedSequenceFlows[] = $connectingObject;
             }
@@ -90,12 +90,12 @@ class StartEvent extends Event implements TransitionalInterface, \Serializable
         }
 
         foreach ($this->getToken() as $token) {
-            $workflow->removeToken($this, $token);
+            $processInstance->removeToken($this, $token);
         }
 
-        // if there are multiple sequence flows available then the workflow runs in parallel
+        // if there are multiple sequence flows available then the processInstance runs in parallel
         foreach ($selectedSequenceFlows as $selectedSequenceFlow) {
-            $token = $workflow->generateToken($this);
+            $token = $processInstance->generateToken($this);
             $selectedSequenceFlow->getDestination()->run($token);
         }
 

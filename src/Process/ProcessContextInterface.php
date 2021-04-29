@@ -24,5 +24,5 @@ interface ProcessContextInterface extends WorkflowAwareInterface
     /**
      * @return ProcessInstance
      */
-    public function getWorkflow();
+    public function getProcessInstance();
 }

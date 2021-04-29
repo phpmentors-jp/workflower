@@ -76,8 +76,8 @@ class InclusiveGateway extends Gateway
      */
     public function end(): void
     {
-        $workflow = $this->getWorkflow();
-        $incoming = $workflow->getConnectingObjectCollectionByDestination($this);
+        $processInstance = $this->getProcessInstance();
+        $incoming = $processInstance->getConnectingObjectCollectionByDestination($this);
         $incomingTokens = $this->getToken();
 
         $valid = count($incomingTokens) === count($incoming);
@@ -85,7 +85,7 @@ class InclusiveGateway extends Gateway
         if (!$valid) {
             $tokensToWait = 0;
             // check if there is another token that can arrive here
-            foreach ($workflow->getCurrentFlowObjects() as $flowObject) {
+            foreach ($processInstance->getCurrentFlowObjects() as $flowObject) {
                 if ($flowObject !== $this && $this->isPathLeadingOurWay($flowObject)) {
                     ++$tokensToWait;
                     break;
@@ -110,15 +110,15 @@ class InclusiveGateway extends Gateway
         if ($valid) {
             $selectedSequenceFlows = [];
 
-            foreach ($workflow->getConnectingObjectCollectionBySource($this) as $outgoing) {
+            foreach ($processInstance->getConnectingObjectCollectionBySource($this) as $outgoing) {
                 if ($outgoing instanceof SequenceFlow && $outgoing->getId() !== $this->getDefaultSequenceFlowId()) {
                     $condition = $outgoing->getCondition();
                     if ($condition === null) {
                         // find the next one that has a condition
                         continue;
                     } else {
-                        $expressionLanguage = $workflow->getExpressionLanguage() ?: new ExpressionLanguage();
-                        if ($expressionLanguage->evaluate($condition, $workflow->getProcessData())) {
+                        $expressionLanguage = $processInstance->getExpressionLanguage() ?: new ExpressionLanguage();
+                        if ($expressionLanguage->evaluate($condition, $processInstance->getProcessData())) {
                             $selectedSequenceFlows[] = $outgoing;
                         }
                     }
@@ -126,7 +126,7 @@ class InclusiveGateway extends Gateway
             }
 
             if (count($selectedSequenceFlows) === 0) {
-                $next = $workflow->getConnectingObject($this->getDefaultSequenceFlowId());
+                $next = $processInstance->getConnectingObject($this->getDefaultSequenceFlowId());
 
                 if ($next) {
                     $selectedSequenceFlows[] = $next;
@@ -138,11 +138,11 @@ class InclusiveGateway extends Gateway
             }
 
             foreach ($incomingTokens as $incomingToken) {
-                $workflow->removeToken($this, $incomingToken);
+                $processInstance->removeToken($this, $incomingToken);
             }
 
             foreach ($selectedSequenceFlows as $selectedSequenceFlow) {
-                $token = $workflow->generateToken($this);
+                $token = $processInstance->generateToken($this);
                 $selectedSequenceFlow->getDestination()->run($token);
             }
 
@@ -153,7 +153,7 @@ class InclusiveGateway extends Gateway
     private function isPathLeadingOurWay($flowObject)
     {
         $found = false;
-        $flows = $this->getWorkflow()->getConnectingObjectCollectionBySource($flowObject);
+        $flows = $this->getProcessInstance()->getConnectingObjectCollectionBySource($flowObject);
 
         foreach ($flows as $flow) {
             if ($flow instanceof SequenceFlow) {

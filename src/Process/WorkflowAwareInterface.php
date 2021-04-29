@@ -17,7 +17,7 @@ use PHPMentors\Workflower\Workflow\ProcessInstance;
 interface WorkflowAwareInterface
 {
     /**
-     * @param ProcessInstance $workflow
+     * @param ProcessInstance $processInstance
      */
-    public function setWorkflow(ProcessInstance $workflow);
+    public function setProcessInstance(ProcessInstance $processInstance);
 }

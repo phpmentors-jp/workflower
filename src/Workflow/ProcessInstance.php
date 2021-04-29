@@ -275,7 +275,7 @@ class ProcessInstance implements ProcessInstanceInterface, \Serializable
      */
     public function addFlowObject(FlowObjectInterface $flowObject)
     {
-        $flowObject->setWorkflow($this);
+        $flowObject->setProcessInstance($this);
         $this->flowObjectCollection->add($flowObject);
     }
 

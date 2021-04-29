@@ -355,13 +355,13 @@ class Bpmn2Reader
 
     /**
      * @param \DOMElement $element
-     * @param int|string  $workflowId
+     * @param int|string  $processInstanceId
      *
      * @return IdAttributeNotFoundException
      */
-    private function createIdAttributeNotFoundException(\DOMElement $element, $workflowId)
+    private function createIdAttributeNotFoundException(\DOMElement $element, $processInstanceId)
     {
-        return new IdAttributeNotFoundException(sprintf('The id attribute of the "%s" element is not found in workflow "%s" on line %d', $element->tagName, $workflowId, $element->getLineNo()));
+        return new IdAttributeNotFoundException(sprintf('The id attribute of the "%s" element is not found in workflow "%s" on line %d', $element->tagName, $processInstanceId, $element->getLineNo()));
     }
 
     /**

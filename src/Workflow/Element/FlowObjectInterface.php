@@ -32,18 +32,18 @@ interface FlowObjectInterface extends RoleAwareInterface, WorkflowElementInterfa
     public function detachToken(Token $token): void;
 
     /**
-     * @param ProcessInstance $workflow
+     * @param ProcessInstance $processInstance
      *
      * @since Method available since Release 2.0.0
      */
-    public function setWorkflow(ProcessInstance $workflow): void;
+    public function setProcessInstance(ProcessInstance $processInstance): void;
 
     /**
      * @return ProcessInstance
      *
      * @since Method available since Release 2.0.0
      */
-    public function getWorkflow(): ProcessInstance;
+    public function getProcessInstance(): ProcessInstance;
 
     /**
      * @return bool

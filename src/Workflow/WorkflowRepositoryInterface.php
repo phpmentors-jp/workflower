@@ -22,12 +22,12 @@ interface WorkflowRepositoryInterface
     public function findById($id): ?ProcessInstance;
 
     /**
-     * @param ProcessInstance $workflow
+     * @param ProcessInstance $processInstance
      */
-    public function add($workflow): void;
+    public function add($processInstance): void;
 
     /**
-     * @param ProcessInstance $workflow
+     * @param ProcessInstance $processInstance
      */
-    public function remove($workflow): void;
+    public function remove($processInstance): void;
 }

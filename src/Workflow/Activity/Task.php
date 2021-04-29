@@ -27,7 +27,7 @@ class Task extends AbstractTask
             throw new UnexpectedActivityStateException(sprintf('The activity "%s" is closed.', $this->getId()));
         }
 
-        $workItem = $this->getWorkflow()->generateWorkItem($this);
+        $workItem = $this->getProcessInstance()->generateWorkItem($this);
         $workItem->setData($data);
         $this->getWorkItems()->add($workItem);
 
@@ -36,7 +36,7 @@ class Task extends AbstractTask
 
     public function createWork(): void
     {
-        $provider = $this->getWorkflow()->getDataProvider();
+        $provider = $this->getProcessInstance()->getDataProvider();
 
         if ($this->isMultiInstance()) {
             // If not sequential then create parallel work items.
@@ -73,12 +73,12 @@ class Task extends AbstractTask
     {
         if ($this->isMultiInstance()) {
             $workItems = $this->getWorkItems();
-            $workflow = $this->getWorkflow();
+            $processInstance = $this->getProcessInstance();
 
             $completed = $workItems->countOfCompletedInstances();
             $active = $workItems->countOfActiveInstances();
 
-            $expression = $workflow->getExpressionLanguage() ?: new ExpressionLanguage();
+            $expression = $processInstance->getExpressionLanguage() ?: new ExpressionLanguage();
             $condition = $this->getCompletionCondition();
             $stop = false;
 
@@ -90,7 +90,7 @@ class Task extends AbstractTask
                     'nrOfActiveInstances' => $active,
                 ];
 
-                $conditionData = array_merge($conditionData, $workflow->getProcessData() ?: []);
+                $conditionData = array_merge($conditionData, $processInstance->getProcessData() ?: []);
                 $stop = $expression->evaluate($condition, $conditionData);
             }
 
@@ -111,7 +111,7 @@ class Task extends AbstractTask
             }
 
             // merge all instances data
-            $provider = $workflow->getDataProvider();
+            $provider = $processInstance->getDataProvider();
             $provider->mergeInstancesData($this);
         }
 

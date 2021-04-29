@@ -37,7 +37,7 @@ class ProcessTask extends Task
         }
 
         $instance = $this->getProcessDefinition()->createProcessInstance();
-        $instance->setProcessInstance($this->getWorkflow());
+        $instance->setProcessInstance($this->getProcessInstance());
         $instance->setActivity($this);
 
         $instance->setProcessData($data);

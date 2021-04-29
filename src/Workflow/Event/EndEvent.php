@@ -65,6 +65,6 @@ class EndEvent extends Event
     public function end(): void
     {
         $this->endDate = new \DateTime();
-        $this->getWorkflow()->end($this);
+        $this->getProcessInstance()->end($this);
     }
 }

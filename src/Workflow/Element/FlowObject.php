@@ -24,7 +24,7 @@ abstract class FlowObject implements FlowObjectInterface, TransitionalInterface,
     /**
      * @var ProcessInstance
      */
-    private $workflow;
+    private $processInstance;
 
     public function __construct(array $config = [])
     {
@@ -87,17 +87,17 @@ abstract class FlowObject implements FlowObjectInterface, TransitionalInterface,
     /**
      * {@inheritdoc}
      */
-    public function setWorkflow(ProcessInstance $workflow): void
+    public function setProcessInstance(ProcessInstance $processInstance): void
     {
-        $this->workflow = $workflow;
+        $this->processInstance = $processInstance;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getWorkflow(): ProcessInstance
+    public function getProcessInstance(): ProcessInstance
     {
-        return $this->workflow;
+        return $this->processInstance;
     }
 
     /**

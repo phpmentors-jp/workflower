@@ -44,19 +44,19 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function add($workflow): void
+    public function add($processInstance): void
     {
-        assert($workflow instanceof ProcessInstance);
+        assert($processInstance instanceof ProcessInstance);
 
-        $this->workflows[$workflow->getId()] = $workflow;
+        $this->workflows[$processInstance->getId()] = $processInstance;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function remove($workflow): void
+    public function remove($processInstance): void
     {
-        assert($workflow instanceof ProcessInstance);
+        assert($processInstance instanceof ProcessInstance);
     }
 
     /**

@@ -25,22 +25,22 @@ class Bpmn2WorkflowRepository implements WorkflowRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function add($workflow): void
+    public function add($processInstance): void
     {
-        assert($workflow instanceof Bpmn2File);
+        assert($processInstance instanceof Bpmn2File);
 
-        $this->bpmn2Files[$workflow->getId()] = $workflow;
+        $this->bpmn2Files[$processInstance->getId()] = $processInstance;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function remove($workflow): void
+    public function remove($processInstance): void
     {
-        assert($workflow instanceof Bpmn2File);
+        assert($processInstance instanceof Bpmn2File);
 
-        if (array_key_exists($workflow->getId(), $this->bpmn2Files)) {
-            unset($this->bpmn2Files[$workflow->getId()]);
+        if (array_key_exists($processInstance->getId(), $this->bpmn2Files)) {
+            unset($this->bpmn2Files[$processInstance->getId()]);
         }
     }
 

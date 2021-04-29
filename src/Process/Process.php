@@ -74,14 +74,14 @@ class Process
     public function start(EventContextInterface $eventContext)
     {
         assert($eventContext->getProcessContext() !== null);
-        assert($eventContext->getProcessContext()->getWorkflow() === null);
+        assert($eventContext->getProcessContext()->getProcessInstance() === null);
         assert($eventContext->getEventId() !== null);
 
-        $workflow = $this->configureWorkflow($this->createWorkflow());
-        $eventContext->getProcessContext()->setWorkflow($workflow);
-        $workflow->setProcessData($eventContext->getProcessContext()->getProcessData());
-        $flowObject = $workflow->getFlowObject($eventContext->getEventId());
-        $workflow->start(/* @var $flowObject StartEvent */ $flowObject);
+        $processInstance = $this->configureWorkflow($this->createWorkflow());
+        $eventContext->getProcessContext()->setProcessInstance($processInstance);
+        $processInstance->setProcessData($eventContext->getProcessContext()->getProcessData());
+        $flowObject = $processInstance->getFlowObject($eventContext->getEventId());
+        $processInstance->start(/* @var $flowObject StartEvent */ $flowObject);
     }
 
     /**
@@ -90,12 +90,12 @@ class Process
     public function allocateWorkItem(WorkItemContextInterface $workItemContext)
     {
         assert($workItemContext->getProcessContext() !== null);
-        assert($workItemContext->getProcessContext()->getWorkflow() !== null);
+        assert($workItemContext->getProcessContext()->getProcessInstance() !== null);
         assert($workItemContext->getActivityId() !== null);
 
-        $workflow = $this->configureWorkflow($workItemContext->getProcessContext()->getWorkflow());
-        $flowObject = $workflow->getFlowObject($workItemContext->getActivityId());
-        $workflow->allocateWorkItem(/* @var $flowObject ActivityInterface */ $flowObject, $workItemContext->getParticipant());
+        $processInstance = $this->configureWorkflow($workItemContext->getProcessContext()->getProcessInstance());
+        $flowObject = $processInstance->getFlowObject($workItemContext->getActivityId());
+        $processInstance->allocateWorkItem(/* @var $flowObject ActivityInterface */ $flowObject, $workItemContext->getParticipant());
     }
 
     /**
@@ -104,12 +104,12 @@ class Process
     public function startWorkItem(WorkItemContextInterface $workItemContext)
     {
         assert($workItemContext->getProcessContext() !== null);
-        assert($workItemContext->getProcessContext()->getWorkflow() !== null);
+        assert($workItemContext->getProcessContext()->getProcessInstance() !== null);
         assert($workItemContext->getActivityId() !== null);
 
-        $workflow = $this->configureWorkflow($workItemContext->getProcessContext()->getWorkflow());
-        $flowObject = $workflow->getFlowObject($workItemContext->getActivityId());
-        $workflow->startWorkItem(/* @var $flowObject ActivityInterface */ $flowObject, $workItemContext->getParticipant());
+        $processInstance = $this->configureWorkflow($workItemContext->getProcessContext()->getProcessInstance());
+        $flowObject = $processInstance->getFlowObject($workItemContext->getActivityId());
+        $processInstance->startWorkItem(/* @var $flowObject ActivityInterface */ $flowObject, $workItemContext->getParticipant());
     }
 
     /**
@@ -118,13 +118,13 @@ class Process
     public function completeWorkItem(WorkItemContextInterface $workItemContext)
     {
         assert($workItemContext->getProcessContext() !== null);
-        assert($workItemContext->getProcessContext()->getWorkflow() !== null);
+        assert($workItemContext->getProcessContext()->getProcessInstance() !== null);
         assert($workItemContext->getActivityId() !== null);
 
-        $workflow = $this->configureWorkflow($workItemContext->getProcessContext()->getWorkflow());
-        $workflow->setProcessData($workItemContext->getProcessContext()->getProcessData());
-        $flowObject = $workflow->getFlowObject($workItemContext->getActivityId());
-        $workflow->completeWorkItem(/* @var $flowObject ActivityInterface */ $flowObject, $workItemContext->getParticipant());
+        $processInstance = $this->configureWorkflow($workItemContext->getProcessContext()->getProcessInstance());
+        $processInstance->setProcessData($workItemContext->getProcessContext()->getProcessData());
+        $flowObject = $processInstance->getFlowObject($workItemContext->getActivityId());
+        $processInstance->completeWorkItem(/* @var $flowObject ActivityInterface */ $flowObject, $workItemContext->getParticipant());
     }
 
     /**
@@ -135,22 +135,22 @@ class Process
     public function executeWorkItem(WorkItemContextInterface $workItemContext)
     {
         assert($workItemContext->getProcessContext() !== null);
-        assert($workItemContext->getProcessContext()->getWorkflow() !== null);
+        assert($workItemContext->getProcessContext()->getProcessInstance() !== null);
         assert($workItemContext->getActivityId() !== null);
-        assert($workItemContext->getProcessContext()->getWorkflow()->getFlowObject($workItemContext->getActivityId()) instanceof ActivityInterface);
+        assert($workItemContext->getProcessContext()->getProcessInstance()->getFlowObject($workItemContext->getActivityId()) instanceof ActivityInterface);
 
-        $activity = $workItemContext->getProcessContext()->getWorkflow()->getFlowObject($workItemContext->getActivityId()); /* @var $activity ActivityInterface */
+        $activity = $workItemContext->getProcessContext()->getProcessInstance()->getFlowObject($workItemContext->getActivityId()); /* @var $activity ActivityInterface */
         if ($activity->isAllocatable()) {
             $this->allocateWorkItem($workItemContext);
             $nextWorkItemContext = new WorkItemContext($workItemContext->getParticipant());
-            $nextWorkItemContext->setActivityId($workItemContext->getProcessContext()->getWorkflow()->getCurrentFlowObject()->getId());
+            $nextWorkItemContext->setActivityId($workItemContext->getProcessContext()->getProcessInstance()->getCurrentFlowObject()->getId());
             $nextWorkItemContext->setProcessContext($workItemContext->getProcessContext());
 
             return $this->executeWorkItem($nextWorkItemContext);
         } elseif ($activity->isStartable()) {
             $this->startWorkItem($workItemContext);
             $nextWorkItemContext = new WorkItemContext($workItemContext->getParticipant());
-            $nextWorkItemContext->setActivityId($workItemContext->getProcessContext()->getWorkflow()->getCurrentFlowObject()->getId());
+            $nextWorkItemContext->setActivityId($workItemContext->getProcessContext()->getProcessInstance()->getCurrentFlowObject()->getId());
             $nextWorkItemContext->setProcessContext($workItemContext->getProcessContext());
 
             return $this->executeWorkItem($nextWorkItemContext);
@@ -179,31 +179,31 @@ class Process
     private function createWorkflow()
     {
         $workflowId = $this->workflowContext instanceof WorkflowContextInterface ? $this->workflowContext->getWorkflowId() : $this->workflowContext;
-        $workflow = $this->workflowRepository->findById($workflowId);
-        if ($workflow === null) {
-            throw new WorkflowNotFoundException(sprintf('The workflow "%s" is not found.', $workflowId));
+        $processInstance = $this->workflowRepository->findById($workflowId);
+        if ($processInstance === null) {
+            throw new WorkflowNotFoundException(sprintf('The processInstance "%s" is not found.', $workflowId));
         }
 
-        return $workflow;
+        return $processInstance;
     }
 
     /**
-     * @param ProcessInstance $workflow
+     * @param ProcessInstance $processInstance
      *
      * @return ProcessInstance
      *
      * @since Method available since Release 1.2.0
      */
-    private function configureWorkflow(ProcessInstance $workflow)
+    private function configureWorkflow(ProcessInstance $processInstance)
     {
         if ($this->expressionLanguage !== null) {
-            $workflow->setExpressionLanguage($this->expressionLanguage);
+            $processInstance->setExpressionLanguage($this->expressionLanguage);
         }
 
         if ($this->operationRunner !== null) {
-            $workflow->setOperationRunner($this->operationRunner);
+            $processInstance->setOperationRunner($this->operationRunner);
         }
 
-        return $workflow;
+        return $processInstance;
     }
 }

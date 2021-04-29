@@ -23,11 +23,11 @@ interface OperationRunnerInterface
 {
     /**
      * @param OperationalInterface $operational
-     * @param ProcessInstance      $workflow
+     * @param ProcessInstance             $processInstance
      *
      * @return ParticipantInterface
      */
-    public function provideParticipant(OperationalInterface $operational, ProcessInstance $workflow);
+    public function provideParticipant(OperationalInterface $operational, ProcessInstance $processInstance);
 
     /**
      * @param WorkItemInterface $workItem

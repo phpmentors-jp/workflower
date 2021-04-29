@@ -19,16 +19,16 @@ class Base64PhpWorkflowSerializer extends PhpWorkflowSerializer
     /**
      * {@inheritdoc}
      */
-    public function serialize(ProcessInstance $workflow)
+    public function serialize(ProcessInstance $processInstance)
     {
-        return base64_encode(parent::serialize($workflow));
+        return base64_encode(parent::serialize($processInstance));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function deserialize($workflow)
+    public function deserialize($processInstance)
     {
-        return parent::deserialize(base64_decode($workflow));
+        return parent::deserialize(base64_decode($processInstance));
     }
 }

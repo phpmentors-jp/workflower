@@ -7,8 +7,8 @@ use PHPMentors\Workflower\Workflow\Element\FlowObject;
 use PHPMentors\Workflower\Workflow\Element\Token;
 use PHPMentors\Workflower\Workflow\ItemsCollectionInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
-use PHPMentors\Workflower\Workflow\ProcessInstance;
 use PHPMentors\Workflower\Workflow\SequenceFlowNotSelectedException;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
@@ -132,10 +132,10 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
     /**
      * {@inheritdoc}
      */
-    public function setWorkflow(ProcessInstance $workflow): void
+    public function setProcessInstance(ProcessInstance $processInstance): void
     {
-        parent::setWorkflow($workflow);
-        $this->setWorkItems($workflow->generateWorkItemsCollection($this));
+        parent::setProcessInstance($processInstance);
+        $this->setWorkItems($processInstance->generateWorkItemsCollection($this));
     }
 
     /**
@@ -280,18 +280,18 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
     {
         // This one gets called after all work items are completed
 
-        $workflow = $this->getWorkflow();
+        $processInstance = $this->getProcessInstance();
         $selectedSequenceFlows = [];
         $incomingTokens = $this->getToken();
 
-        foreach ($workflow->getConnectingObjectCollectionBySource($this) as $outgoing) {
+        foreach ($processInstance->getConnectingObjectCollectionBySource($this) as $outgoing) {
             if ($outgoing instanceof SequenceFlow && $outgoing->getId() !== $this->getDefaultSequenceFlowId()) {
                 $condition = $outgoing->getCondition();
                 if ($condition === null) {
                     $selectedSequenceFlows[] = $outgoing;
                 } else {
-                    $expressionLanguage = $workflow->getExpressionLanguage() ?: new ExpressionLanguage();
-                    if ($expressionLanguage->evaluate($condition, $workflow->getProcessData() ?: [])) {
+                    $expressionLanguage = $processInstance->getExpressionLanguage() ?: new ExpressionLanguage();
+                    if ($expressionLanguage->evaluate($condition, $processInstance->getProcessData() ?: [])) {
                         $selectedSequenceFlows[] = $outgoing;
                     }
                 }
@@ -299,7 +299,7 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
         }
 
         if (count($selectedSequenceFlows) === 0) {
-            $next = $workflow->getConnectingObject($this->getDefaultSequenceFlowId());
+            $next = $processInstance->getConnectingObject($this->getDefaultSequenceFlowId());
 
             if ($next) {
                 $selectedSequenceFlows[] = $next;
@@ -311,11 +311,11 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
         }
 
         foreach ($incomingTokens as $incomingToken) {
-            $workflow->removeToken($this, $incomingToken);
+            $processInstance->removeToken($this, $incomingToken);
         }
 
         foreach ($selectedSequenceFlows as $selectedSequenceFlow) {
-            $token = $workflow->generateToken($this);
+            $token = $processInstance->generateToken($this);
             $selectedSequenceFlow->getDestination()->run($token);
         }
 
@@ -343,10 +343,10 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
 
         if ($state === self::STATE_INACTIVE || $state === self::STATE_READY || $state === self::STATE_ACTIVE) {
             $this->cancelActiveInstances();
-            $workflow = $this->getWorkflow();
+            $processInstance = $this->getProcessInstance();
 
             foreach ($this->getToken() as $token) {
-                $workflow->removeToken($this, $token);
+                $processInstance->removeToken($this, $token);
             }
 
             $this->state = self::STATE_FAILED;

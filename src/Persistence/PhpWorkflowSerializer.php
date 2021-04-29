@@ -19,16 +19,16 @@ class PhpWorkflowSerializer implements WorkflowSerializerInterface
     /**
      * {@inheritdoc}
      */
-    public function serialize(ProcessInstance $workflow)
+    public function serialize(ProcessInstance $processInstance)
     {
-        return serialize($workflow);
+        return serialize($processInstance);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function deserialize($workflow)
+    public function deserialize($processInstance)
     {
-        return unserialize($workflow);
+        return unserialize($processInstance);
     }
 }

@@ -17,16 +17,16 @@ use PHPMentors\Workflower\Workflow\ProcessInstance;
 interface WorkflowSerializerInterface
 {
     /**
-     * @param ProcessInstance $workflow
+     * @param ProcessInstance $processInstance
      *
      * @return string
      */
-    public function serialize(ProcessInstance $workflow);
+    public function serialize(ProcessInstance $processInstance);
 
     /**
-     * @param string $workflow
+     * @param string $processInstance
      *
      * @return ProcessInstance
      */
-    public function deserialize($workflow);
+    public function deserialize($processInstance);
 }
