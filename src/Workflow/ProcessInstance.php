@@ -34,7 +34,7 @@ use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
 use PHPMentors\Workflower\Workflow\Provider\DataProviderInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
-class Workflow implements ProcessInstanceInterface, \Serializable
+class ProcessInstance implements ProcessInstanceInterface, \Serializable
 {
     const DEFAULT_ROLE_ID = '__ROLE__';
 

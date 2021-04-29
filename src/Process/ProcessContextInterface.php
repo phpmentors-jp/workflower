@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Process;
 
-use PHPMentors\Workflower\Workflow\Workflow;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 
 interface ProcessContextInterface extends WorkflowAwareInterface
 {
@@ -22,7 +22,7 @@ interface ProcessContextInterface extends WorkflowAwareInterface
     public function getProcessData();
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      */
     public function getWorkflow();
 }

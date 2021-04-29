@@ -12,14 +12,14 @@
 
 namespace PHPMentors\Workflower\Persistence;
 
-use PHPMentors\Workflower\Workflow\Workflow;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 
 class Base64PhpWorkflowSerializer extends PhpWorkflowSerializer
 {
     /**
      * {@inheritdoc}
      */
-    public function serialize(Workflow $workflow)
+    public function serialize(ProcessInstance $workflow)
     {
         return base64_encode(parent::serialize($workflow));
     }

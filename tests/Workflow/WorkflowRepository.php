@@ -46,7 +46,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
      */
     public function add($workflow): void
     {
-        assert($workflow instanceof Workflow);
+        assert($workflow instanceof ProcessInstance);
 
         $this->workflows[$workflow->getId()] = $workflow;
     }
@@ -56,13 +56,13 @@ class WorkflowRepository implements WorkflowRepositoryInterface
      */
     public function remove($workflow): void
     {
-        assert($workflow instanceof Workflow);
+        assert($workflow instanceof ProcessInstance);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findById($id): ?Workflow
+    public function findById($id): ?ProcessInstance
     {
         if (!array_key_exists($id, $this->workflows)) {
             return null;
@@ -72,7 +72,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      */
     private function createLoanRequestProcess()
     {
@@ -121,7 +121,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      */
     private function createMultipleWorkItemsProcess()
     {
@@ -152,7 +152,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @since Method available since Release 1.2.0
      */
@@ -164,7 +164,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @since Method available since Release 1.3.0
      */
@@ -176,7 +176,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @since Method available since Release 1.3.0
      */
@@ -188,11 +188,11 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @since Method available since Release 2.0.0
      */
-    private function createParallelGatewayProcess(): Workflow
+    private function createParallelGatewayProcess(): ProcessInstance
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/ParallelGatewayProcess.bpmn');
 
@@ -200,11 +200,11 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @since Method available since Release 2.0.0
      */
-    private function createMultipleEndEventsProcess(): Workflow
+    private function createMultipleEndEventsProcess(): ProcessInstance
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/MultipleEndEvents.bpmn');
 
@@ -212,11 +212,11 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @since Method available since Release 2.0.0
      */
-    private function createParallelSequenceFlowsProcess(): Workflow
+    private function createParallelSequenceFlowsProcess(): ProcessInstance
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/ParallelSequenceFlows.bpmn');
 
@@ -224,11 +224,11 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @since Method available since Release 2.0.0
      */
-    private function createParallelUserTasksProcess(): Workflow
+    private function createParallelUserTasksProcess(): ProcessInstance
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/ParallelUserTasks.bpmn');
 
@@ -236,11 +236,11 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @since Method available since Release 2.0.0
      */
-    private function createSequentialUserTasksProcess(): Workflow
+    private function createSequentialUserTasksProcess(): ProcessInstance
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/SequentialUserTasks.bpmn');
 
@@ -248,11 +248,11 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @since Method available since Release 2.0.0
      */
-    private function createSubProcessTaskProcess(): Workflow
+    private function createSubProcessTaskProcess(): ProcessInstance
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/SubProcess.bpmn');
 
@@ -260,11 +260,11 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @since Method available since Release 2.0.0
      */
-    private function createCallActivityProcess(): Workflow
+    private function createCallActivityProcess(): ProcessInstance
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/CallActivity.bpmn');
 
@@ -272,11 +272,11 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @since Method available since Release 2.0.0
      */
-    private function createInclusiveGatewayProcess(): Workflow
+    private function createInclusiveGatewayProcess(): ProcessInstance
     {
         $this->definitions->importFromFile(dirname(__DIR__).'/Resources/config/workflower/InclusiveGateway.bpmn');
 

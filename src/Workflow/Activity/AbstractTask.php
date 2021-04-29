@@ -7,8 +7,8 @@ use PHPMentors\Workflower\Workflow\Element\FlowObject;
 use PHPMentors\Workflower\Workflow\Element\Token;
 use PHPMentors\Workflower\Workflow\ItemsCollectionInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 use PHPMentors\Workflower\Workflow\SequenceFlowNotSelectedException;
-use PHPMentors\Workflower\Workflow\Workflow;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
@@ -132,7 +132,7 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
     /**
      * {@inheritdoc}
      */
-    public function setWorkflow(Workflow $workflow): void
+    public function setWorkflow(ProcessInstance $workflow): void
     {
         parent::setWorkflow($workflow);
         $this->setWorkItems($workflow->generateWorkItemsCollection($this));

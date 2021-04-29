@@ -306,13 +306,13 @@ class WorkflowBuilder
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @throws \LogicException
      */
     public function build()
     {
-        $workflow = new Workflow($this->workflowId, $this->workflowName);
+        $workflow = new ProcessInstance($this->workflowId, $this->workflowName);
 
         foreach ($this->roles as $id => $role) {
             list($name) = $role;
@@ -423,12 +423,12 @@ class WorkflowBuilder
     }
 
     /**
-     * @param Workflow   $workflow
-     * @param int|string $roleId
+     * @param ProcessInstance $workflow
+     * @param int|string      $roleId
      *
      * @throws \LogicException
      */
-    private function assertWorkflowHasRole(Workflow $workflow, $roleId)
+    private function assertWorkflowHasRole(ProcessInstance $workflow, $roleId)
     {
         if (!$workflow->hasRole($roleId)) {
             throw new \LogicException(sprintf('The workflow "%s" does not have the role "%s".', $workflow->getId(), $roleId));

@@ -12,14 +12,14 @@
 
 namespace PHPMentors\Workflower\Persistence;
 
-use PHPMentors\Workflower\Workflow\Workflow;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 
 class PhpWorkflowSerializer implements WorkflowSerializerInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function serialize(Workflow $workflow)
+    public function serialize(ProcessInstance $workflow)
     {
         return serialize($workflow);
     }

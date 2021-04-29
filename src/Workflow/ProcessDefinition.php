@@ -321,7 +321,7 @@ class ProcessDefinition implements ProcessDefinitionInterface
      */
     public function createProcessInstance()
     {
-        $workflow = new Workflow($this->getId(), $this->getName());
+        $workflow = new ProcessInstance($this->getId(), $this->getName());
         $workflow->setProcessDefinition($this);
 
         foreach ($this->roles as $config) {
@@ -737,12 +737,12 @@ class ProcessDefinition implements ProcessDefinitionInterface
     }
 
     /**
-     * @param Workflow   $workflow
-     * @param int|string $roleId
+     * @param ProcessInstance $workflow
+     * @param int|string      $roleId
      *
      * @throws \LogicException
      */
-    private function assertWorkflowHasRole(Workflow $workflow, $roleId)
+    private function assertWorkflowHasRole(ProcessInstance $workflow, $roleId)
     {
         if (!$workflow->hasRole($roleId)) {
             throw new \LogicException(sprintf('The workflow "%s" does not have the role "%s".', $workflow->getId(), $roleId));

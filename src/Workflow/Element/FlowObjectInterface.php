@@ -13,7 +13,7 @@
 namespace PHPMentors\Workflower\Workflow\Element;
 
 use PHPMentors\Workflower\Workflow\Participant\RoleAwareInterface;
-use PHPMentors\Workflower\Workflow\Workflow;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 
 interface FlowObjectInterface extends RoleAwareInterface, WorkflowElementInterface
 {
@@ -32,18 +32,18 @@ interface FlowObjectInterface extends RoleAwareInterface, WorkflowElementInterfa
     public function detachToken(Token $token): void;
 
     /**
-     * @param Workflow $workflow
+     * @param ProcessInstance $workflow
      *
      * @since Method available since Release 2.0.0
      */
-    public function setWorkflow(Workflow $workflow): void;
+    public function setWorkflow(ProcessInstance $workflow): void;
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @since Method available since Release 2.0.0
      */
-    public function getWorkflow(): Workflow;
+    public function getWorkflow(): ProcessInstance;
 
     /**
      * @return bool

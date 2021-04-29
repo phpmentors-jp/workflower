@@ -12,21 +12,21 @@
 
 namespace PHPMentors\Workflower\Persistence;
 
-use PHPMentors\Workflower\Workflow\Workflow;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 
 interface WorkflowSerializerInterface
 {
     /**
-     * @param Workflow $workflow
+     * @param ProcessInstance $workflow
      *
      * @return string
      */
-    public function serialize(Workflow $workflow);
+    public function serialize(ProcessInstance $workflow);
 
     /**
      * @param string $workflow
      *
-     * @return Workflow
+     * @return ProcessInstance
      */
     public function deserialize($workflow);
 }

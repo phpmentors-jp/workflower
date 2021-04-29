@@ -16,7 +16,7 @@ use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\UnexpectedActivityStateException;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
 use PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface;
-use PHPMentors\Workflower\Workflow\Workflow;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 use PHPMentors\Workflower\Workflow\WorkflowRepositoryInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
@@ -172,7 +172,7 @@ class Process
     }
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @throws WorkflowNotFoundException
      */
@@ -188,13 +188,13 @@ class Process
     }
 
     /**
-     * @param Workflow $workflow
+     * @param ProcessInstance $workflow
      *
-     * @return Workflow
+     * @return ProcessInstance
      *
      * @since Method available since Release 1.2.0
      */
-    private function configureWorkflow(Workflow $workflow)
+    private function configureWorkflow(ProcessInstance $workflow)
     {
         if ($this->expressionLanguage !== null) {
             $workflow->setExpressionLanguage($this->expressionLanguage);

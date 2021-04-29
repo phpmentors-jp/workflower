@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Definition;
 
-use PHPMentors\Workflower\Workflow\Workflow;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 use PHPMentors\Workflower\Workflow\WorkflowRepositoryInterface;
 
 class Bpmn2WorkflowRepository implements WorkflowRepositoryInterface
@@ -47,9 +47,9 @@ class Bpmn2WorkflowRepository implements WorkflowRepositoryInterface
     /**
      * {@inheritdoc}
      *
-     * @return Workflow
+     * @return ProcessInstance
      */
-    public function findById($id): ?Workflow
+    public function findById($id): ?ProcessInstance
     {
         if (!array_key_exists($id, $this->bpmn2Files)) {
             return null;
