@@ -13,7 +13,7 @@
 namespace PHPMentors\Workflower\Definition;
 
 use PHPMentors\Workflower\Workflow\ProcessDefinition;
-use PHPMentors\Workflower\Workflow\Workflow;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 
 class Bpmn2Reader
 {
@@ -139,7 +139,7 @@ class Bpmn2Reader
 
         if (count($process['roles']) == 0) {
             $process['roles'][] = [
-                'id' => Workflow::DEFAULT_ROLE_ID,
+                'id' => ProcessInstance::DEFAULT_ROLE_ID,
             ];
         }
 
@@ -355,13 +355,13 @@ class Bpmn2Reader
 
     /**
      * @param \DOMElement $element
-     * @param int|string  $workflowId
+     * @param int|string  $processInstanceId
      *
      * @return IdAttributeNotFoundException
      */
-    private function createIdAttributeNotFoundException(\DOMElement $element, $workflowId)
+    private function createIdAttributeNotFoundException(\DOMElement $element, $processInstanceId)
     {
-        return new IdAttributeNotFoundException(sprintf('The id attribute of the "%s" element is not found in workflow "%s" on line %d', $element->tagName, $workflowId, $element->getLineNo()));
+        return new IdAttributeNotFoundException(sprintf('The id attribute of the "%s" element is not found in workflow "%s" on line %d', $element->tagName, $processInstanceId, $element->getLineNo()));
     }
 
     /**
@@ -374,6 +374,6 @@ class Bpmn2Reader
      */
     private function provideRoleIdForFlowObject(array $flowObjectRoles, $flowObjectId)
     {
-        return count($flowObjectRoles) ? $flowObjectRoles[$flowObjectId] : Workflow::DEFAULT_ROLE_ID;
+        return count($flowObjectRoles) ? $flowObjectRoles[$flowObjectId] : ProcessInstance::DEFAULT_ROLE_ID;
     }
 }

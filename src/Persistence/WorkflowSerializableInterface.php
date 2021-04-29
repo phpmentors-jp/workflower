@@ -13,7 +13,7 @@
 namespace PHPMentors\Workflower\Persistence;
 
 use PHPMentors\Workflower\Process\WorkflowAwareInterface;
-use PHPMentors\Workflower\Workflow\Workflow;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 
 interface WorkflowSerializableInterface extends WorkflowAwareInterface
 {
@@ -28,7 +28,7 @@ interface WorkflowSerializableInterface extends WorkflowAwareInterface
     public function getSerializedWorkflow();
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      */
-    public function getWorkflow();
+    public function getProcessInstance();
 }

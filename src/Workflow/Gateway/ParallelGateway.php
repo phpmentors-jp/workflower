@@ -51,8 +51,8 @@ class ParallelGateway extends Gateway
      */
     public function end(): void
     {
-        $workflow = $this->getWorkflow();
-        $incoming = $workflow->getConnectingObjectCollectionByDestination($this);
+        $processInstance = $this->getProcessInstance();
+        $incoming = $processInstance->getConnectingObjectCollectionByDestination($this);
         $incomingTokens = $this->getToken();
 
         // The Parallel Gateway is activated if there is at least one token on each
@@ -65,12 +65,12 @@ class ParallelGateway extends Gateway
 
         if (count($incomingTokens) == count($incoming)) {
             foreach ($incomingTokens as $incomingToken) {
-                $workflow->removeToken($this, $incomingToken);
+                $processInstance->removeToken($this, $incomingToken);
             }
 
-            foreach ($workflow->getConnectingObjectCollectionBySource($this) as $outgoing) {
+            foreach ($processInstance->getConnectingObjectCollectionBySource($this) as $outgoing) {
                 if ($outgoing instanceof SequenceFlow) {
-                    $token = $workflow->generateToken($this);
+                    $token = $processInstance->generateToken($this);
                     $destination = $outgoing->getDestination();
                     $destination->run($token);
                 }

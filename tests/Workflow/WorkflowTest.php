@@ -431,7 +431,7 @@ class WorkflowTest extends TestCase
         $participant = $this->getMockBuilder(ParticipantInterface::class)
             ->setMethods(['hasRole', 'setResource', 'getResource', 'getName', 'getId'])
             ->getMock();
-        $participant->expects($this->exactly(3))->method('hasRole')->with($this->equalTo(Workflow::DEFAULT_ROLE_ID))->willReturn(true);
+        $participant->expects($this->exactly(3))->method('hasRole')->with($this->equalTo(ProcessInstance::DEFAULT_ROLE_ID))->willReturn(true);
 
         $workflow = $this->workflowRepository->findById('NoLanesProcess');
         $workflow->start($workflow->getFlowObject('Start'));
@@ -804,7 +804,7 @@ class WorkflowTest extends TestCase
         $workflow = $this->workflowRepository->findById('SequentialUserTasks');
         $serialized = $workflow->serialize();
 
-        $restore = new Workflow('test', 'Test');
+        $restore = new ProcessInstance('test', 'Test');
         $restore->unserialize($serialized);
 
         $this->assertThat($serialized, $this->equalTo($restore->serialize()));

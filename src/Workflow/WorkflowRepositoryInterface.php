@@ -17,17 +17,17 @@ interface WorkflowRepositoryInterface
     /**
      * @param int|string $id
      *
-     * @return Workflow|null
+     * @return ProcessInstance|null
      */
-    public function findById($id): ?Workflow;
+    public function findById($id): ?ProcessInstance;
 
     /**
-     * @param Workflow $workflow
+     * @param ProcessInstance $processInstance
      */
-    public function add($workflow): void;
+    public function add($processInstance): void;
 
     /**
-     * @param Workflow $workflow
+     * @param ProcessInstance $processInstance
      */
-    public function remove($workflow): void;
+    public function remove($processInstance): void;
 }

@@ -2,7 +2,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Element;
 
-use PHPMentors\Workflower\Workflow\Workflow;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 
 /**
  * @since Class available since Release 2.0.0
@@ -22,9 +22,9 @@ abstract class FlowObject implements FlowObjectInterface, TransitionalInterface,
     private $token = [];
 
     /**
-     * @var Workflow
+     * @var ProcessInstance
      */
-    private $workflow;
+    private $processInstance;
 
     public function __construct(array $config = [])
     {
@@ -87,17 +87,17 @@ abstract class FlowObject implements FlowObjectInterface, TransitionalInterface,
     /**
      * {@inheritdoc}
      */
-    public function setWorkflow(Workflow $workflow): void
+    public function setProcessInstance(ProcessInstance $processInstance): void
     {
-        $this->workflow = $workflow;
+        $this->processInstance = $processInstance;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getWorkflow(): Workflow
+    public function getProcessInstance(): ProcessInstance
     {
-        return $this->workflow;
+        return $this->processInstance;
     }
 
     /**

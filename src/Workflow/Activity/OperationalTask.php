@@ -84,10 +84,10 @@ abstract class OperationalTask extends Task implements OperationalInterface
         // create work items
         parent::createWork();
 
-        $workflow = $this->getWorkflow();
-        $operationRunner = $workflow->getOperationRunner();
+        $processInstance = $this->getProcessInstance();
+        $operationRunner = $processInstance->getOperationRunner();
 
-        $participant = $operationRunner->provideParticipant($this, $workflow);
+        $participant = $operationRunner->provideParticipant($this, $processInstance);
 
         // execute work items
         foreach ($this->workItems as $workItem) {

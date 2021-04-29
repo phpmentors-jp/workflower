@@ -87,7 +87,7 @@ class ExclusiveGateway extends Gateway implements ConditionalInterface
      */
     public function end(): void
     {
-        $workflow = $this->getWorkflow();
+        $processInstance = $this->getProcessInstance();
         $selectedSequenceFlow = null;
 
         // Each token arriving at any incoming Sequence Flows activates the
@@ -101,15 +101,15 @@ class ExclusiveGateway extends Gateway implements ConditionalInterface
         // In case all conditions evaluate to false and a default flow has not been
         // specified, an exception is thrown.
 
-        foreach ($workflow->getConnectingObjectCollectionBySource($this) as $outgoing) {
+        foreach ($processInstance->getConnectingObjectCollectionBySource($this) as $outgoing) {
             if ($outgoing instanceof SequenceFlow && $outgoing->getId() !== $this->getDefaultSequenceFlowId()) {
                 $condition = $outgoing->getCondition();
                 if ($condition === null) {
                     // find the next one that has a condition
                     continue;
                 } else {
-                    $expressionLanguage = $workflow->getExpressionLanguage() ?: new ExpressionLanguage();
-                    if ($expressionLanguage->evaluate($condition, $workflow->getProcessData())) {
+                    $expressionLanguage = $processInstance->getExpressionLanguage() ?: new ExpressionLanguage();
+                    if ($expressionLanguage->evaluate($condition, $processInstance->getProcessData())) {
                         $selectedSequenceFlow = $outgoing;
                         break;
                     }
@@ -118,7 +118,7 @@ class ExclusiveGateway extends Gateway implements ConditionalInterface
         }
 
         if (!$selectedSequenceFlow) {
-            $selectedSequenceFlow = $workflow->getConnectingObject($this->getDefaultSequenceFlowId());
+            $selectedSequenceFlow = $processInstance->getConnectingObject($this->getDefaultSequenceFlowId());
         }
 
         if (!$selectedSequenceFlow) {

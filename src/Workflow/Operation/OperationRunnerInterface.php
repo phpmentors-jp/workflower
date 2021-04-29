@@ -14,7 +14,7 @@ namespace PHPMentors\Workflower\Workflow\Operation;
 
 use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
-use PHPMentors\Workflower\Workflow\Workflow;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 
 /**
  * @since Interface available since Release 1.2.0
@@ -23,11 +23,11 @@ interface OperationRunnerInterface
 {
     /**
      * @param OperationalInterface $operational
-     * @param Workflow             $workflow
+     * @param ProcessInstance             $processInstance
      *
      * @return ParticipantInterface
      */
-    public function provideParticipant(OperationalInterface $operational, Workflow $workflow);
+    public function provideParticipant(OperationalInterface $operational, ProcessInstance $processInstance);
 
     /**
      * @param WorkItemInterface $workItem

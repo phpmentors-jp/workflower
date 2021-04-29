@@ -46,7 +46,7 @@ interface ProcessDefinitionInterface
     public function getProcessDefinitions();
 
     /**
-     * @return Workflow
+     * @return ProcessInstance
      */
     public function createProcessInstance();
 }

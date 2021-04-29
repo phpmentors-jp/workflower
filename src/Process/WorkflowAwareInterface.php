@@ -12,12 +12,12 @@
 
 namespace PHPMentors\Workflower\Process;
 
-use PHPMentors\Workflower\Workflow\Workflow;
+use PHPMentors\Workflower\Workflow\ProcessInstance;
 
 interface WorkflowAwareInterface
 {
     /**
-     * @param Workflow $workflow
+     * @param ProcessInstance $processInstance
      */
-    public function setWorkflow(Workflow $workflow);
+    public function setProcessInstance(ProcessInstance $processInstance);
 }
