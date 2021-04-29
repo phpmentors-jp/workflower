@@ -12,9 +12,13 @@
 
 namespace PHPMentors\Workflower\Workflow\Event;
 
+use PHPMentors\Workflower\Workflow\Element\FlowObject;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
-abstract class Event implements \Serializable
+/**
+ * @since Class available since Release 2.0.0
+ */
+abstract class Event extends FlowObject implements EventInterface
 {
     /**
      * @var int|string
@@ -31,16 +35,15 @@ abstract class Event implements \Serializable
      */
     private $role;
 
-    /**
-     * @param int|string $id
-     * @param Role       $role
-     * @param string     $name
-     */
-    public function __construct($id, Role $role, $name = null)
+    public function __construct(array $config = [])
     {
-        $this->id = $id;
-        $this->role = $role;
-        $this->name = $name;
+        parent::__construct($config);
+
+        foreach ($config as $name => $value) {
+            if (property_exists(self::class, $name)) {
+                $this->{$name} = $value;
+            }
+        }
     }
 
     /**
@@ -49,6 +52,7 @@ abstract class Event implements \Serializable
     public function serialize()
     {
         return serialize([
+            get_parent_class($this) => parent::serialize(),
             'id' => $this->id,
             'name' => $this->name,
             'role' => $this->role,
@@ -61,6 +65,11 @@ abstract class Event implements \Serializable
     public function unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
+            if ($name == get_parent_class($this)) {
+                parent::unserialize($value);
+                continue;
+            }
+
             if (property_exists($this, $name)) {
                 $this->$name = $value;
             }
@@ -104,4 +113,5 @@ abstract class Event implements \Serializable
 
         return $this->id === $target->getId();
     }
+
 }

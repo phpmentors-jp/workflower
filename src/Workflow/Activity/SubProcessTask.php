@@ -1,29 +1,17 @@
 <?php
-/*
- * Copyright (c) Atsuhiro Kubo <kubo@iteman.jp> and contributors,
- * All rights reserved.
- *
- * This file is part of Workflower.
- *
- * This program and the accompanying materials are made available under
- * the terms of the BSD 2-Clause License which accompanies this
- * distribution, and is available at http://opensource.org/licenses/BSD-2-Clause
- */
+
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-use PHPMentors\Workflower\Workflow\Participant\Role;
-use PHPMentors\Workflower\Workflow\Resource\MessageInterface;
+
+use PHPMentors\Workflower\Workflow\ProcessDefinitionInterface;
 
 /**
- * @since Class available since Release 1.3.0
+ * @since Class available since Release 2.0.0
  */
-class SendTask extends OperationalTask implements MessageInterface
+class SubProcessTask extends ProcessTask
 {
-    /**
-     * @var int|string
-     */
-    private $message;
+    private $triggeredByEvent = false;
 
     public function __construct(array $config = [])
     {
@@ -43,7 +31,7 @@ class SendTask extends OperationalTask implements MessageInterface
     {
         return serialize([
             get_parent_class($this) => parent::serialize(),
-            'message' => $this->message,
+            'triggeredByEvent' => $this->triggeredByEvent,
         ]);
     }
 
@@ -64,11 +52,4 @@ class SendTask extends OperationalTask implements MessageInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMessage()
-    {
-        return $this->message;
-    }
 }

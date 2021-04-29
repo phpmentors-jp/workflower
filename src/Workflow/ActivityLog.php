@@ -28,11 +28,12 @@ class ActivityLog
     private $workItem;
 
     /**
-     * @param ActivityInterface $activity
+     * @param WorkItemInterface $workItem
      */
-    public function __construct(ActivityInterface $activity)
+    public function __construct(WorkItemInterface $workItem)
     {
-        $this->activity = $activity;
+        $this->workItem = $workItem;
+        $this->activity = $workItem->getParentActivity();
     }
 
     /**
@@ -41,14 +42,6 @@ class ActivityLog
     public function getActivity()
     {
         return $this->activity;
-    }
-
-    /**
-     * @param WorkItemInterface $workItem
-     */
-    public function setWorkItem(WorkItemInterface $workItem)
-    {
-        $this->workItem = $workItem;
     }
 
     /**

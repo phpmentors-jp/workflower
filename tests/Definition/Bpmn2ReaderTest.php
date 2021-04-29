@@ -12,6 +12,8 @@
 
 namespace PHPMentors\Workflower\Definition;
 
+use PHPMentors\Workflower\Workflow\ProcessDefinition;
+use PHPMentors\Workflower\Workflow\Workflow;
 use PHPMentors\Workflower\Workflow\WorkflowRepository;
 use PHPUnit\Framework\TestCase;
 
@@ -24,9 +26,13 @@ class Bpmn2ReaderTest extends TestCase
     {
         $workflowRepository = new WorkflowRepository();
         $bpmn2Reader = new Bpmn2Reader();
-        $workflow = $bpmn2Reader->read(dirname(__DIR__).'/Resources/config/workflower/LoanRequestProcess.bpmn');
+        $definitions = $bpmn2Reader->read(dirname(__DIR__).'/Resources/config/workflower/LoanRequestProcess.bpmn');
 
-        $this->assertThat($workflow, $this->equalTo($workflowRepository->findById('LoanRequestProcess')));
+        $instance = $definitions[0]->createProcessInstance();
+        $dest = $workflowRepository->findById('LoanRequestProcess');
+        $definitions[0]->setProcessDefinitions($dest->getProcessDefinition()->getProcessDefinitions());
+
+        $this->assertThat($instance, $this->equalTo($dest));
     }
 
     /**
@@ -38,8 +44,12 @@ class Bpmn2ReaderTest extends TestCase
     {
         $workflowRepository = new WorkflowRepository();
         $bpmn2Reader = new Bpmn2Reader();
-        $workflow = $bpmn2Reader->readSource(file_get_contents(dirname(__DIR__).'/Resources/config/workflower/LoanRequestProcess.bpmn'));
+        $definitions = $bpmn2Reader->readSource(file_get_contents(dirname(__DIR__).'/Resources/config/workflower/LoanRequestProcess.bpmn'));
 
-        $this->assertThat($workflow, $this->equalTo($workflowRepository->findById('LoanRequestProcess')));
+        $instance = $definitions[0]->createProcessInstance();
+        $dest = $workflowRepository->findById('LoanRequestProcess');
+        $definitions[0]->setProcessDefinitions($dest->getProcessDefinition()->getProcessDefinitions());
+
+        $this->assertThat($instance, $this->equalTo($dest));
     }
 }

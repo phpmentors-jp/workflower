@@ -15,37 +15,57 @@ namespace PHPMentors\Workflower\Workflow\Activity;
 use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
 use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
+use PHPMentors\Workflower\Workflow\ItemsCollectionInterface;
 
-interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, ConditionalInterface, WorkItemInterface
+interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, ConditionalInterface
 {
-    public function createWorkItem();
+    const STATE_INACTIVE = 'inactive';
+    const STATE_READY = 'ready';
+    const STATE_ACTIVE = 'active';
+    const STATE_COMPLETED = 'completed';
+    const STATE_FAILED = 'failed';
+    const STATE_CLOSED = 'closed';
+
+    /**
+     * @return ItemsCollectionInterface
+     */
+    public function getWorkItems();
+
+    /**
+     * @param ItemsCollectionInterface $collection
+     * @return void
+     */
+    public function setWorkItems(ItemsCollectionInterface $collection);
+
+    /**
+     * @return void
+     */
+    public function createWork(): void;
+
+    /**
+     * @return void
+     */
+    public function completeWork(): void;
+
+    /**
+     * @return string
+     */
+    public function getState();
 
     /**
      * @return bool
      */
-    public function isAllocatable();
+    public function isClosed();
 
     /**
      * @return bool
      */
-    public function isStartable();
+    public function isFailed();
 
     /**
-     * @return bool
-     */
-    public function isCompletable();
-
-    /**
-     * @return bool
-     */
-    public function isEnded();
-
-    /**
-     * @param int $index
+     * @return void
      *
-     * @return WorkItemInterface
-     *
-     * @throws \OutOfBoundsException
+     * @since Method available since Release 2.0.0
      */
-    public function getWorkItem($index);
+    public function cancel();
 }

@@ -12,15 +12,15 @@
 
 namespace PHPMentors\Workflower\Definition;
 
+use PHPMentors\Workflower\Workflow\ProcessDefinition;
 use PHPMentors\Workflower\Workflow\Workflow;
-use PHPMentors\Workflower\Workflow\WorkflowBuilder;
 
 class Bpmn2Reader
 {
     /**
      * @param string $file
      *
-     * @return Workflow
+     * @return ProcessDefinition[]
      *
      * @throws IdAttributeNotFoundException
      */
@@ -38,7 +38,7 @@ class Bpmn2Reader
     /**
      * @param string $source
      *
-     * @return Workflow
+     * @return ProcessDefinition[]
      *
      * @throws IdAttributeNotFoundException
      *
@@ -59,7 +59,7 @@ class Bpmn2Reader
      * @param \DOMDocument $document
      * @param int|string   $workflowId
      *
-     * @return Workflow
+     * @return ProcessDefinition[]
      *
      * @throws IdAttributeNotFoundException
      *
@@ -72,166 +72,284 @@ class Bpmn2Reader
         });
         $errorToExceptionContext->invoke();
 
-        $workflowBuilder = new WorkflowBuilder($workflowId);
+        $processes = [];
+        $globalData = [
+            'messages' => [],
+            'operations' => []
+        ];
 
-        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'process') as $element) {
-            /* @var $element \DOMElement */
-            if ($element->hasAttribute('id')) {
-                $workflowBuilder->setWorkflowId($element->getAttribute('id'));
-            }
-
-            if ($element->hasAttribute('name')) {
-                $workflowBuilder->setWorkflowName($element->getAttribute('name'));
-            }
-        }
-
-        $flowObjectRoles = [];
-        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'lane') as $element) {
-            if (!$element->hasAttribute('id')) {
-                throw $this->createIdAttributeNotFoundException($element, $workflowId);
-            }
-
-            $workflowBuilder->addRole(
-                $element->getAttribute('id'),
-                $element->hasAttribute('name') ? $element->getAttribute('name') : null
-            );
-
-            foreach ($element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'flowNodeRef') as $childElement) {
-                $flowObjectRoles[$childElement->nodeValue] = $element->getAttribute('id');
-            }
-        }
-
-        if (count($flowObjectRoles) == 0) {
-            $workflowBuilder->addRole(Workflow::DEFAULT_ROLE_ID);
-        }
-
-        $messages = [];
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'message') as $element) {
             if (!$element->hasAttribute('id')) {
-                throw $this->createIdAttributeNotFoundException($element, $workflowId);
+                throw new IdAttributeNotFoundException(sprintf('Element "%s" has no id', $element->tagName));
             }
 
-            $messages[$element->getAttribute('id')] = $element->getAttribute('name');
+            $globalData['messages'][$element->getAttribute('id')] = $element->getAttribute('name');
         }
 
-        $operations = [];
         foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'operation') as $element) {
             if (!$element->hasAttribute('id')) {
-                throw $this->createIdAttributeNotFoundException($element, $workflowId);
+                throw new IdAttributeNotFoundException(sprintf('Element "%s" has no id', $element->tagName));
             }
 
-            $operations[$element->getAttribute('id')] = $element->getAttribute('name');
+            $globalData['operations'][$element->getAttribute('id')] = $element->getAttribute('name');
         }
 
-        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'startEvent') as $element) {
-            if (!$element->hasAttribute('id')) {
-                throw $this->createIdAttributeNotFoundException($element, $workflowId);
-            }
-
-            $workflowBuilder->addStartEvent(
-                $element->getAttribute('id'),
-                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
-                $element->hasAttribute('name') ? $element->getAttribute('name') : null,
-                $element->hasAttribute('default') ? $element->getAttribute('default') : null
-            );
+        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'process') as $element) {
+            $processes[] = new ProcessDefinition($this->readProcess($globalData, $element));
         }
 
-        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'task') as $element) {
-            if (!$element->hasAttribute('id')) {
-                throw $this->createIdAttributeNotFoundException($element, $workflowId);
-            }
+        return $processes;
+    }
 
-            $workflowBuilder->addTask(
-                $element->getAttribute('id'),
-                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
-                $element->hasAttribute('name') ? $element->getAttribute('name') : null,
-                $element->hasAttribute('default') ? $element->getAttribute('default') : null
-            );
+    /**
+     * @param array $globalData
+     * @param \DOMElement $element
+     * @return array
+     */
+    private function readProcess(array $globalData, \DOMElement $rootElement)
+    {
+        if (!$rootElement->hasAttribute('id')) {
+            throw new IdAttributeNotFoundException(sprintf('Element "%s" has no id', $rootElement->tagName));
         }
 
-        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'serviceTask') as $element) {
+        $process = [
+            'id' => $rootElement->getAttribute('id'),
+            'name' => $rootElement->hasAttribute('name') ? $rootElement->getAttribute('name') : null,
+            'roles' => [],
+            'objectRoles' => []
+        ];
+
+        foreach ($rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'lane') as $element) {
             if (!$element->hasAttribute('id')) {
-                throw $this->createIdAttributeNotFoundException($element, $workflowId);
+                throw new IdAttributeNotFoundException(sprintf('Element "%s" has no id', $rootElement->tagName));
             }
 
-            $workflowBuilder->addServiceTask(
-                $element->getAttribute('id'),
-                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
-                $element->hasAttribute('operationRef') ? $operations[$element->getAttribute('operationRef')] : null,
-                $element->hasAttribute('name') ? $element->getAttribute('name') : null,
-                $element->hasAttribute('default') ? $element->getAttribute('default') : null
-            );
+            $id = $element->getAttribute('id');
+
+            $process['roles'][] = [
+                'id' => $id,
+                'name' => $element->hasAttribute('name') ? $element->getAttribute('name') : null
+            ];
+
+            foreach ($element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'flowNodeRef') as $childElement) {
+                $process['objectRoles'][$childElement->nodeValue] = $id;
+            }
         }
 
-        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'sendTask') as $element) {
-            if (!$element->hasAttribute('id')) {
-                throw $this->createIdAttributeNotFoundException($element, $workflowId);
-            }
-
-            $workflowBuilder->addSendTask(
-                $element->getAttribute('id'),
-                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
-                $element->hasAttribute('messageRef') ? $messages[$element->getAttribute('messageRef')] : null,
-                $element->hasAttribute('operationRef') ? $operations[$element->getAttribute('operationRef')] : null,
-                $element->hasAttribute('name') ? $element->getAttribute('name') : null,
-                $element->hasAttribute('default') ? $element->getAttribute('default') : null
-            );
+        if (count($process['roles']) == 0) {
+            $process['roles'][] = [
+                'id' => Workflow::DEFAULT_ROLE_ID
+            ];
         }
 
-        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'exclusiveGateway') as $element) {
-            if (!$element->hasAttribute('id')) {
-                throw $this->createIdAttributeNotFoundException($element, $workflowId);
-            }
+        $process['startEvents'] = $this->readEvents($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'startEvent'));
+        $process['endEvents'] = $this->readEvents($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'endEvent'));
 
-            $workflowBuilder->addExclusiveGateway(
-                $element->getAttribute('id'),
-                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
-                $element->hasAttribute('name') ? $element->getAttribute('name') : null,
-                $element->hasAttribute('default') ? $element->getAttribute('default') : null
-            );
+        $process['tasks'] = $this->readTasks($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'task'));
+        $process['userTasks'] = $this->readTasks($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'userTask'));
+        $process['manualTasks'] = $this->readTasks($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'manualTask'));
+        $process['serviceTasks'] = $this->readTasks($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'serviceTask'));
+        $process['sendTasks'] = $this->readTasks($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'sendTask'));
+        $process['callActivities'] = $this->readTasks($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'callActivity'));
+
+        foreach($rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'subProcess') as $element) {
+            $task = $this->readTask($globalData, $process, $element);
+            $task['processDefinition'] = $this->readProcess($globalData, $element);
+            $process['subProcesses'][] = $task;
         }
 
-        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'parallelGateway') as $element) {
-            if (!$element->hasAttribute('id')) {
-                throw $this->createIdAttributeNotFoundException($element, $workflowId);
-            }
+        $process['exclusiveGateways'] = $this->readGateways($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'exclusiveGateway'));
+        $process['parallelGateways'] = $this->readGateways($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'parallelGateway'));
+        $process['inclusiveGateways'] = $this->readGateways($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'inclusiveGateway'));
 
-            $workflowBuilder->addParallelGateway(
-                $element->getAttribute('id'),
-                $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')),
-                $element->hasAttribute('name') ? $element->getAttribute('name') : null
-            );
+        $process['sequenceFlows'] = $this->readSequenceFlows($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'sequenceFlow'));
+
+        return $process;
+    }
+
+    /**
+     * @param array $globalData
+     * @param array $process
+     * @param \DOMNodeList $nodes
+     */
+    private function readTasks(array $globalData, array $process, $nodes)
+    {
+        $items = [];
+
+        foreach ($nodes as $element) {
+            $items[] = $this->readTask($globalData, $process, $element);
         }
 
-        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'endEvent') as $element) {
-            if (!$element->hasAttribute('id')) {
-                throw $this->createIdAttributeNotFoundException($element, $workflowId);
-            }
+        return $items;
+    }
 
-            $workflowBuilder->addEndEvent($element->getAttribute('id'), $this->provideRoleIdForFlowObject($flowObjectRoles, $element->getAttribute('id')), $element->hasAttribute('name') ? $element->getAttribute('name') : null);
+    /**
+     * @param array $globalData
+     * @param array $process
+     * @param \DOMElement $element
+     */
+    private function readTask(array $globalData, array $process, $element)
+    {
+        if (!$element->hasAttribute('id')) {
+            throw new IdAttributeNotFoundException(sprintf('Element "%s" has no id', $element->tagName));
         }
 
-        foreach ($document->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'sequenceFlow') as $element) {
+        $id = $element->getAttribute('id');
+        $message = $element->hasAttribute('messageRef') ? $globalData['messages'][$element->getAttribute('messageRef')] : null;
+        $operation = $element->hasAttribute('operationRef') ? $globalData['operations'][$element->getAttribute('operationRef')] : null;
+        $defaultSequenceFlowId = $element->hasAttribute('default') ? $element->getAttribute('default') : null;
+        $calledElement = $element->hasAttribute('calledElement') ? $element->getAttribute('calledElement') : null;
+        $multiInstance = null;
+        $sequential = null;
+        $completionCondition = null;
+
+        foreach ($element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'multiInstanceLoopCharacteristics') as $childElement) {
+            $multiInstance = true;
+            $sequential = $childElement->hasAttribute('isSequential') ? ($childElement->getAttribute('isSequential') === 'true') : false;
+            foreach ($childElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'completionCondition') as $conditionElement) {
+                $completionCondition = $conditionElement->nodeValue;
+            }
+        }
+
+        $config = [
+            'id' => $id,
+            'name' => $element->hasAttribute('name') ? $element->getAttribute('name') : null,
+            'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id)
+        ];
+
+        if ($multiInstance !== null) {
+            $config['multiInstance'] = $multiInstance;
+        }
+        if ($sequential !== null) {
+            $config['sequential'] = $sequential;
+        }
+        if ($completionCondition !== null) {
+            $config['completionCondition'] = $completionCondition;
+        }
+        if ($defaultSequenceFlowId !== null) {
+            $config['defaultSequenceFlowId'] = $defaultSequenceFlowId;
+        }
+        if ($message !== null) {
+            $config['message'] = $message;
+        }
+        if ($operation !== null) {
+            $config['operation'] = $operation;
+        }
+        if ($calledElement !== null) {
+            $config['calledElement'] = $calledElement;
+        }
+
+        return $config;
+    }
+
+    /**
+     * @param array $globalData
+     * @param array $process
+     * @param \DOMNodeList $nodes
+     */
+    private function readGateways(array $globalData, array $process, $nodes)
+    {
+        $items = [];
+
+        foreach ($nodes as $element) {
             if (!$element->hasAttribute('id')) {
-                throw $this->createIdAttributeNotFoundException($element, $workflowId);
+                throw new IdAttributeNotFoundException(sprintf('Element "%s" has no id', $element->tagName));
             }
 
+            $id = $element->getAttribute('id');
+            $defaultSequenceFlowId = $element->hasAttribute('default') ? $element->getAttribute('default') : null;
+
+            $config = [
+                'id' => $id,
+                'name' => $element->hasAttribute('name') ? $element->getAttribute('name') : null,
+                'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id)
+            ];
+
+            if ($defaultSequenceFlowId !== null) {
+                $config['defaultSequenceFlowId'] = $defaultSequenceFlowId;
+            }
+
+            $items[] = $config;
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param array $globalData
+     * @param array $process
+     * @param \DOMNodeList $nodes
+     */
+    private function readEvents(array $globalData, array $process, $nodes)
+    {
+        $items = [];
+
+        foreach ($nodes as $element) {
+            if (!$element->hasAttribute('id')) {
+                throw new IdAttributeNotFoundException(sprintf('Element "%s" has no id', $element->tagName));
+            }
+
+            $id = $element->getAttribute('id');
+            $defaultSequenceFlowId = $element->hasAttribute('default') ? $element->getAttribute('default') : null;
+            $name = $element->hasAttribute('name') ? $element->getAttribute('name') : null;
+
+            $config = [
+                'id' => $id,
+                'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id)
+            ];
+
+            if ($name !== null) {
+                $config['name'] = $name;
+            }
+            if ($defaultSequenceFlowId !== null) {
+                $config['defaultSequenceFlowId'] = $defaultSequenceFlowId;
+            }
+
+            $items[] = $config;
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param array $globalData
+     * @param array $process
+     * @param \DOMNodeList $nodes
+     */
+    private function readSequenceFlows(array $globalData, array $process, $nodes)
+    {
+        $items = [];
+
+        foreach ($nodes as $element) {
+            if (!$element->hasAttribute('id')) {
+                throw new IdAttributeNotFoundException(sprintf('Element "%s" has no id', $element->tagName));
+            }
+
+            $id = $element->getAttribute('id');
+            $name = $element->hasAttribute('name') ? $element->getAttribute('name') : null;
             $condition = null;
             foreach ($element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'conditionExpression') as $childElement) {
                 $condition = $childElement->nodeValue;
                 break;
             }
 
-            $workflowBuilder->addSequenceFlow(
-                $element->getAttribute('sourceRef'),
-                $element->getAttribute('targetRef'),
-                $element->getAttribute('id'),
-                $element->hasAttribute('name') ? $element->getAttribute('name') : null,
-                $condition === null ? null : $condition
-            );
+            $config = [
+                'id' => $id,
+                'source' => $element->getAttribute('sourceRef'),
+                'destination' => $element->getAttribute('targetRef'),
+            ];
+
+            if ($name !== null) {
+                $config['name'] = $name;
+            }
+            if ($condition !== null) {
+                $config['condition'] = $condition;
+            }
+
+            $items[] = $config;
         }
 
-        return $workflowBuilder->build();
+        return $items;
     }
 
     /**

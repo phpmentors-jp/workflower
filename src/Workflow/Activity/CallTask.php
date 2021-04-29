@@ -1,29 +1,20 @@
 <?php
-/*
- * Copyright (c) Atsuhiro Kubo <kubo@iteman.jp> and contributors,
- * All rights reserved.
- *
- * This file is part of Workflower.
- *
- * This program and the accompanying materials are made available under
- * the terms of the BSD 2-Clause License which accompanies this
- * distribution, and is available at http://opensource.org/licenses/BSD-2-Clause
- */
+
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
-use PHPMentors\Workflower\Workflow\Participant\Role;
-use PHPMentors\Workflower\Workflow\Resource\MessageInterface;
+
+use PHPMentors\Workflower\Workflow\Workflow;
 
 /**
- * @since Class available since Release 1.3.0
+ * @since Class available since Release 2.0.0
  */
-class SendTask extends OperationalTask implements MessageInterface
+class CallTask extends ProcessTask
 {
     /**
-     * @var int|string
+     * @var string
      */
-    private $message;
+    private $calledElement;
 
     public function __construct(array $config = [])
     {
@@ -43,7 +34,7 @@ class SendTask extends OperationalTask implements MessageInterface
     {
         return serialize([
             get_parent_class($this) => parent::serialize(),
-            'message' => $this->message,
+            'calledElement' => $this->calledElement,
         ]);
     }
 
@@ -65,10 +56,26 @@ class SendTask extends OperationalTask implements MessageInterface
     }
 
     /**
+     * @return string
+     */
+    public function getCalledElement()
+    {
+        return $this->calledElement;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function getMessage()
+    public function getProcessDefinition()
     {
-        return $this->message;
+        if ($this->processDefinition === null) {
+            // by the time this is called we assume that our process definition
+            // is already in our repository. Maybe we should throw an error
+            // if we don't find it there
+            $this->processDefinition = $this->getWorkflow()->getProcessDefinition()->getProcessDefinitions()->getLatestById($this->calledElement);
+        }
+
+        return $this->processDefinition;
     }
+
 }

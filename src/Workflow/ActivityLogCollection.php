@@ -30,14 +30,6 @@ class ActivityLogCollection implements \Countable, \IteratorAggregate
     public function add(ActivityLog $activityLog)
     {
         $this->activityLogs[] = $activityLog;
-
-        if (array_key_exists($activityLog->getActivity()->getId(), $this->lastWorkItemIndexByActivity)) {
-            ++$this->lastWorkItemIndexByActivity[$activityLog->getActivity()->getId()];
-        } else {
-            $this->lastWorkItemIndexByActivity[$activityLog->getActivity()->getId()] = 0;
-        }
-
-        $activityLog->setWorkItem($activityLog->getActivity()->getWorkItem($this->lastWorkItemIndexByActivity[$activityLog->getActivity()->getId()]));
     }
 
     /**

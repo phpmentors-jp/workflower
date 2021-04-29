@@ -4,13 +4,29 @@ namespace PHPMentors\Workflower\Workflow\Activity;
 
 use PHPMentors\Workflower\Workflow\Participant\LoggedParticipant;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
+use PHPMentors\Workflower\Workflow\ProcessInstanceInterface;
 
 class WorkItem implements WorkItemInterface, \Serializable
 {
     /**
      * @var string
      */
-    private $currentState = self::STATE_CREATED;
+    private $id;
+
+    /**
+     * @var ProcessInstanceInterface
+     */
+    private $parentProcessInstance;
+
+    /**
+     * @var ActivityInterface
+     */
+    private $parentActivity;
+
+    /**
+     * @var string
+     */
+    private $state = self::STATE_CREATED;
 
     /**
      * @var ParticipantInterface
@@ -47,8 +63,14 @@ class WorkItem implements WorkItemInterface, \Serializable
      */
     private $endResult;
 
-    public function __construct()
+    /**
+     * @var array
+     */
+    private $data;
+
+    public function __construct($id)
     {
+        $this->id = $id;
         $this->creationDate = new \DateTime();
     }
 
@@ -58,7 +80,10 @@ class WorkItem implements WorkItemInterface, \Serializable
     public function serialize()
     {
         return serialize([
-            'currentState' => $this->currentState,
+            'id' => $this->id,
+            'parentProcessInstance' => $this->parentProcessInstance,
+            'parentActivity' => $this->parentActivity,
+            'state' => $this->state,
             'participant' => $this->participant === null ? null : ($this->participant instanceof LoggedParticipant ? $this->participant : new LoggedParticipant($this->participant)),
             'creationDate' => $this->creationDate,
             'allocationDate' => $this->allocationDate,
@@ -84,9 +109,107 @@ class WorkItem implements WorkItemInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function getCurrentState()
+    public function getId()
     {
-        return $this->currentState;
+        return $this->id;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setParentProcessInstance(ProcessInstanceInterface $processInstance)
+    {
+        $this->parentProcessInstance = $processInstance;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParentProcessInstance()
+    {
+        return $this->parentProcessInstance;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setParentActivity(ActivityInterface $activity)
+    {
+        $this->parentActivity = $activity;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParentActivity()
+    {
+        return $this->parentActivity;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isAllocatable()
+    {
+        return $this->getState() == WorkItem::STATE_CREATED;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isStartable()
+    {
+        return $this->getState() == WorkItem::STATE_ALLOCATED;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isCompletable()
+    {
+        return $this->getState() == WorkItem::STATE_STARTED;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isCancelled()
+    {
+        return $this->getState() == WorkItem::STATE_CANCELLED;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isEnded()
+    {
+        $state = $this->getState();
+
+        return $state == WorkItem::STATE_ENDED || $state == WorkItem::STATE_CANCELLED;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getState()
+    {
+        return $this->state;
     }
 
     /**
@@ -150,7 +273,11 @@ class WorkItem implements WorkItemInterface, \Serializable
      */
     public function allocate(ParticipantInterface $participant)
     {
-        $this->currentState = self::STATE_ALLOCATED;
+        if (!$this->isAllocatable()) {
+            throw new UnexpectedWorkItemStateException(sprintf('The current work item of the activity "%s" is not allocatable.', $this->getId()));
+        }
+
+        $this->state = self::STATE_ALLOCATED;
         $this->allocationDate = new \DateTime();
         $this->participant = $participant;
     }
@@ -158,9 +285,13 @@ class WorkItem implements WorkItemInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function start()
+    public function start(): void
     {
-        $this->currentState = self::STATE_STARTED;
+        if (!$this->isStartable()) {
+            throw new UnexpectedWorkItemStateException(sprintf('The current work item of the activity "%s" is not startable.', $this->getId()));
+        }
+
+        $this->state = self::STATE_STARTED;
         $this->startDate = new \DateTime();
     }
 
@@ -169,9 +300,21 @@ class WorkItem implements WorkItemInterface, \Serializable
      */
     public function complete(ParticipantInterface $participant = null)
     {
-        $this->currentState = self::STATE_ENDED;
+        if (!$this->isCompletable()) {
+            throw new UnexpectedWorkItemStateException(sprintf('The current work item of the activity "%s" is not completable.', $this->getId()));
+        }
+
+        $this->state = self::STATE_ENDED;
         $this->endDate = new \DateTime();
         $this->endParticipant = $participant === null ? $this->participant : $participant;
         $this->endResult = self::END_RESULT_COMPLETION;
+
+        $this->getParentActivity()->completeWork();
+    }
+
+    public function cancel(): void
+    {
+        $this->state = self::STATE_CANCELLED;
+        $this->endDate = new \DateTime();
     }
 }

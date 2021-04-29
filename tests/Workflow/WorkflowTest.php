@@ -15,9 +15,10 @@ namespace PHPMentors\Workflower\Workflow;
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\WorkItem;
 use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
-use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
 use PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
+use PHPMentors\Workflower\Workflow\Provider\DataProviderInterface;
+use PHPMentors\Workflower\Workflow\ProcessDefinition;
 use PHPUnit\Framework\TestCase;
 
 class WorkflowTest extends TestCase
@@ -63,7 +64,7 @@ class WorkflowTest extends TestCase
 
         $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
         $this->assertThat($currentFlowObject->getId(), $this->equalTo('RecordLoanApplicationInformation'));
-        $this->assertThat($currentFlowObject->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_CREATED));
+        $this->assertThat($currentFlowObject->getState(), $this->equalTo(ActivityInterface::STATE_ACTIVE));
 
         $previousFlowObject = $workflow->getPreviousFlowObject();
 
@@ -81,14 +82,15 @@ class WorkflowTest extends TestCase
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
         $workflow->start($workflow->getFlowObject('Start'));
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->allocateWorkItem($workflow->getCurrentFlowObject()->getWorkItems()->getAt(0), $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
+        $workitem = $currentFlowObject->getWorkItems()->getAt(0);
 
         $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
         $this->assertThat($currentFlowObject->getId(), $this->equalTo('RecordLoanApplicationInformation'));
-        $this->assertThat($currentFlowObject->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_ALLOCATED));
-        $this->assertThat($currentFlowObject->getParticipant(), $this->identicalTo($participant));
+        $this->assertThat($currentFlowObject->getState(), $this->equalTo(ActivityInterface::STATE_ACTIVE));
+        $this->assertThat($workitem->getParticipant(), $this->identicalTo($participant));
     }
 
     /**
@@ -101,17 +103,19 @@ class WorkflowTest extends TestCase
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
         $workflow->start($workflow->getFlowObject('Start'));
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
 
         $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
         $this->assertThat($currentFlowObject->getId(), $this->equalTo('RecordLoanApplicationInformation'));
-        $this->assertThat($currentFlowObject->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_STARTED));
-        $this->assertThat($currentFlowObject->getCreationDate(), $this->isInstanceOf('DateTime'));
-        $this->assertThat($currentFlowObject->getAllocationDate(), $this->isInstanceOf('DateTime'));
-        $this->assertThat($currentFlowObject->getStartDate(), $this->isInstanceOf('DateTime'));
+        $this->assertThat($currentFlowObject->getState(), $this->equalTo(ActivityInterface::STATE_ACTIVE));
+        $this->assertThat($workitem->getCreationDate(), $this->isInstanceOf('DateTime'));
+        $this->assertThat($workitem->getAllocationDate(), $this->isInstanceOf('DateTime'));
+        $this->assertThat($workitem->getStartDate(), $this->isInstanceOf('DateTime'));
     }
 
     /**
@@ -124,24 +128,27 @@ class WorkflowTest extends TestCase
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
         $workflow->start($workflow->getFlowObject('Start'));
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
 
         $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
         $this->assertThat($currentFlowObject->getId(), $this->equalTo('CheckApplicantInformation'));
-        $this->assertThat($currentFlowObject->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_CREATED));
+        $this->assertThat($currentFlowObject->getState(), $this->equalTo(ActivityInterface::STATE_ACTIVE));
 
         $previousFlowObject = $workflow->getPreviousFlowObject();
+        $workitem = $previousFlowObject->getWorkItems()->getAt(0);
 
         $this->assertThat($currentFlowObject, $this->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ActivityInterface'));
         $this->assertThat($previousFlowObject->getId(), $this->equalTo('RecordLoanApplicationInformation'));
-        $this->assertThat($previousFlowObject->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_ENDED));
-        $this->assertThat($previousFlowObject->getEndDate(), $this->isInstanceOf('DateTime'));
-        $this->assertThat($previousFlowObject->getEndParticipant(), $this->identicalTo($participant));
-        $this->assertThat($previousFlowObject->getEndResult(), $this->equalTo(WorkItem::END_RESULT_COMPLETION));
+        $this->assertThat($previousFlowObject->getState(), $this->equalTo(ActivityInterface::STATE_CLOSED));
+        $this->assertThat($workitem->getState(), $this->equalTo(WorkItemInterface::STATE_ENDED));
+        $this->assertThat($workitem->getEndDate(), $this->isInstanceOf('DateTime'));
+        $this->assertThat($workitem->getEndParticipant(), $this->identicalTo($participant));
+        $this->assertThat($workitem->getEndResult(), $this->equalTo(WorkItem::END_RESULT_COMPLETION));
     }
 
     /**
@@ -171,14 +178,16 @@ class WorkflowTest extends TestCase
         $workflow->setProcessData(['rejected' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
         $workflow->setProcessData(['rejected' => $rejected]);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
 
@@ -212,18 +221,21 @@ class WorkflowTest extends TestCase
         $workflow->setProcessData(['rejected' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
         $workflow->setProcessData(['rejected' => $rejected]);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
 
@@ -242,21 +254,25 @@ class WorkflowTest extends TestCase
         $workflow->setProcessData(['rejected' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
         $this->assertThat($workflow->isActive(), $this->isFalse());
         $this->assertThat($workflow->isEnded(), $this->isTrue());
@@ -281,21 +297,25 @@ class WorkflowTest extends TestCase
         $workflow->setProcessData(['rejected' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
         $activityLog = $workflow->getActivityLog();
 
@@ -311,7 +331,7 @@ class WorkflowTest extends TestCase
 
         foreach ($activityLog as $i => $activityLogEntry) { /* @var $activityLogEntry ActivityLog */
             $this->assertThat($activityLogEntry->getActivity()->getId(), $this->equalTo($activityIds[$i]));
-            $this->assertThat($activityLogEntry->getWorkItem()->getCurrentState(), $this->equalTo(WorkItemInterface::STATE_ENDED));
+            $this->assertThat($activityLogEntry->getWorkItem()->getState(), $this->equalTo(WorkItemInterface::STATE_ENDED));
             $this->assertThat($activityLogEntry->getWorkItem()->getParticipant(), $this->identicalTo($participant));
             $this->assertThat($activityLogEntry->getWorkItem()->getCreationDate(), $this->isInstanceOf('DateTime'));
             $this->assertThat($activityLogEntry->getWorkItem()->getAllocationDate(), $this->isInstanceOf('DateTime'));
@@ -334,22 +354,26 @@ class WorkflowTest extends TestCase
         $workflow->setProcessData(['satisfied' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(1);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(1);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
         $workflow->setProcessData(['satisfied' => true]);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
         $activityLog = $workflow->getActivityLog();
 
@@ -378,14 +402,15 @@ class WorkflowTest extends TestCase
         $participant = $this->createMock(ParticipantInterface::class);
         $participant->method('hasRole')->willReturn(true);
         $operationRunner = $this->getMockBuilder(OperationRunnerInterface::class)
-            ->setMethods(['provideParticipant', 'run'])
+            ->setMethods(['provideParticipant', 'run', 'runWorkItem'])
             ->getMock();
         $operationRunner->method('provideParticipant')->willReturn($participant);
         $self = $this;
-        $operationRunner->expects($this->exactly(2))->method('run')->willReturnCallback(function (OperationalInterface $operational, Workflow $workflow) use ($self) {
+        $operationRunner->expects($this->exactly(2))->method('runWorkItem')->willReturnCallback(function (WorkItemInterface $workItem) use ($self) {
             static $calls = 0;
 
             ++$calls;
+            $operational = $workItem->getParentActivity();
             $self->assertThat($operational, $self->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ServiceTask'));
             $self->assertThat($operational->getOperation(), $self->equalTo('phpmentors_workflower.service'.$calls));
         });
@@ -411,9 +436,11 @@ class WorkflowTest extends TestCase
 
         $workflow = $this->workflowRepository->findById('NoLanesProcess');
         $workflow->start($workflow->getFlowObject('Start'));
-        $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
+
+        $workitem = $workflow->getCurrentFlowObject()->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
         $this->assertThat($workflow->isEnded(), $this->isTrue());
     }
@@ -428,14 +455,15 @@ class WorkflowTest extends TestCase
         $participant = $this->createMock(ParticipantInterface::class);
         $participant->method('hasRole')->willReturn(true);
         $operationRunner = $this->getMockBuilder(OperationRunnerInterface::class)
-            ->setMethods(['provideParticipant', 'run'])
+            ->setMethods(['provideParticipant', 'run', 'runWorkItem'])
             ->getMock();
         $operationRunner->method('provideParticipant')->willReturn($participant);
         $self = $this;
-        $operationRunner->expects($this->exactly(2))->method('run')->willReturnCallback(function (OperationalInterface $operational, Workflow $workflow) use ($self) {
+        $operationRunner->expects($this->exactly(2))->method('runWorkItem')->willReturnCallback(function (WorkItemInterface $workItem) use ($self) {
             static $calls = 0;
 
             ++$calls;
+            $operational = $workItem->getParentActivity();
             $self->assertThat($operational, $self->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\SendTask'));
             $self->assertThat($operational->getOperation(), $self->equalTo('phpmentors_workflower.service'.$calls));
             $self->assertThat($operational, $self->isInstanceOf('PHPMentors\Workflower\Workflow\Resource\MessageInterface'));
@@ -475,15 +503,17 @@ class WorkflowTest extends TestCase
             $concurrentFlowObjects = array_values($concurrentFlowObjects);
         }
 
-        $workflow->allocateWorkItem($currentFlowObjects[0], $participant);
-        $workflow->startWorkItem($currentFlowObjects[0], $participant);
-        $workflow->completeWorkItem($currentFlowObjects[0], $participant);
+        $workitem = $currentFlowObjects[0]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
         $this->assertThat(count($workflow->getCurrentFlowObjects()), $this->equalTo(2));
 
-        $workflow->allocateWorkItem($currentFlowObjects[1], $participant);
-        $workflow->startWorkItem($currentFlowObjects[1], $participant);
-        $workflow->completeWorkItem($currentFlowObjects[1], $participant);
+        $workitem = $currentFlowObjects[1]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
         $this->assertThat(count($workflow->getCurrentFlowObjects()), $this->equalTo(1));
         $this->assertThat(current($workflow->getCurrentFlowObjects())->getId(), $this->equalTo('ArchiveOrder'));
@@ -525,9 +555,10 @@ class WorkflowTest extends TestCase
 
         foreach ($workflow->getCurrentFlowObjects() as $currentFlowObject) {
             if ($currentFlowObject->getId() == 'Task1') {
-                $workflow->allocateWorkItem($currentFlowObject, $participant);
-                $workflow->startWorkItem($currentFlowObject, $participant);
-                $workflow->completeWorkItem($currentFlowObject, $participant);
+                $workitem = $currentFlowObject->getWorkItems()->getAt(0);
+                $workflow->allocateWorkItem($workitem, $participant);
+                $workflow->startWorkItem($workitem, $participant);
+                $workflow->completeWorkItem($workitem, $participant);
 
                 break;
             }
@@ -542,9 +573,10 @@ class WorkflowTest extends TestCase
 
         foreach ($workflow->getCurrentFlowObjects() as $currentFlowObject) {
             if ($currentFlowObject->getId() == 'Task2') {
-                $workflow->allocateWorkItem($currentFlowObject, $participant);
-                $workflow->startWorkItem($currentFlowObject, $participant);
-                $workflow->completeWorkItem($currentFlowObject, $participant);
+                $workitem = $currentFlowObject->getWorkItems()->getAt(0);
+                $workflow->allocateWorkItem($workitem, $participant);
+                $workflow->startWorkItem($workitem, $participant);
+                $workflow->completeWorkItem($workitem, $participant);
 
                 break;
             }
@@ -559,9 +591,10 @@ class WorkflowTest extends TestCase
 
         foreach ($workflow->getCurrentFlowObjects() as $currentFlowObject) {
             if ($currentFlowObject->getId() == 'Task3') {
-                $workflow->allocateWorkItem($currentFlowObject, $participant);
-                $workflow->startWorkItem($currentFlowObject, $participant);
-                $workflow->completeWorkItem($currentFlowObject, $participant);
+                $workitem = $currentFlowObject->getWorkItems()->getAt(0);
+                $workflow->allocateWorkItem($workitem, $participant);
+                $workflow->startWorkItem($workitem, $participant);
+                $workflow->completeWorkItem($workitem, $participant);
 
                 break;
             }
@@ -599,9 +632,10 @@ class WorkflowTest extends TestCase
         $this->assertThat($workflow->isActive(), $this->isTrue());
         $this->assertThat($workflow->isEnded(), $this->isFalse());
 
-        $workflow->allocateWorkItem($currentFlowObjects[0], $participant);
-        $workflow->startWorkItem($currentFlowObjects[0], $participant);
-        $workflow->completeWorkItem($currentFlowObjects[0], $participant);
+        $workitem = $currentFlowObjects[0]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
         $currentFlowObjects = $workflow->getCurrentFlowObjects();
 
@@ -611,13 +645,15 @@ class WorkflowTest extends TestCase
         $this->assertEquals('Task 3', $currentFlowObjects[0]->getName());
         $this->assertEquals('Task 2', $currentFlowObjects[1]->getName());
 
-        $workflow->allocateWorkItem($currentFlowObjects[0], $participant);
-        $workflow->startWorkItem($currentFlowObjects[0], $participant);
-        $workflow->completeWorkItem($currentFlowObjects[0], $participant);
+        $workitem = $currentFlowObjects[0]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
-        $workflow->allocateWorkItem($currentFlowObjects[1], $participant);
-        $workflow->startWorkItem($currentFlowObjects[1], $participant);
-        $workflow->completeWorkItem($currentFlowObjects[1], $participant);
+        $workitem = $currentFlowObjects[1]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
         $this->assertThat($workflow->isActive(), $this->isFalse());
         $this->assertThat($workflow->isEnded(), $this->isTrue());
@@ -651,9 +687,10 @@ class WorkflowTest extends TestCase
         $this->assertThat($workflow->isActive(), $this->isTrue());
         $this->assertThat($workflow->isEnded(), $this->isFalse());
 
-        $workflow->allocateWorkItem($currentFlowObjects[0], $participant);
-        $workflow->startWorkItem($currentFlowObjects[0], $participant);
-        $workflow->completeWorkItem($currentFlowObjects[0], $participant);
+        $workitem = $currentFlowObjects[0]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
         $currentFlowObjects = $workflow->getCurrentFlowObjects();
 
@@ -662,11 +699,289 @@ class WorkflowTest extends TestCase
         $this->assertThat($workflow->isEnded(), $this->isFalse());
         $this->assertEquals('Task 2', $currentFlowObjects[0]->getName());
 
-        $workflow->allocateWorkItem($currentFlowObjects[0], $participant);
-        $workflow->startWorkItem($currentFlowObjects[0], $participant);
-        $workflow->completeWorkItem($currentFlowObjects[0], $participant);
+        $workitem = $currentFlowObjects[0]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
 
         $this->assertThat($workflow->isActive(), $this->isFalse());
         $this->assertThat($workflow->isEnded(), $this->isTrue());
     }
+
+    /**
+     * @test
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function executeParallelUserTasks()
+    {
+        $participant = $this->createMock(ParticipantInterface::class);
+        $participant->method('hasRole')->willReturn(true);
+
+
+        $parallelData = [
+            ['test' => 1],
+            ['test' => 2],
+            ['test' => 3],
+            ['test' => 4]
+        ];
+        $dataProvider = $this->getMockBuilder(DataProviderInterface::class)
+            ->setMethods(['getParallelInstancesData', 'getSequentialInstanceData', 'getSingleInstanceData', 'mergeInstancesData'])
+            ->getMock();
+        $dataProvider->method('getParallelInstancesData')->willReturn($parallelData);
+
+        $workflow = $this->workflowRepository->findById('ParallelUserTasks');
+        $workflow->setDataProvider($dataProvider);
+        $workflow->start($workflow->getFlowObject('Start'));
+        $currentFlowObject = $workflow->getCurrentFlowObject();
+
+        $this->assertThat($workflow->isActive(), $this->isTrue());
+        $this->assertThat($workflow->isEnded(), $this->isFalse());
+        $this->assertThat($currentFlowObject->getWorkItems()->count(), $this->equalTo(4));
+
+        $workitem = $currentFlowObject->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
+
+        $workitem = $currentFlowObject->getWorkItems()->getAt(2);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
+
+        $userTask = $workflow->getFlowObject('Task_1');
+
+        $this->assertThat($workflow->isEnded(), $this->isTrue());
+        $this->assertThat($userTask->getWorkItems()->getAt(1)->isCancelled(), $this->isTrue());
+        $this->assertThat($userTask->getWorkItems()->getAt(3)->isCancelled(), $this->isTrue());
+    }
+
+    /**
+     * @test
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function executeSequentialUserTasks()
+    {
+        $participant = $this->createMock(ParticipantInterface::class);
+        $participant->method('hasRole')->willReturn(true);
+
+        $counter = 0;
+        $dataProvider = $this->getMockBuilder(DataProviderInterface::class)
+            ->setMethods(['getParallelInstancesData', 'getSequentialInstanceData', 'getSingleInstanceData', 'mergeInstancesData'])
+            ->getMock();
+        $dataProvider->method('getSequentialInstanceData')->willReturn(['test' => ++$counter]);
+
+        $workflow = $this->workflowRepository->findById('SequentialUserTasks');
+        $workflow->setDataProvider($dataProvider);
+        $workflow->start($workflow->getFlowObject('Start'));
+        $currentFlowObject = $workflow->getCurrentFlowObject();
+
+        $this->assertThat($workflow->isActive(), $this->isTrue());
+        $this->assertThat($workflow->isEnded(), $this->isFalse());
+        $this->assertThat($currentFlowObject->getWorkItems()->count(), $this->equalTo(1));
+
+        $workitem = $currentFlowObject->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
+
+        $this->assertThat($currentFlowObject->getWorkItems()->count(), $this->equalTo(2));
+
+        $workitem = $currentFlowObject->getWorkItems()->getAt(1);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
+
+        $this->assertThat($workflow->isEnded(), $this->isTrue());
+    }
+
+    /**
+     * @test
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function processSerialization()
+    {
+        $workflow = $this->workflowRepository->findById('SequentialUserTasks');
+        $serialized = $workflow->serialize();
+
+        $restore = new Workflow('test', 'Test');
+        $restore->unserialize($serialized);
+
+        $this->assertThat($serialized, $this->equalTo($restore->serialize()));
+    }
+
+    /**
+     * @test
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function executeSubProcessTask()
+    {
+        $participant = $this->createMock(ParticipantInterface::class);
+        $participant->method('hasRole')->willReturn(true);
+
+        $workflow = $this->workflowRepository->findById('SubProcess');
+        $workflow->start($workflow->getFlowObject('Start'));
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat($workflow->isActive(), $this->isTrue());
+        $this->assertThat($workflow->isEnded(), $this->isFalse());
+        $this->assertThat($currentFlowObjects[0]->getWorkItems()->count(), $this->equalTo(1));
+        $this->assertThat($currentFlowObjects[1]->getWorkItems()->count(), $this->equalTo(1));
+
+        $workitem = $currentFlowObjects[0]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
+
+        $processInstance = $currentFlowObjects[1]->getWorkItems()->getAt(0);
+        $currentFlowObject = $processInstance->getCurrentFlowObject();
+        $workitem = $currentFlowObject->getWorkItems()->getAt(0);
+        $processInstance->allocateWorkItem($workitem, $participant);
+        $processInstance->startWorkItem($workitem, $participant);
+        $processInstance->completeWorkItem($workitem, $participant);
+
+        $this->assertThat($processInstance->isEnded(), $this->isTrue());
+        $this->assertThat($workflow->isEnded(), $this->isTrue());
+    }
+
+    /**
+     * @test
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function executeCallActivityTask()
+    {
+        $participant = $this->createMock(ParticipantInterface::class);
+        $participant->method('hasRole')->willReturn(true);
+
+        $workflow = $this->workflowRepository->findById('CallActivity');
+        $workflow->start($workflow->getFlowObject('Start'));
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat($workflow->isActive(), $this->isTrue());
+        $this->assertThat($workflow->isEnded(), $this->isFalse());
+        $this->assertThat($currentFlowObjects[0]->getWorkItems()->count(), $this->equalTo(1));
+        $this->assertThat($currentFlowObjects[1]->getWorkItems()->count(), $this->equalTo(1));
+
+        $workitem = $currentFlowObjects[0]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
+
+        $processInstance = $currentFlowObjects[1]->getWorkItems()->getAt(0);
+        $currentFlowObject = $processInstance->getCurrentFlowObject();
+        $workitem = $currentFlowObject->getWorkItems()->getAt(0);
+        $processInstance->allocateWorkItem($workitem, $participant);
+        $processInstance->startWorkItem($workitem, $participant);
+        $processInstance->completeWorkItem($workitem, $participant);
+        $processInstance->cancel();
+
+        $this->assertThat($processInstance->isEnded(), $this->isTrue());
+        $this->assertThat($workflow->isEnded(), $this->isTrue());
+    }
+
+    /**
+     * @test
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function inclusiveGateway()
+    {
+        $participant = $this->createMock(ParticipantInterface::class);
+        $participant->method('hasRole')->willReturn(true);
+
+        $workflow = $this->workflowRepository->findById('InclusiveGateway');
+        $workflow->setProcessData([
+            'paymentReceived' => false,
+            'shipOrder' => true
+        ]);
+        $workflow->start($workflow->getFlowObject('Start'));
+
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(2));
+
+        foreach ($currentFlowObjects as $currentFlowObject) {
+            $this->assertThat(current($currentFlowObject->getToken())->getPreviousFlowObject()->getId(), $this->equalTo('InclusiveGateway1'));
+        }
+
+        $workitem = $currentFlowObjects[0]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
+
+        $this->assertThat(count($workflow->getCurrentFlowObjects()), $this->equalTo(2));
+
+        $workitem = $currentFlowObjects[1]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
+
+        $this->assertThat(count($workflow->getCurrentFlowObjects()), $this->equalTo(1));
+        $this->assertThat(current($workflow->getCurrentFlowObjects())->getId(), $this->equalTo('ArchiveOrder'));
+        $this->assertThat(current(current($workflow->getCurrentFlowObjects())->getToken())->getPreviousFlowObject()->getId(), $this->equalTo('InclusiveGateway2'));
+
+        $activityLog = $workflow->getActivityLog();
+
+        $this->assertThat(count($activityLog), $this->equalTo(3));
+
+        $concurrentFlowObjects = ['ReceiveOrder', 'ShipOrder'];
+
+        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(0)->getActivity()->getId()));
+
+        unset($concurrentFlowObjects[array_search($activityLog->get(0)->getActivity()->getId(), $concurrentFlowObjects)]);
+
+        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(1)->getActivity()->getId()));
+
+        $this->assertThat($activityLog->get(2)->getActivity()->getId(), $this->equalTo('ArchiveOrder'));
+    }
+
+    /**
+     * @test
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function inclusiveGateway2()
+    {
+        $participant = $this->createMock(ParticipantInterface::class);
+        $participant->method('hasRole')->willReturn(true);
+
+        $workflow = $this->workflowRepository->findById('InclusiveGateway');
+        $workflow->setProcessData([
+            'paymentReceived' => true,
+            'shipOrder' => true
+        ]);
+        $workflow->start($workflow->getFlowObject('Start'));
+
+        $currentFlowObjects = $workflow->getCurrentFlowObjects();
+
+        $this->assertThat(count($currentFlowObjects), $this->equalTo(1));
+
+        foreach ($currentFlowObjects as $currentFlowObject) {
+            $this->assertThat(current($currentFlowObject->getToken())->getPreviousFlowObject()->getId(), $this->equalTo('InclusiveGateway1'));
+        }
+
+        $workitem = $currentFlowObjects[0]->getWorkItems()->getAt(0);
+        $workflow->allocateWorkItem($workitem, $participant);
+        $workflow->startWorkItem($workitem, $participant);
+        $workflow->completeWorkItem($workitem, $participant);
+
+        $this->assertThat(count($workflow->getCurrentFlowObjects()), $this->equalTo(1));
+        $this->assertThat(current($workflow->getCurrentFlowObjects())->getId(), $this->equalTo('ArchiveOrder'));
+        $this->assertThat(current(current($workflow->getCurrentFlowObjects())->getToken())->getPreviousFlowObject()->getId(), $this->equalTo('InclusiveGateway2'));
+
+        $activityLog = $workflow->getActivityLog();
+
+        $this->assertThat(count($activityLog), $this->equalTo(2));
+
+        $concurrentFlowObjects = ['ShipOrder'];
+
+        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(0)->getActivity()->getId()));
+
+        $this->assertThat($activityLog->get(1)->getActivity()->getId(), $this->equalTo('ArchiveOrder'));
+    }
+
 }

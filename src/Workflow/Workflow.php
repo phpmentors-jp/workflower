@@ -13,9 +13,11 @@
 namespace PHPMentors\Workflower\Workflow;
 
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
+use PHPMentors\Workflower\Workflow\Activity\CallTask;
+use PHPMentors\Workflower\Workflow\Activity\SubProcessTask;
 use PHPMentors\Workflower\Workflow\Activity\UnexpectedActivityException;
-use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
-use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
+use PHPMentors\Workflower\Workflow\Activity\WorkItem;
+use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
 use PHPMentors\Workflower\Workflow\Element\ConnectingObjectCollection;
 use PHPMentors\Workflower\Workflow\Element\ConnectingObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\FlowObjectCollection;
@@ -24,16 +26,16 @@ use PHPMentors\Workflower\Workflow\Element\Token;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 use PHPMentors\Workflower\Workflow\Event\EndEvent;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
-use PHPMentors\Workflower\Workflow\Gateway\ExclusiveGateway;
-use PHPMentors\Workflower\Workflow\Gateway\ParallelGateway;
-use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
+use PHPMentors\Workflower\Workflow\Event\TerminateEndEvent;
 use PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
+use PHPMentors\Workflower\Workflow\Provider\DataProviderInterface;
+use PHPMentors\Workflower\Workflow\ProcessDefinitionInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
-class Workflow implements \Serializable
+class Workflow implements ProcessInstanceInterface, \Serializable
 {
     const DEFAULT_ROLE_ID = '__ROLE__';
 
@@ -45,9 +47,24 @@ class Workflow implements \Serializable
     private $id;
 
     /**
+     * @var ProcessInstanceInterface
+     */
+    private $parentProcessInstance;
+
+    /**
+     * @var ActivityInterface
+     */
+    private $parentActivity;
+
+    /**
      * @var string
      */
     private $name;
+
+    /**
+     * @var string
+     */
+    private $state = self::STATE_STARTED;
 
     /**
      * @var ConnectingObjectCollection
@@ -105,6 +122,13 @@ class Workflow implements \Serializable
     private $operationRunner;
 
     /**
+     * @var DataProviderInterface
+     *
+     * @since Property available since Release 2.0.0
+     */
+    private $dataProvider;
+
+    /**
      * @var Token[]
      *
      * @since Property available since Release 2.0.0
@@ -117,6 +141,11 @@ class Workflow implements \Serializable
      * @since Property available since Release 2.0.0
      */
     private $activityLogCollection;
+
+    /**
+     * @var ProcessDefinitionInterface
+     */
+    private $processDefinition;
 
     /**
      * @param int|string $id
@@ -139,6 +168,9 @@ class Workflow implements \Serializable
     {
         return serialize([
             'id' => $this->id,
+            'parentProcessInstance' => $this->parentProcessInstance,
+            'parentActivity' => $this->parentActivity,
+            'state' => $this->state,
             'name' => $this->name,
             'endDate' => $this->endDate,
             'connectingObjectCollection' => $this->connectingObjectCollection,
@@ -182,6 +214,56 @@ class Workflow implements \Serializable
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function setParentProcessInstance(ProcessInstanceInterface $processInstance)
+    {
+        $this->parentProcessInstance = $processInstance;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParentProcessInstance()
+    {
+        return $this->parentProcessInstance;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setParentActivity(ActivityInterface $activity)
+    {
+        $this->parentActivity = $activity;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParentActivity()
+    {
+        return $this->parentActivity;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    public function setProcessDefinition(ProcessDefinitionInterface $definition)
+    {
+        $this->processDefinition = $definition;
+    }
+
+    public function getProcessDefinition()
+    {
+        return $this->processDefinition;
+    }
+
+    /**
      * @param ConnectingObjectInterface $connectingObject
      */
     public function addConnectingObject(ConnectingObjectInterface $connectingObject)
@@ -194,6 +276,7 @@ class Workflow implements \Serializable
      */
     public function addFlowObject(FlowObjectInterface $flowObject)
     {
+        $flowObject->setWorkflow($this);
         $this->flowObjectCollection->add($flowObject);
     }
 
@@ -215,6 +298,16 @@ class Workflow implements \Serializable
     public function getConnectingObjectCollectionBySource(TransitionalInterface $flowObject)
     {
         return $this->connectingObjectCollection->filterBySource($flowObject);
+    }
+
+    /**
+     * @param TransitionalInterface $flowObject
+     *
+     * @return ConnectingObjectCollection
+     */
+    public function getConnectingObjectCollectionByDestination(TransitionalInterface $flowObject)
+    {
+        return $this->connectingObjectCollection->filterByDestination($flowObject);
     }
 
     /**
@@ -268,7 +361,10 @@ class Workflow implements \Serializable
      */
     public function isEnded()
     {
-        return count($this->tokens) == 0 && count($this->endEvents) > 0;
+        $state = $this->state;
+
+        return count($this->tokens) == 0 &&
+            ($state === self::STATE_ENDED || $state === self::STATE_CANCELLED || $state === self::STATE_ABNORMAL);
     }
 
     /**
@@ -329,45 +425,46 @@ class Workflow implements \Serializable
     public function start(StartEvent $event)
     {
         $this->startEvent = $event;
-        $this->tokens[] = $this->generateToken($this->startEvent);
-        $this->selectSequenceFlow($this->startEvent);
+        $event->run( $this->generateToken($this->startEvent));
     }
 
     /**
-     * @param ActivityInterface    $activity
+     * @param WorkItemInterface    $workItem
      * @param ParticipantInterface $participant
      */
-    public function allocateWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
+    public function allocateWorkItem(WorkItemInterface $workItem, ParticipantInterface $participant)
     {
+        $activity = $workItem->getParentActivity();
         $this->assertParticipantHasRole($activity, $participant);
         $this->assertCurrentFlowObjectIsExpectedActivity($activity);
 
-        $activity->allocate($participant);
+        $workItem->allocate($participant);
     }
 
     /**
-     * @param ActivityInterface    $activity
+     * @param WorkItemInterface    $workItem
      * @param ParticipantInterface $participant
      */
-    public function startWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
+    public function startWorkItem(WorkItemInterface $workItem, ParticipantInterface $participant)
     {
+        $activity = $workItem->getParentActivity();
         $this->assertParticipantHasRole($activity, $participant);
         $this->assertCurrentFlowObjectIsExpectedActivity($activity);
 
-        $activity->start();
+        $workItem->start();
     }
 
     /**
-     * @param ActivityInterface    $activity
+     * @param WorkItemInterface    $workItem
      * @param ParticipantInterface $participant
      */
-    public function completeWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
+    public function completeWorkItem(WorkItemInterface $workItem, ParticipantInterface $participant)
     {
+        $activity = $workItem->getParentActivity();
         $this->assertParticipantHasRole($activity, $participant);
         $this->assertCurrentFlowObjectIsExpectedActivity($activity);
 
-        $activity->complete($participant);
-        $this->selectSequenceFlow($activity);
+        $workItem->complete($participant);
     }
 
     /**
@@ -399,6 +496,14 @@ class Workflow implements \Serializable
     }
 
     /**
+     * @return ExpressionLanguage
+     */
+    public function getExpressionLanguage()
+    {
+        return $this->expressionLanguage;
+    }
+
+    /**
      * @param OperationRunnerInterface $operationRunner
      *
      * @since Method available since Release 1.2.0
@@ -409,17 +514,79 @@ class Workflow implements \Serializable
     }
 
     /**
+     * @return OperationRunnerInterface
+     */
+    public function getOperationRunner(): OperationRunnerInterface
+    {
+        return $this->operationRunner;
+    }
+
+    /**
+     * @param DataProviderInterface $dataProvider
+     */
+    public function setDataProvider(DataProviderInterface $dataProvider): void
+    {
+        $this->dataProvider = $dataProvider;
+    }
+
+    /**
+     * @return DataProviderInterface
+     */
+    public function getDataProvider()
+    {
+        return $this->dataProvider;
+    }
+
+    /**
      * @param EndEvent $event
      */
-    private function end(EndEvent $event)
+    public function end(EndEvent $event)
     {
         $this->endEvents[] = $event;
 
-        $token = $event->getToken();
+        $token = current($event->getToken());
         $this->removeToken($event, $token);
 
-        if (count($this->tokens) == 0) {
+        // when it's a Terminate End Event cancel all other tokens available
+        // otherwise wait for all other tokens to arrive in End Events to end
+        // the process instance
+
+        if ($event instanceof TerminateEndEvent) {
+            $this->cancel();
+            $this->state = self::STATE_ABNORMAL;
+
+        } else if (count($this->tokens) == 0) {
+
             $this->endDate = $event->getEndDate();
+            $this->state = self::STATE_ENDED;
+
+            $parentActivity = $this->getParentActivity();
+
+            if ($parentActivity !== null) {
+                $parentActivity->completeWork();
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function cancel()
+    {
+        if (!$this->isEnded()) {
+            // cancel the process instance and change the state
+            foreach ($this->getCurrentFlowObjects() as $flowObject) {
+                $flowObject->cancel();
+            }
+
+            $this->state = self::STATE_CANCELLED;
+
+            $parentActivity = $this->getParentActivity();
+
+            if ($parentActivity !== null) {
+                $parentActivity->completeWork();
+            }
+
         }
     }
 
@@ -452,82 +619,6 @@ class Workflow implements \Serializable
     }
 
     /**
-     * @param TransitionalInterface $currentFlowObject
-     *
-     * @throws SequenceFlowNotSelectedException
-     */
-    private function selectSequenceFlow(TransitionalInterface $currentFlowObject)
-    {
-        $selectedSequenceFlows = [];
-        $exclusive = $currentFlowObject instanceof ExclusiveGateway;
-
-        // Only one sequence flow is selected when using the exclusive gateway.
-        // In case multiple sequence flow have a condition that evaluates to ‘true’,
-        // the first one defined is exclusively selected for continuing the process.
-        // If no sequence flow can be selected (no condition evaluates to ‘true’)
-        // this will result in a runtime exception, unless you have a default flow
-        // defined. One default flow can be set on the gateway itself in case
-        // no other condition matches.
-
-        foreach ($this->connectingObjectCollection->filterBySource($currentFlowObject) as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
-            if ($connectingObject instanceof SequenceFlow) {
-                if (!($currentFlowObject instanceof ConditionalInterface) || $connectingObject->getId() !== $currentFlowObject->getDefaultSequenceFlowId()) {
-                    $condition = $connectingObject->getCondition();
-                    if ($condition === null) {
-                        if ($exclusive) {
-                            // find the next one that has a condition
-                            continue;
-                        }
-                        $selectedSequenceFlows[] = $connectingObject;
-                    } else {
-                        $expressionLanguage = $this->expressionLanguage ?: new ExpressionLanguage();
-                        if ($expressionLanguage->evaluate($condition, $this->processData)) {
-                            $selectedSequenceFlows[] = $connectingObject;
-
-                            if ($exclusive) {
-                                // stop; we found the first exclusive route that has a
-                                // condition that evaluates to 'true'
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if (count($selectedSequenceFlows) == 0 && $currentFlowObject instanceof ConditionalInterface) {
-            $nextFlowObject = $this->connectingObjectCollection->get($currentFlowObject->getDefaultSequenceFlowId());
-
-            if ($nextFlowObject) {
-                $selectedSequenceFlows[] = $nextFlowObject;
-            }
-        }
-
-        if (count($selectedSequenceFlows) == 0) {
-            throw new SequenceFlowNotSelectedException(sprintf('No sequence flow can be selected on "%s".', $currentFlowObject->getId()));
-        }
-
-        $token = $currentFlowObject->getToken();
-        assert(count($token) === 1);
-        $token = current($token);
-
-        if (count($selectedSequenceFlows) > 1) {
-            // remove the current token
-            $this->removeToken($currentFlowObject, $token);
-
-            // if there are multiple sequence flows available then the workflow runs in parallel
-            foreach ($selectedSequenceFlows as $selectedSequenceFlow) {
-                $token = $this->generateToken($currentFlowObject);
-                $this->tokens[] = $token;
-
-                $this->flow($token, $selectedSequenceFlow->getDestination());
-            }
-        } else {
-            $this->flow($token, $selectedSequenceFlows[0]->getDestination());
-        }
-    }
-
-    /**
      * @param ActivityInterface    $activity
      * @param ParticipantInterface $participant
      *
@@ -556,18 +647,18 @@ class Workflow implements \Serializable
         throw new UnexpectedActivityException(sprintf('The current flow object is not equal to the expected activity "%s".', $activity->getId()));
     }
 
-    /**
-     * @since Method available since Release 1.2.0
-     *
-     * @param ActivityInterface $operational
-     */
-    private function executeOperationalActivity(ActivityInterface $operational)
-    {
-        $participant = $this->operationRunner->provideParticipant(/* @var $operational OperationalInterface */ $operational, $this);
-        $this->allocateWorkItem($operational, $participant);
-        $this->startWorkItem($operational, $participant);
-        $this->operationRunner->run(/* @var $operational OperationalInterface */ $operational, $this);
-        $this->completeWorkItem($operational, $participant);
+    private function generateId() {
+        // Generate 16 bytes (128 bits) of random data or use the data passed into the function.
+        $data = random_bytes(16);
+        assert(strlen($data) == 16);
+
+        // Set version to 0100
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+        // Set bits 6-7 to 10
+        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+
+        // Output the 36 character UUID.
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 
     /**
@@ -575,13 +666,43 @@ class Workflow implements \Serializable
      *
      * @return Token
      *
-     * @throws \Exception
+     * @since Method available since Release 2.0.0
+     */
+    public function generateToken(FlowObjectInterface $flowObject): Token
+    {
+        $token = new Token($this->generateId(), $flowObject);
+        $this->tokens[] = $token;
+
+        return $token;
+    }
+
+    /**
+     * @param ActivityInterface $activity
+     * @return WorkItemInterface
      *
      * @since Method available since Release 2.0.0
      */
-    private function generateToken(FlowObjectInterface $flowObject): Token
+    public function generateWorkItem(ActivityInterface $activity): WorkItemInterface
     {
-        return new Token(sha1(random_bytes(24)), $flowObject);
+        $workItem = new WorkItem($this->generateId());
+        $workItem->setParentProcessInstance($this);
+        $workItem->setParentActivity($activity);
+        $this->getActivityLog()->add(new ActivityLog($workItem));
+        return $workItem;
+    }
+
+    /**
+     * @param ActivityInterface $activity
+     * @return ItemsCollectionInterface
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function generateWorkItemsCollection(ActivityInterface $activity)
+    {
+        $isSubProcess = ($activity instanceof SubProcessTask || $activity instanceof CallTask);
+        $collection = $isSubProcess ? new ProcessInstancesCollection() : new WorkItemsCollection();
+
+        return $collection;
     }
 
     /**
@@ -590,7 +711,7 @@ class Workflow implements \Serializable
      *
      * @since Method available since Release 2.0.0
      */
-    private function removeToken(FlowObjectInterface $flowObject, Token $token): void
+    public function removeToken(FlowObjectInterface $flowObject, Token $token): void
     {
         $flowObject->detachToken($token);
         $this->tokens = array_filter($this->tokens, function (Token $currentToken) use ($token) {
@@ -599,43 +720,17 @@ class Workflow implements \Serializable
     }
 
     /**
-     * @param Token               $token
-     * @param FlowObjectInterface $flowObject
-     *
-     * @throws \Exception
-     *
-     * @since Method available since Release 2.0.0
+     * @return StartEvent
      */
-    private function flow(Token $token, FlowObjectInterface $flowObject): void
+    public function getFirstStartEvent()
     {
-        $token->flow($flowObject);
-
-        if ($flowObject instanceof ExclusiveGateway) {
-            $this->selectSequenceFlow($flowObject);
-        } elseif ($flowObject instanceof ParallelGateway) {
-            $parallelGateway = $flowObject;
-            $incomings = $this->connectingObjectCollection->filterByDestination($parallelGateway);
-            $incomingTokens = $parallelGateway->getToken();
-            if (count($incomingTokens) == count($incomings)) {
-                foreach ($incomingTokens as $incomingToken) {
-                    $this->removeToken($parallelGateway, $incomingToken);
-                }
-
-                foreach ($this->connectingObjectCollection->filterBySource($parallelGateway) as $outgoing) {
-                    $outgoingToken = $this->generateToken($parallelGateway);
-                    $this->tokens[] = $outgoingToken;
-                    $this->flow($outgoingToken, $outgoing->getDestination());
-                }
+        foreach ($this->flowObjectCollection as $flowObject) {
+            if ($flowObject instanceof StartEvent) {
+                return $flowObject;
             }
-        } elseif ($flowObject instanceof ActivityInterface) {
-            $flowObject->createWorkItem();
-            $this->activityLogCollection->add(new ActivityLog($flowObject));
-
-            if ($flowObject instanceof OperationalInterface) {
-                $this->executeOperationalActivity($flowObject);
-            }
-        } elseif ($flowObject instanceof EndEvent) {
-            $this->end($flowObject);
         }
+
+        return null;
     }
+
 }

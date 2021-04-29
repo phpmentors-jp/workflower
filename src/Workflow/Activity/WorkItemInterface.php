@@ -12,20 +12,53 @@
 
 namespace PHPMentors\Workflower\Workflow\Activity;
 
+use PHPMentors\Workflower\Workflow\ItemInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 
-interface WorkItemInterface
+interface WorkItemInterface extends ItemInterface
 {
     const STATE_CREATED = 'created';
     const STATE_ALLOCATED = 'allocated';
     const STATE_STARTED = 'started';
     const STATE_ENDED = 'ended';
+    const STATE_CANCELLED = 'cancelled';
     const END_RESULT_COMPLETION = 'completion';
 
     /**
-     * @return ParticipantInterface
+     * @param array $data
+     * @return void
      */
-    public function getCurrentState();
+    public function setData($data);
+
+    /**
+     * @return array
+     */
+    public function getData();
+
+    /**
+     * @return bool
+     */
+    public function isAllocatable();
+
+    /**
+     * @return bool
+     */
+    public function isStartable();
+
+    /**
+     * @return bool
+     */
+    public function isCompletable();
+
+    /**
+     * @return bool
+     */
+    public function isCancelled();
+
+    /**
+     * @return bool
+     */
+    public function isEnded();
 
     /**
      * @return ParticipantInterface
@@ -67,10 +100,19 @@ interface WorkItemInterface
      */
     public function allocate(ParticipantInterface $participant);
 
-    public function start();
+    /**
+     * @return void
+     */
+    public function start(): void;
 
     /**
      * @param ParticipantInterface $participant
      */
     public function complete(ParticipantInterface $participant);
+
+    /**
+     * @return void
+     */
+    public function cancel(): void;
+
 }
