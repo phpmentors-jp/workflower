@@ -30,7 +30,7 @@ class ProcessInstanceTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->workflowRepository = new WorkflowRepository();
     }
@@ -495,7 +495,7 @@ class ProcessInstanceTest extends TestCase
         $this->assertThat(count($currentFlowObjects), $this->equalTo(count($concurrentFlowObjects)));
 
         foreach ($currentFlowObjects as $currentFlowObject) {
-            $this->assertThat($concurrentFlowObjects, $this->contains($currentFlowObject->getId()));
+            $this->assertThat($concurrentFlowObjects, $this->containsIdentical($currentFlowObject->getId()));
             $this->assertThat(current($currentFlowObject->getToken())->getPreviousFlowObject()->getId(), $this->equalTo('ParallelGateway1'));
 
             unset($concurrentFlowObjects[array_search($currentFlowObject->getId(), $concurrentFlowObjects)]);
@@ -524,11 +524,11 @@ class ProcessInstanceTest extends TestCase
 
         $concurrentFlowObjects = ['ReceivePayment', 'ShipOrder'];
 
-        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(0)->getActivity()->getId()));
+        $this->assertThat($concurrentFlowObjects, $this->containsIdentical($activityLog->get(0)->getActivity()->getId()));
 
         unset($concurrentFlowObjects[array_search($activityLog->get(0)->getActivity()->getId(), $concurrentFlowObjects)]);
 
-        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(1)->getActivity()->getId()));
+        $this->assertThat($concurrentFlowObjects, $this->containsIdentical($activityLog->get(1)->getActivity()->getId()));
 
         $this->assertThat($activityLog->get(2)->getActivity()->getId(), $this->equalTo('ArchiveOrder'));
     }
@@ -928,11 +928,11 @@ class ProcessInstanceTest extends TestCase
 
         $concurrentFlowObjects = ['ReceiveOrder', 'ShipOrder'];
 
-        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(0)->getActivity()->getId()));
+        $this->assertThat($concurrentFlowObjects, $this->containsIdentical($activityLog->get(0)->getActivity()->getId()));
 
         unset($concurrentFlowObjects[array_search($activityLog->get(0)->getActivity()->getId(), $concurrentFlowObjects)]);
 
-        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(1)->getActivity()->getId()));
+        $this->assertThat($concurrentFlowObjects, $this->containsIdentical($activityLog->get(1)->getActivity()->getId()));
 
         $this->assertThat($activityLog->get(2)->getActivity()->getId(), $this->equalTo('ArchiveOrder'));
     }
@@ -977,7 +977,7 @@ class ProcessInstanceTest extends TestCase
 
         $concurrentFlowObjects = ['ShipOrder'];
 
-        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(0)->getActivity()->getId()));
+        $this->assertThat($concurrentFlowObjects, $this->containsIdentical($activityLog->get(0)->getActivity()->getId()));
 
         $this->assertThat($activityLog->get(1)->getActivity()->getId(), $this->equalTo('ArchiveOrder'));
     }

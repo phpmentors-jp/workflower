@@ -2,6 +2,7 @@
 /.composer/
 /.idea/
 /.php_cs.cache
+/.phpunit.result.cache
 /.project
 /.settings/
 /.vscode/
