@@ -9,6 +9,7 @@ interface ProcessInstanceInterface extends ItemInterface
     const STATE_CANCELLED = 'cancelled';
     const STATE_ERROR = 'error';
     const STATE_ABNORMAL = 'abnormal';
+    const STATE_WAITING = 'waiting';
 
     /**
      * @return string

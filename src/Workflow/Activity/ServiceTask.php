@@ -17,4 +17,10 @@ namespace PHPMentors\Workflower\Workflow\Activity;
  */
 class ServiceTask extends OperationalTask
 {
+    protected string $serviceClass;
+
+    public function getServiceClass(): string
+    {
+        return $this->serviceClass;
+    }
 }

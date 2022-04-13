@@ -25,6 +25,7 @@ use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\Token;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 use PHPMentors\Workflower\Workflow\Event\EndEvent;
+use PHPMentors\Workflower\Workflow\Event\IntermediateCatchEvent;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
 use PHPMentors\Workflower\Workflow\Event\TerminateEndEvent;
 use PHPMentors\Workflower\Workflow\Operation\OperationRunnerInterface;
@@ -352,7 +353,12 @@ class ProcessInstance implements ProcessInstanceInterface, \Serializable
      */
     public function isActive()
     {
-        return count($this->tokens) > 0 && isset($this->startEvent);
+        return count($this->tokens) > 0 && isset($this->startEvent) && $this->isWaiting() === false;
+    }
+
+    public function isWaiting()
+    {
+        return count($this->tokens) > 0 && $this->state === self::STATE_WAITING;
     }
 
     /**
@@ -559,6 +565,22 @@ class ProcessInstance implements ProcessInstanceInterface, \Serializable
 
             $parentActivity = $this->getActivity();
 
+            if ($parentActivity !== null) {
+                $parentActivity->completeWork();
+            }
+        }
+    }
+
+    public function wait(IntermediateCatchEvent $event)
+    {
+        // we didn't remove this token yet, because technically the workflow is still running
+        if (count($this->tokens) == 1) {
+            $this->endDate = $event->getEndDate();
+            $this->state = self::STATE_WAITING;
+
+            $parentActivity = $this->getActivity();
+
+            // finish other work first
             if ($parentActivity !== null) {
                 $parentActivity->completeWork();
             }

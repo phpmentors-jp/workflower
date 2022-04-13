@@ -12,6 +12,7 @@ use PHPMentors\Workflower\Workflow\Activity\UserTask;
 use PHPMentors\Workflower\Workflow\Connection\SequenceFlow;
 use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
 use PHPMentors\Workflower\Workflow\Event\EndEvent;
+use PHPMentors\Workflower\Workflow\Event\IntermediateCatchEvent;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
 use PHPMentors\Workflower\Workflow\Gateway\ExclusiveGateway;
 use PHPMentors\Workflower\Workflow\Gateway\InclusiveGateway;
@@ -130,6 +131,11 @@ class ProcessDefinition implements ProcessDefinitionInterface
     private $callActivities = [];
 
     /**
+     * @var array
+     */
+    private $intermediateCatchEvent = [];
+
+    /**
      * @var ProcessDefinitionRepositoryInterface
      */
     private $processDefinitions;
@@ -148,6 +154,7 @@ class ProcessDefinition implements ProcessDefinitionInterface
      *                      'roles' => (array)
      *                      'sequenceFlows' => (array)
      *                      'tasks' => (array)
+     *                      'intermediateCatchEvent' => (array)
      *                      'userTasks' => (array)
      *                      'manualTasks' => (array)
      *                      'serviceTasks' => (array)
@@ -234,6 +241,12 @@ class ProcessDefinition implements ProcessDefinitionInterface
                 case 'callActivities':
                     foreach ($definitions as $definition) {
                         $this->addCallActivity($definition);
+                    }
+                    break;
+
+                case 'intermediateCatchEvent':
+                    foreach ($definitions as $definition) {
+                        $this->addIntermediateCatchEvent($definition);
                     }
                     break;
 
@@ -347,6 +360,13 @@ class ProcessDefinition implements ProcessDefinitionInterface
             $this->replaceRoleInConfig($processInstance, $clone);
 
             $processInstance->addFlowObject(new Task($clone));
+        }
+
+        foreach ($this->intermediateCatchEvent as $config) {
+            $clone = array_merge([], $config);
+            $this->replaceRoleInConfig($processInstance, $clone);
+
+            $processInstance->addFlowObject(new IntermediateCatchEvent($clone));
         }
 
         foreach ($this->userTasks as $config) {
@@ -597,6 +617,31 @@ class ProcessDefinition implements ProcessDefinitionInterface
      *                      'multiInstance' => (bool)
      *                      'sequential' => (bool)
      *                      'completionCondition' => (string)
+     *                      'timerEventDuration' => (string)
+     *                      ]
+     */
+    public function addIntermediateCatchEvent(array $config)
+    {
+        $id = $this->getParamFromConfig($config, 'id');
+        $defaultSequenceFlow = $this->getParamFromConfig($config, 'defaultSequenceFlowId');
+
+        $this->intermediateCatchEvent[$id] = $config;
+
+        if ($defaultSequenceFlow !== null) {
+            $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
+        }
+    }
+
+    /**
+     * @param array $config Array containing the necessary params.
+     *                      $config = [
+     *                      'id' => (string)
+     *                      'roleId' => (string)
+     *                      'name' => (string)
+     *                      'defaultSequenceFlow' => (int|string)
+     *                      'multiInstance' => (bool)
+     *                      'sequential' => (bool)
+     *                      'completionCondition' => (string)
      *                      ]
      */
     public function addUserTask(array $config)
@@ -642,6 +687,7 @@ class ProcessDefinition implements ProcessDefinitionInterface
      *                      'roleId' => (string)
      *                      'name' => (string)
      *                      'operation' => (string)
+     *                      'serviceClass' => (string)
      *                      'defaultSequenceFlow' => (int|string)
      *                      'multiInstance' => (bool)
      *                      'sequential' => (bool)

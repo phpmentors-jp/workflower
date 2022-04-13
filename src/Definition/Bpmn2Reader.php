@@ -152,6 +152,7 @@ class Bpmn2Reader
         $process['serviceTasks'] = $this->readTasks($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'serviceTask'));
         $process['sendTasks'] = $this->readTasks($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'sendTask'));
         $process['callActivities'] = $this->readTasks($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'callActivity'));
+        $process['intermediateCatchEvent'] = $this->readTasks($globalData, $process, $rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'intermediateCatchEvent'));
 
         foreach ($rootElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'subProcess') as $element) {
             $task = $this->readTask($globalData, $process, $element);
@@ -184,22 +185,29 @@ class Bpmn2Reader
         return $items;
     }
 
-    /**
-     * @param array       $globalData
-     * @param array       $process
-     * @param \DOMElement $element
-     */
-    private function readTask(array $globalData, array $process, $element)
+    private function readTask(array $globalData, array $process, \DOMElement $element)
     {
         if (!$element->hasAttribute('id')) {
             throw new IdAttributeNotFoundException(sprintf('Element "%s" has no id', $element->tagName));
         }
-
         $id = $element->getAttribute('id');
+
+        $config = [
+            'id' => $id,
+            'name' => $element->hasAttribute('name') ? $element->getAttribute('name') : null,
+            'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id),
+        ];
+
         $message = $element->hasAttribute('messageRef') ? $globalData['messages'][$element->getAttribute('messageRef')] : null;
         $operation = $element->hasAttribute('operationRef') ? $globalData['operations'][$element->getAttribute('operationRef')] : null;
         $defaultSequenceFlowId = $element->hasAttribute('default') ? $element->getAttribute('default') : null;
         $calledElement = $element->hasAttribute('calledElement') ? $element->getAttribute('calledElement') : null;
+
+        // for writing default implementations, this class should be called
+        if ($element->hasAttribute('camunda:class')) {
+            $config['serviceClass'] = $element->getAttribute('camunda:class');
+        }
+
         $multiInstance = null;
         $sequential = null;
         $completionCondition = null;
@@ -212,11 +220,11 @@ class Bpmn2Reader
             }
         }
 
-        $config = [
-            'id' => $id,
-            'name' => $element->hasAttribute('name') ? $element->getAttribute('name') : null,
-            'roleId' => $this->provideRoleIdForFlowObject($process['objectRoles'], $id),
-        ];
+        foreach ($element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'timerEventDefinition') as $childElement) {
+            foreach ($childElement->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL', 'timeDuration') as $timerDurationElement) {
+                $config['timerEventDuration'] = $timerDurationElement->nodeValue;
+            }
+        }
 
         if ($multiInstance !== null) {
             $config['multiInstance'] = $multiInstance;
