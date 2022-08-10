@@ -15,7 +15,7 @@ namespace PHPMentors\Workflower\Workflow\Participant;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\DomainKata\Entity\Operation\IdentifiableInterface;
 
-class Role implements EntityInterface, IdentifiableInterface, \Serializable
+class Role implements EntityInterface, IdentifiableInterface
 {
     /**
      * @var int|string
@@ -28,8 +28,8 @@ class Role implements EntityInterface, IdentifiableInterface, \Serializable
     private $name;
 
     /**
-     * @param int|string $id
-     * @param string     $name
+     * @param  int|string  $id
+     * @param  string  $name
      */
     public function __construct($id, $name = null)
     {
@@ -40,18 +40,18 @@ class Role implements EntityInterface, IdentifiableInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function __serialize()
     {
-        return serialize(array(
+        return serialize([
             'id' => $this->id,
             'name' => $this->name,
-        ));
+        ]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    public function __unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if (property_exists($this, $name)) {

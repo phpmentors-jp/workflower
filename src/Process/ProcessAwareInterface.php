@@ -15,7 +15,7 @@ namespace PHPMentors\Workflower\Process;
 interface ProcessAwareInterface extends OperationInterface
 {
     /**
-     * @param Process $process
+     * @param  Process  $process
      */
     public function setProcess(Process $process);
 }

@@ -18,7 +18,7 @@ use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
 
-class SequenceFlow implements ConnectingObjectInterface, \Serializable
+class SequenceFlow implements ConnectingObjectInterface
 {
     /**
      * @var int|string
@@ -47,10 +47,10 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
 
     /**
      * @param int|string
-     * @param TransitionalInterface $source
-     * @param FlowObjectInterface   $destination
-     * @param string                $name
-     * @param Expression            $condition
+     * @param  TransitionalInterface  $source
+     * @param  FlowObjectInterface  $destination
+     * @param  string  $name
+     * @param  Expression  $condition
      */
     public function __construct($id, TransitionalInterface $source, FlowObjectInterface $destination, $name = null, Expression $condition = null)
     {
@@ -64,21 +64,21 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function __serialize()
     {
-        return serialize(array(
+        return serialize([
             'id' => $this->id,
             'name' => $this->name,
             'source' => $this->source,
             'destination' => $this->destination,
             'condition' => $this->condition,
-        ));
+        ]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    public function __unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if (property_exists($this, $name)) {
@@ -134,7 +134,7 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
      */
     public function equals(EntityInterface $target)
     {
-        if (!($target instanceof self)) {
+        if (! ($target instanceof self)) {
             return false;
         }
 

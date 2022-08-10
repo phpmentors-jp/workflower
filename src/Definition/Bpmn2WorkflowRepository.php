@@ -20,7 +20,7 @@ class Bpmn2WorkflowRepository implements WorkflowRepositoryInterface
     /**
      * @var array
      */
-    private $bpmn2Files = array();
+    private $bpmn2Files = [];
 
     /**
      * {@inheritdoc}
@@ -51,7 +51,7 @@ class Bpmn2WorkflowRepository implements WorkflowRepositoryInterface
      */
     public function findById($id)
     {
-        if (!array_key_exists($id, $this->bpmn2Files)) {
+        if (! array_key_exists($id, $this->bpmn2Files)) {
             return null;
         }
 

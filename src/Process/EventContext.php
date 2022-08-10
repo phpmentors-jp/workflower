@@ -25,8 +25,8 @@ class EventContext implements EventContextInterface
     private $processContext;
 
     /**
-     * @param int|string              $eventId
-     * @param ProcessContextInterface $processContext
+     * @param  int|string  $eventId
+     * @param  ProcessContextInterface  $processContext
      */
     public function __construct($eventId, ProcessContextInterface $processContext)
     {

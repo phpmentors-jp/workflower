@@ -14,28 +14,29 @@ namespace PHPMentors\Workflower\Workflow\Element;
 
 use PHPMentors\DomainKata\Entity\EntityCollectionInterface;
 use PHPMentors\DomainKata\Entity\EntityInterface;
+use Traversable;
 
-class FlowObjectCollection implements EntityCollectionInterface, \Serializable
+class FlowObjectCollection implements EntityCollectionInterface
 {
     /**
      * @var array
      */
-    private $flowObjects = array();
+    private $flowObjects = [];
 
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function __serialize()
     {
-        return serialize(array(
+        return serialize([
             'flowObjects' => $this->flowObjects,
-        ));
+        ]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    public function __unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if (property_exists($this, $name)) {
@@ -61,7 +62,7 @@ class FlowObjectCollection implements EntityCollectionInterface, \Serializable
      */
     public function get($key)
     {
-        if (!array_key_exists($key, $this->flowObjects)) {
+        if (! array_key_exists($key, $this->flowObjects)) {
             return null;
         }
 
@@ -79,7 +80,7 @@ class FlowObjectCollection implements EntityCollectionInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         return count($this->flowObjects);
     }
@@ -87,7 +88,7 @@ class FlowObjectCollection implements EntityCollectionInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->flowObjects);
     }

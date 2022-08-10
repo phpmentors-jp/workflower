@@ -14,28 +14,29 @@ namespace PHPMentors\Workflower\Workflow\Element;
 
 use PHPMentors\DomainKata\Entity\EntityCollectionInterface;
 use PHPMentors\DomainKata\Entity\EntityInterface;
+use Traversable;
 
-class ConnectingObjectCollection implements EntityCollectionInterface, \Serializable
+class ConnectingObjectCollection implements EntityCollectionInterface
 {
     /**
      * @var array
      */
-    private $connectingObjects = array();
+    private $connectingObjects = [];
 
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function __serialize()
     {
-        return serialize(array(
+        return serialize([
             'connectingObjects' => $this->connectingObjects,
-        ));
+        ]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    public function __unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if (property_exists($this, $name)) {
@@ -61,7 +62,7 @@ class ConnectingObjectCollection implements EntityCollectionInterface, \Serializ
      */
     public function get($key)
     {
-        if (!array_key_exists($key, $this->connectingObjects)) {
+        if (! array_key_exists($key, $this->connectingObjects)) {
             return null;
         }
 
@@ -79,7 +80,7 @@ class ConnectingObjectCollection implements EntityCollectionInterface, \Serializ
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         return count($this->connectingObjects);
     }
@@ -87,14 +88,13 @@ class ConnectingObjectCollection implements EntityCollectionInterface, \Serializ
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->connectingObjects);
     }
 
     /**
-     * @param TransitionalInterface $flowObject
-     *
+     * @param  TransitionalInterface  $flowObject
      * @return ConnectingObjectCollection
      */
     public function filterBySource(TransitionalInterface $flowObject)

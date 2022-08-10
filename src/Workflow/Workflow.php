@@ -40,7 +40,7 @@ use Stagehand\FSM\StateMachine\StateMachine;
 use Stagehand\FSM\StateMachine\StateMachineInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
-class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
+class Workflow implements EntityInterface, IdentifiableInterface
 {
     const DEFAULT_ROLE_ID = '__ROLE__';
 
@@ -104,8 +104,8 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     private $operationRunner;
 
     /**
-     * @param int|string $id
-     * @param string     $name
+     * @param  int|string  $id
+     * @param  string  $name
      */
     public function __construct($id, $name)
     {
@@ -119,9 +119,9 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function __serialize()
     {
-        return serialize(array(
+        return serialize([
             'name' => $this->name,
             'connectingObjectCollection' => $this->connectingObjectCollection,
             'flowObjectCollection' => $this->flowObjectCollection,
@@ -129,13 +129,13 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
             'startDate' => $this->startDate,
             'endDate' => $this->endDate,
             'stateMachine' => $this->stateMachine,
-        ));
+        ]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    public function __unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if (property_exists($this, $name)) {
@@ -163,7 +163,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param ConnectingObjectInterface $connectingObject
+     * @param  ConnectingObjectInterface  $connectingObject
      */
     public function addConnectingObject(ConnectingObjectInterface $connectingObject)
     {
@@ -179,7 +179,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param FlowObjectInterface $flowObject
+     * @param  FlowObjectInterface  $flowObject
      */
     public function addFlowObject(FlowObjectInterface $flowObject)
     {
@@ -206,8 +206,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param int|string $id
-     *
+     * @param  int|string  $id
      * @return ConnectingObjectInterface|null
      */
     public function getConnectingObject($id)
@@ -216,8 +215,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param TransitionalInterface $flowObject
-     *
+     * @param  TransitionalInterface  $flowObject
      * @return ConnectingObjectCollection
      */
     public function getConnectingObjectCollectionBySource(TransitionalInterface $flowObject)
@@ -226,8 +224,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param int|string $id
-     *
+     * @param  int|string  $id
      * @return FlowObjectInterface|null
      */
     public function getFlowObject($id)
@@ -236,7 +233,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param Role $role
+     * @param  Role  $role
      */
     public function addRole(Role $role)
     {
@@ -244,8 +241,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param int|string $id
-     *
+     * @param  int|string  $id
      * @return bool
      */
     public function hasRole($id)
@@ -254,8 +250,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param int|string $id
-     *
+     * @param  int|string  $id
      * @return Role
      */
     public function getRole($id)
@@ -329,8 +324,8 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param ActivityInterface    $activity
-     * @param ParticipantInterface $participant
+     * @param  ActivityInterface  $activity
+     * @param  ParticipantInterface  $participant
      */
     public function allocateWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
     {
@@ -341,8 +336,8 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param ActivityInterface    $activity
-     * @param ParticipantInterface $participant
+     * @param  ActivityInterface  $activity
+     * @param  ParticipantInterface  $participant
      */
     public function startWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
     {
@@ -353,8 +348,8 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param ActivityInterface    $activity
-     * @param ParticipantInterface $participant
+     * @param  ActivityInterface  $activity
+     * @param  ParticipantInterface  $participant
      */
     public function completeWorkItem(ActivityInterface $activity, ParticipantInterface $participant)
     {
@@ -367,7 +362,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param array $processData
+     * @param  array  $processData
      */
     public function setProcessData(array $processData)
     {
@@ -385,7 +380,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param ExpressionLanguage $expressionLanguage
+     * @param  ExpressionLanguage  $expressionLanguage
      *
      * @since Method available since Release 1.1.0
      */
@@ -395,7 +390,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param OperationRunnerInterface $operationRunner
+     * @param  OperationRunnerInterface  $operationRunner
      *
      * @since Method available since Release 1.2.0
      */
@@ -405,7 +400,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param EndEvent $event
+     * @param  EndEvent  $event
      */
     private function end(EndEvent $event)
     {
@@ -446,8 +441,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param string $stateMachineName
-     *
+     * @param  string  $stateMachineName
      * @return StateMachineInterface
      */
     private function createStateMachine($stateMachineName)
@@ -468,7 +462,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param TransitionalInterface $currentFlowObject
+     * @param  TransitionalInterface  $currentFlowObject
      *
      * @throws SequenceFlowNotSelectedException
      */
@@ -476,7 +470,7 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     {
         foreach ($this->connectingObjectCollection->filterBySource($currentFlowObject) as $connectingObject) { /* @var $connectingObject ConnectingObjectInterface */
             if ($connectingObject instanceof SequenceFlow) {
-                if (!($currentFlowObject instanceof ConditionalInterface) || $connectingObject->getId() !== $currentFlowObject->getDefaultSequenceFlowId()) {
+                if (! ($currentFlowObject instanceof ConditionalInterface) || $connectingObject->getId() !== $currentFlowObject->getDefaultSequenceFlowId()) {
                     $condition = $connectingObject->getCondition();
                     if ($condition === null) {
                         $selectedSequenceFlow = $connectingObject;
@@ -492,8 +486,8 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
             }
         }
 
-        if (!isset($selectedSequenceFlow)) {
-            if (!($currentFlowObject instanceof ConditionalInterface) || $currentFlowObject->getDefaultSequenceFlowId() === null) {
+        if (! isset($selectedSequenceFlow)) {
+            if (! ($currentFlowObject instanceof ConditionalInterface) || $currentFlowObject->getDefaultSequenceFlowId() === null) {
                 throw new SequenceFlowNotSelectedException(sprintf('No sequence flow can be selected on "%s".', $currentFlowObject->getId()));
             }
 
@@ -508,26 +502,26 @@ class Workflow implements EntityInterface, IdentifiableInterface, \Serializable
     }
 
     /**
-     * @param ActivityInterface    $activity
-     * @param ParticipantInterface $participant
+     * @param  ActivityInterface  $activity
+     * @param  ParticipantInterface  $participant
      *
      * @throws AccessDeniedException
      */
     private function assertParticipantHasRole(ActivityInterface $activity, ParticipantInterface $participant)
     {
-        if (!$participant->hasRole($activity->getRole()->getId())) {
+        if (! $participant->hasRole($activity->getRole()->getId())) {
             throw new AccessDeniedException(sprintf('The participant "%s" does not have the role "%s" that is required to operate the activity "%s".', $participant->getId(), $activity->getRole()->getId(), $activity->getId()));
         }
     }
 
     /**
-     * @param ActivityInterface $activity
+     * @param  ActivityInterface  $activity
      *
      * @throws UnexpectedActivityException
      */
     private function assertCurrentFlowObjectIsExpectedActivity(ActivityInterface $activity)
     {
-        if (!$activity->equals($this->getCurrentFlowObject())) {
+        if (! $activity->equals($this->getCurrentFlowObject())) {
             throw new UnexpectedActivityException(sprintf('The current flow object is not equal to the expected activity "%s".', $activity->getId()));
         }
     }

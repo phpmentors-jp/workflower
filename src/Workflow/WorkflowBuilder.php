@@ -27,46 +27,46 @@ class WorkflowBuilder
     /**
      * @var array
      */
-    private $endEvents = array();
+    private $endEvents = [];
 
     /**
      * @var array
      */
-    private $exclusiveGateways = array();
+    private $exclusiveGateways = [];
 
     /**
      * @var array
      */
-    private $roles = array();
+    private $roles = [];
 
     /**
      * @var array
      */
-    private $sequenceFlows = array();
+    private $sequenceFlows = [];
 
     /**
      * @var array
      */
-    private $startEvents = array();
+    private $startEvents = [];
 
     /**
      * @var array
      */
-    private $tasks = array();
+    private $tasks = [];
 
     /**
      * @var array
      *
      * @since Property available since Release 1.2.0
      */
-    private $serviceTasks = array();
+    private $serviceTasks = [];
 
     /**
      * @var array
      *
      * @since Property available since Release 1.3.0
      */
-    private $sendTasks = array();
+    private $sendTasks = [];
 
     /**
      * @var string
@@ -81,11 +81,11 @@ class WorkflowBuilder
     /**
      * @var array
      */
-    private $defaultableFlowObjects = array();
+    private $defaultableFlowObjects = [];
 
     /**
-     * @param int|string $workflowId
-     * @param int|string $workflowName
+     * @param  int|string  $workflowId
+     * @param  int|string  $workflowName
      */
     public function __construct($workflowId = null, $workflowName = null)
     {
@@ -94,7 +94,7 @@ class WorkflowBuilder
     }
 
     /**
-     * @param int|string $id
+     * @param  int|string  $id
      */
     public function setWorkflowId($id)
     {
@@ -102,7 +102,7 @@ class WorkflowBuilder
     }
 
     /**
-     * @param string $name
+     * @param  string  $name
      */
     public function setWorkflowName($name)
     {
@@ -110,24 +110,24 @@ class WorkflowBuilder
     }
 
     /**
-     * @param string $id
-     * @param string $participant
-     * @param string $name
+     * @param  string  $id
+     * @param  string  $participant
+     * @param  string  $name
      */
     public function addEndEvent($id, $participant, $name = null)
     {
-        $this->endEvents[$id] = array($participant, $name);
+        $this->endEvents[$id] = [$participant, $name];
     }
 
     /**
-     * @param int|string $id
-     * @param string     $participant
-     * @param string     $name
-     * @param int|string $defaultSequenceFlow
+     * @param  int|string  $id
+     * @param  string  $participant
+     * @param  string  $name
+     * @param  int|string  $defaultSequenceFlow
      */
     public function addExclusiveGateway($id, $participant, $name = null, $defaultSequenceFlow = null)
     {
-        $this->exclusiveGateways[$id] = array($participant, $name);
+        $this->exclusiveGateways[$id] = [$participant, $name];
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
@@ -135,20 +135,20 @@ class WorkflowBuilder
     }
 
     /**
-     * @param int|string $id
-     * @param string     $name
+     * @param  int|string  $id
+     * @param  string  $name
      */
     public function addRole($id, $name = null)
     {
-        $this->roles[$id] = array($name);
+        $this->roles[$id] = [$name];
     }
 
     /**
-     * @param string     $source
-     * @param string     $destination
-     * @param int|string $id
-     * @param string     $name
-     * @param string     $condition
+     * @param  string  $source
+     * @param  string  $destination
+     * @param  int|string  $id
+     * @param  string  $name
+     * @param  string  $condition
      */
     public function addSequenceFlow($source, $destination, $id = null, $name = null, $condition = null)
     {
@@ -156,21 +156,21 @@ class WorkflowBuilder
 
         if ($id === null) {
             $id = $source.'.'.$destination.$i;
-            ++$i;
+            $i++;
         }
 
-        $this->sequenceFlows[$id] = array($source, $destination, $name, $condition);
+        $this->sequenceFlows[$id] = [$source, $destination, $name, $condition];
     }
 
     /**
-     * @param int|string $id
-     * @param string     $participant
-     * @param string     $name
-     * @param int|string $defaultSequenceFlow
+     * @param  int|string  $id
+     * @param  string  $participant
+     * @param  string  $name
+     * @param  int|string  $defaultSequenceFlow
      */
     public function addStartEvent($id, $participant, $name = null, $defaultSequenceFlow = null)
     {
-        $this->startEvents[$id] = array($participant, $name, $defaultSequenceFlow);
+        $this->startEvents[$id] = [$participant, $name, $defaultSequenceFlow];
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
@@ -178,14 +178,14 @@ class WorkflowBuilder
     }
 
     /**
-     * @param string     $id
-     * @param string     $participant
-     * @param string     $name
-     * @param int|string $defaultSequenceFlow
+     * @param  string  $id
+     * @param  string  $participant
+     * @param  string  $name
+     * @param  int|string  $defaultSequenceFlow
      */
     public function addTask($id, $participant, $name = null, $defaultSequenceFlow = null)
     {
-        $this->tasks[$id] = array($participant, $name);
+        $this->tasks[$id] = [$participant, $name];
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
@@ -193,17 +193,17 @@ class WorkflowBuilder
     }
 
     /**
-     * @param string     $id
-     * @param string     $participant
-     * @param string     $operation
-     * @param string     $name
-     * @param int|string $defaultSequenceFlow
+     * @param  string  $id
+     * @param  string  $participant
+     * @param  string  $operation
+     * @param  string  $name
+     * @param  int|string  $defaultSequenceFlow
      *
      * @since Method available since Release 1.2.0
      */
     public function addServiceTask($id, $participant, $operation, $name = null, $defaultSequenceFlow = null)
     {
-        $this->serviceTasks[$id] = array($participant, $operation, $name);
+        $this->serviceTasks[$id] = [$participant, $operation, $name];
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
@@ -211,18 +211,18 @@ class WorkflowBuilder
     }
 
     /**
-     * @param string     $id
-     * @param string     $participant
-     * @param string     $message
-     * @param string     $operation
-     * @param string     $name
-     * @param int|string $defaultSequenceFlow
+     * @param  string  $id
+     * @param  string  $participant
+     * @param  string  $message
+     * @param  string  $operation
+     * @param  string  $name
+     * @param  int|string  $defaultSequenceFlow
      *
      * @since Method available since Release 1.3.0
      */
     public function addSendTask($id, $participant, $message, $operation, $name = null, $defaultSequenceFlow = null)
     {
-        $this->sendTasks[$id] = array($participant, $message, $operation, $name);
+        $this->sendTasks[$id] = [$participant, $message, $operation, $name];
 
         if ($defaultSequenceFlow !== null) {
             $this->defaultableFlowObjects[$defaultSequenceFlow] = $id;
@@ -239,54 +239,54 @@ class WorkflowBuilder
         $workflow = new Workflow($this->workflowId, $this->workflowName);
 
         foreach ($this->roles as $id => $role) {
-            list($name) = $role;
+            [$name] = $role;
             $workflow->addRole(new Role($id, $name));
         }
 
         foreach ($this->startEvents as $id => $event) {
-            list($roleId, $name) = $event;
+            [$roleId, $name] = $event;
             $this->assertWorkflowHasRole($workflow, $roleId);
 
             $workflow->addFlowObject(new StartEvent($id, $workflow->getRole($roleId), $name));
         }
 
         foreach ($this->endEvents as $id => $event) {
-            list($roleId, $name) = $event;
+            [$roleId, $name] = $event;
             $this->assertWorkflowHasRole($workflow, $roleId);
 
             $workflow->addFlowObject(new EndEvent($id, $workflow->getRole($roleId), $name));
         }
 
         foreach ($this->tasks as $id => $task) {
-            list($roleId, $name) = $task;
+            [$roleId, $name] = $task;
             $this->assertWorkflowHasRole($workflow, $roleId);
 
             $workflow->addFlowObject(new Task($id, $workflow->getRole($roleId), $name));
         }
 
         foreach ($this->serviceTasks as $id => $task) {
-            list($roleId, $operation, $name) = $task;
+            [$roleId, $operation, $name] = $task;
             $this->assertWorkflowHasRole($workflow, $roleId);
 
             $workflow->addFlowObject(new ServiceTask($id, $workflow->getRole($roleId), $operation, $name));
         }
 
         foreach ($this->sendTasks as $id => $task) {
-            list($roleId, $message, $operation, $name) = $task;
+            [$roleId, $message, $operation, $name] = $task;
             $this->assertWorkflowHasRole($workflow, $roleId);
 
             $workflow->addFlowObject(new SendTask($id, $workflow->getRole($roleId), $message, $operation, $name));
         }
 
         foreach ($this->exclusiveGateways as $id => $gateway) {
-            list($roleId, $name) = $gateway;
+            [$roleId, $name] = $gateway;
             $this->assertWorkflowHasRole($workflow, $roleId);
 
             $workflow->addFlowObject(new ExclusiveGateway($id, $workflow->getRole($roleId), $name));
         }
 
         foreach ($this->sequenceFlows as $id => $flow) {
-            list($source, $destination, $name, $condition) = $flow;
+            [$source, $destination, $name, $condition] = $flow;
 
             if (array_key_exists($id, $this->defaultableFlowObjects) && $condition !== null) {
                 throw new \LogicException(sprintf('The sequence flow "%s" has the condition "%s". A condition cannot be set to the default sequence flow.', $id, $condition));
@@ -303,14 +303,14 @@ class WorkflowBuilder
     }
 
     /**
-     * @param Workflow   $workflow
-     * @param int|string $roleId
+     * @param  Workflow  $workflow
+     * @param  int|string  $roleId
      *
      * @throws \LogicException
      */
     private function assertWorkflowHasRole(Workflow $workflow, $roleId)
     {
-        if (!$workflow->hasRole($roleId)) {
+        if (! $workflow->hasRole($roleId)) {
             throw new \LogicException(sprintf('The workflow "%s" does not have the role "%s".', $workflow->getId(), $roleId));
         }
     }

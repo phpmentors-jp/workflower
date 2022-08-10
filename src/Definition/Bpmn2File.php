@@ -23,7 +23,7 @@ class Bpmn2File implements EntityInterface, IdentifiableInterface
     private $file;
 
     /**
-     * @param string $file
+     * @param  string  $file
      */
     public function __construct($file)
     {
@@ -47,8 +47,7 @@ class Bpmn2File implements EntityInterface, IdentifiableInterface
     }
 
     /**
-     * @param string $file
-     *
+     * @param  string  $file
      * @return string
      */
     public static function getWorkflowId($file)

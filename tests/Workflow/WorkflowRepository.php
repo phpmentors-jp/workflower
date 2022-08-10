@@ -20,7 +20,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
     /**
      * @var array
      */
-    private $workflows = array();
+    private $workflows = [];
 
     public function __construct()
     {
@@ -54,7 +54,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface
      */
     public function findById($id)
     {
-        if (!array_key_exists($id, $this->workflows)) {
+        if (! array_key_exists($id, $this->workflows)) {
             return null;
         }
 

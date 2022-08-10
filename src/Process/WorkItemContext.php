@@ -32,7 +32,7 @@ class WorkItemContext implements WorkItemContextInterface
     private $processContext;
 
     /**
-     * @param ParticipantInterface $participant
+     * @param  ParticipantInterface  $participant
      */
     public function __construct(ParticipantInterface $participant)
     {
@@ -40,7 +40,7 @@ class WorkItemContext implements WorkItemContextInterface
     }
 
     /**
-     * @param int|string $activityId
+     * @param  int|string  $activityId
      */
     public function setActivityId($activityId)
     {
@@ -48,7 +48,7 @@ class WorkItemContext implements WorkItemContextInterface
     }
 
     /**
-     * @param ProcessContextInterface $processContext
+     * @param  ProcessContextInterface  $processContext
      */
     public function setProcessContext(ProcessContextInterface $processContext)
     {
@@ -64,7 +64,7 @@ class WorkItemContext implements WorkItemContextInterface
     }
 
     /**
-     * @param ParticipantInterface $participant
+     * @param  ParticipantInterface  $participant
      *
      * @since Method available since Release 1.1.0
      */

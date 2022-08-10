@@ -41,8 +41,7 @@ interface ActivityInterface extends FlowObjectInterface, TransitionalInterface, 
     public function isEnded();
 
     /**
-     * @param int $index
-     *
+     * @param  int  $index
      * @return WorkItemInterface
      *
      * @throws \OutOfBoundsException

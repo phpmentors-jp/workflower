@@ -17,7 +17,7 @@ use PHPMentors\Workflower\Workflow\Workflow;
 interface WorkflowAwareInterface extends OperationInterface
 {
     /**
-     * @param Workflow $workflow
+     * @param  Workflow  $workflow
      */
     public function setWorkflow(Workflow $workflow);
 }
