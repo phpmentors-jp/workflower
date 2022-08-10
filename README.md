@@ -47,6 +47,12 @@ Add the dependency to `phpmentors/workflower` into your `composer.json` file as 
 composer require phpmentors/workflower "1.4.*"
 ```
 
+when your PHP version >= 8.0, you can install `1.5.*`
+
+```
+composer require phpmentors/workflower "1.5.*"
+```
+
 ## Documentation
 
 * [Quick Start Guide](https://github.com/phpmentors-jp/workflower/blob/master/docs/GUIDE.md)
