@@ -15,18 +15,19 @@ namespace PHPMentors\Workflower\Workflow;
 use PHPMentors\DomainKata\Entity\EntityCollectionInterface;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
+use Traversable;
 
 class ActivityLogCollection implements EntityCollectionInterface
 {
     /**
      * @var ActivityLog[]
      */
-    private $activityLogs = array();
+    private $activityLogs = [];
 
     /**
      * @var array
      */
-    private $lastWorkItemIndexByActivity = array();
+    private $lastWorkItemIndexByActivity = [];
 
     /**
      * {@inheritdoc}
@@ -38,7 +39,7 @@ class ActivityLogCollection implements EntityCollectionInterface
         $this->activityLogs[] = $entity;
 
         if (array_key_exists($entity->getActivity()->getId(), $this->lastWorkItemIndexByActivity)) {
-            ++$this->lastWorkItemIndexByActivity[$entity->getActivity()->getId()];
+            $this->lastWorkItemIndexByActivity[$entity->getActivity()->getId()]++;
         } else {
             $this->lastWorkItemIndexByActivity[$entity->getActivity()->getId()] = 0;
         }
@@ -53,7 +54,7 @@ class ActivityLogCollection implements EntityCollectionInterface
      */
     public function get($key)
     {
-        if (!array_key_exists($key, $this->activityLogs)) {
+        if (! array_key_exists($key, $this->activityLogs)) {
             return null;
         }
 
@@ -71,7 +72,7 @@ class ActivityLogCollection implements EntityCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         return count($this->activityLogs);
     }
@@ -79,7 +80,7 @@ class ActivityLogCollection implements EntityCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->activityLogs);
     }

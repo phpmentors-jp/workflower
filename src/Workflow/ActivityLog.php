@@ -29,7 +29,7 @@ class ActivityLog implements EntityInterface
     private $workItem;
 
     /**
-     * @param ActivityInterface $activity
+     * @param  ActivityInterface  $activity
      */
     public function __construct(ActivityInterface $activity)
     {
@@ -45,7 +45,7 @@ class ActivityLog implements EntityInterface
     }
 
     /**
-     * @param WorkItemInterface $workItem
+     * @param  WorkItemInterface  $workItem
      */
     public function setWorkItem(WorkItemInterface $workItem)
     {

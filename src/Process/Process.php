@@ -47,9 +47,9 @@ class Process implements ServiceInterface
     private $operationRunner;
 
     /**
-     * @param int|string|WorkflowContextInterface $workflowContext
-     * @param WorkflowRepositoryInterface         $workflowRepository
-     * @param OperationRunnerInterface            $operationRunner
+     * @param  int|string|WorkflowContextInterface  $workflowContext
+     * @param  WorkflowRepositoryInterface  $workflowRepository
+     * @param  OperationRunnerInterface  $operationRunner
      */
     public function __construct($workflowContext, WorkflowRepositoryInterface $workflowRepository, OperationRunnerInterface $operationRunner)
     {
@@ -59,7 +59,7 @@ class Process implements ServiceInterface
     }
 
     /**
-     * @param ExpressionLanguage $expressionLanguage
+     * @param  ExpressionLanguage  $expressionLanguage
      *
      * @since Method available since Release 1.2.0
      */
@@ -69,7 +69,7 @@ class Process implements ServiceInterface
     }
 
     /**
-     * @param EventContextInterface $eventContext
+     * @param  EventContextInterface  $eventContext
      */
     public function start(EventContextInterface $eventContext)
     {
@@ -84,7 +84,7 @@ class Process implements ServiceInterface
     }
 
     /**
-     * @param WorkItemContextInterface $workItemContext
+     * @param  WorkItemContextInterface  $workItemContext
      */
     public function allocateWorkItem(WorkItemContextInterface $workItemContext)
     {
@@ -97,7 +97,7 @@ class Process implements ServiceInterface
     }
 
     /**
-     * @param WorkItemContextInterface $workItemContext
+     * @param  WorkItemContextInterface  $workItemContext
      */
     public function startWorkItem(WorkItemContextInterface $workItemContext)
     {
@@ -110,7 +110,7 @@ class Process implements ServiceInterface
     }
 
     /**
-     * @param WorkItemContextInterface $workItemContext
+     * @param  WorkItemContextInterface  $workItemContext
      */
     public function completeWorkItem(WorkItemContextInterface $workItemContext)
     {
@@ -124,7 +124,7 @@ class Process implements ServiceInterface
     }
 
     /**
-     * @param WorkItemContextInterface $workItemContext
+     * @param  WorkItemContextInterface  $workItemContext
      *
      * @throws UnexpectedActivityStateException
      */
@@ -184,8 +184,7 @@ class Process implements ServiceInterface
     }
 
     /**
-     * @param Workflow $workflow
-     *
+     * @param  Workflow  $workflow
      * @return Workflow
      *
      * @since Method available since Release 1.2.0

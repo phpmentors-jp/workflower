@@ -15,7 +15,7 @@ namespace PHPMentors\Workflower\Workflow\Element;
 interface ConditionalInterface extends OperationInterface
 {
     /**
-     * @param int|string $sequenceFlowId
+     * @param  int|string  $sequenceFlowId
      */
     public function setDefaultSequenceFlowId($sequenceFlowId);
 

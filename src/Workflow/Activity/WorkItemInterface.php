@@ -18,9 +18,13 @@ use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 interface WorkItemInterface extends EntityInterface
 {
     const STATE_CREATED = 'created';
+
     const STATE_ALLOCATED = 'allocated';
+
     const STATE_STARTED = 'started';
+
     const STATE_ENDED = 'ended';
+
     const END_RESULT_COMPLETION = 'completion';
 
     /**
@@ -64,14 +68,14 @@ interface WorkItemInterface extends EntityInterface
     public function getEndResult();
 
     /**
-     * @param ParticipantInterface $participant
+     * @param  ParticipantInterface  $participant
      */
     public function allocate(ParticipantInterface $participant);
 
     public function start();
 
     /**
-     * @param ParticipantInterface $participant
+     * @param  ParticipantInterface  $participant
      */
     public function complete(ParticipantInterface $participant);
 }

@@ -13,8 +13,9 @@
 namespace PHPMentors\Workflower\Definition;
 
 use PHPMentors\Workflower\Workflow\WorkflowRepository;
+use PHPUnit\Framework\TestCase;
 
-class Bpmn2ReaderTest extends \PHPUnit_Framework_TestCase
+class Bpmn2ReaderTest extends TestCase
 {
     /**
      * @test

@@ -11,14 +11,15 @@
         }
     ],
     "require": {
-        "php": ">=5.3.9",
+        "php": "^8.0",
         "phpmentors/domain-kata": "~1.4",
         "piece/stagehand-fsm": "~2.6",
-        "symfony/expression-language": "~2.8|~3.0|~4.0"
+        "symfony/expression-language": "~3.4|~4.0|~5.0",
+        "ext-dom": "*"
     },
     "require-dev": {
-        "phake/phake": "~2.0",
-        "phpunit/phpunit": "~4.0"
+        "phake/phake": "^4.0",
+        "phpunit/phpunit": "~8.0"
     },
     "autoload": {
         "psr-4": {

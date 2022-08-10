@@ -15,7 +15,7 @@ namespace PHPMentors\Workflower\Workflow\Event;
 use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
-abstract class Event implements \Serializable
+abstract class Event
 {
     /**
      * @var int|string
@@ -33,9 +33,9 @@ abstract class Event implements \Serializable
     private $role;
 
     /**
-     * @param int|string $id
-     * @param Role       $role
-     * @param string     $name
+     * @param  int|string  $id
+     * @param  Role  $role
+     * @param  string  $name
      */
     public function __construct($id, Role $role, $name = null)
     {
@@ -44,22 +44,16 @@ abstract class Event implements \Serializable
         $this->name = $name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function __serialize()
     {
-        return serialize(array(
+        return serialize([
             'id' => $this->id,
             'name' => $this->name,
             'role' => $this->role,
-        ));
+        ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unserialize($serialized)
+    public function __unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if (property_exists($this, $name)) {
@@ -69,8 +63,6 @@ abstract class Event implements \Serializable
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @return string
      */
     public function getId()
@@ -86,20 +78,14 @@ abstract class Event implements \Serializable
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getRole()
     {
         return $this->role;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function equals(EntityInterface $target)
     {
-        if (!($target instanceof self)) {
+        if (! ($target instanceof self)) {
             return false;
         }
 

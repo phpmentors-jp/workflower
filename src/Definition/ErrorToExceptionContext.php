@@ -25,8 +25,8 @@ class ErrorToExceptionContext
     private $target;
 
     /**
-     * @param int      $errorReportingLevel
-     * @param \Closure $target
+     * @param  int  $errorReportingLevel
+     * @param  \Closure  $target
      */
     public function __construct($errorReportingLevel, \Closure $target)
     {

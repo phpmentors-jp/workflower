@@ -18,14 +18,13 @@ use PHPMentors\Workflower\Workflow\Resource\ResourceInterface;
 interface ParticipantInterface extends OperationInterface, IdentifiableInterface
 {
     /**
-     * @param string $role
-     *
+     * @param  string  $role
      * @return bool
      */
     public function hasRole($role);
 
     /**
-     * @param ResourceInterface $resource
+     * @param  ResourceInterface  $resource
      */
     public function setResource(ResourceInterface $resource);
 

@@ -14,28 +14,29 @@ namespace PHPMentors\Workflower\Workflow\Participant;
 
 use PHPMentors\DomainKata\Entity\EntityCollectionInterface;
 use PHPMentors\DomainKata\Entity\EntityInterface;
+use Traversable;
 
-class RoleCollection implements EntityCollectionInterface, \Serializable
+class RoleCollection implements EntityCollectionInterface
 {
     /**
      * @var array
      */
-    private $roles = array();
+    private $roles = [];
 
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function __serialize()
     {
-        return serialize(array(
+        return serialize([
             'roles' => $this->roles,
-        ));
+        ]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    public function __unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if (property_exists($this, $name)) {
@@ -79,7 +80,7 @@ class RoleCollection implements EntityCollectionInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         return count($this->roles);
     }
@@ -87,7 +88,7 @@ class RoleCollection implements EntityCollectionInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->roles);
     }

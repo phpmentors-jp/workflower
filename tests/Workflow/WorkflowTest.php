@@ -16,8 +16,9 @@ use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\WorkItem;
 use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
 use PHPMentors\Workflower\Workflow\Operation\OperationalInterface;
+use PHPUnit\Framework\TestCase;
 
-class WorkflowTest extends \PHPUnit_Framework_TestCase
+class WorkflowTest extends TestCase
 {
     /**
      * @var WorkflowRepositoryInterface
@@ -27,7 +28,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->workflowRepository = new WorkflowRepository();
     }
@@ -149,15 +150,15 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
      */
     public function completeActivityOnConditionalSequenceFlowsData()
     {
-        return array(
-            array(true, 'End'),
-            array(false, 'LoanStudy'),
-        );
+        return [
+            [true, 'End'],
+            [false, 'LoanStudy'],
+        ];
     }
 
     /**
-     * @param bool   $rejected
-     * @param string $nextFlowObjectId
+     * @param  bool  $rejected
+     * @param  string  $nextFlowObjectId
      *
      * @test
      * @dataProvider completeActivityOnConditionalSequenceFlowsData
@@ -168,7 +169,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
-        $workflow->setProcessData(array('rejected' => false));
+        $workflow->setProcessData(['rejected' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
@@ -177,7 +178,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
         $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->setProcessData(array('rejected' => $rejected));
+        $workflow->setProcessData(['rejected' => $rejected]);
         $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
@@ -190,15 +191,15 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
      */
     public function selectSequenceFlowOnExclusiveGatewayData()
     {
-        return array(
-            array(true, 'InformRejection'),
-            array(false, 'Disbursement'),
-        );
+        return [
+            [true, 'InformRejection'],
+            [false, 'Disbursement'],
+        ];
     }
 
     /**
-     * @param bool   $rejected
-     * @param string $nextFlowObjectId
+     * @param  bool  $rejected
+     * @param  string  $nextFlowObjectId
      *
      * @test
      * @dataProvider selectSequenceFlowOnExclusiveGatewayData
@@ -209,7 +210,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
-        $workflow->setProcessData(array('rejected' => false));
+        $workflow->setProcessData(['rejected' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
@@ -222,7 +223,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
         $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->setProcessData(array('rejected' => $rejected));
+        $workflow->setProcessData(['rejected' => $rejected]);
         $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
 
         $currentFlowObject = $workflow->getCurrentFlowObject();
@@ -239,7 +240,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
-        $workflow->setProcessData(array('rejected' => false));
+        $workflow->setProcessData(['rejected' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
@@ -283,7 +284,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
-        $workflow->setProcessData(array('rejected' => false));
+        $workflow->setProcessData(['rejected' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
@@ -307,12 +308,12 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $this->assertThat($activityLog, $this->isInstanceOf('PHPMentors\Workflower\Workflow\ActivityLogCollection'));
         $this->assertThat(count($activityLog), $this->equalTo(4));
 
-        $activityIds = array(
+        $activityIds = [
             'RecordLoanApplicationInformation',
             'CheckApplicantInformation',
             'LoanStudy',
             'Disbursement',
-        );
+        ];
 
         foreach ($activityLog as $i => $activityLogEntry) { /* @var $activityLogEntry ActivityLog */
             $this->assertThat($activityLogEntry->getActivity()->getId(), $this->equalTo($activityIds[$i]));
@@ -336,7 +337,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         \Phake::when($participant)->hasRole($this->anything())->thenReturn(true);
 
         $workflow = $this->workflowRepository->findById('MultipleWorkItemsProcess');
-        $workflow->setProcessData(array('satisfied' => false));
+        $workflow->setProcessData(['satisfied' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
@@ -353,7 +354,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
 
         $workflow->allocateWorkItem($workflow->getCurrentFlowObject(), $participant);
         $workflow->startWorkItem($workflow->getCurrentFlowObject(), $participant);
-        $workflow->setProcessData(array('satisfied' => true));
+        $workflow->setProcessData(['satisfied' => true]);
         $workflow->completeWorkItem($workflow->getCurrentFlowObject(), $participant);
 
         $activityLog = $workflow->getActivityLog();
@@ -384,8 +385,11 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         $workflow = $this->workflowRepository->findById('LoanRequestProcess');
         $workflow->setExpressionLanguage($expressionLanguage);
 
-        $workflow->setProcessData(array('rejected' => false));
+        $workflow->setProcessData(['rejected' => false]);
         $workflow->start($workflow->getFlowObject('Start'));
+
+        // if not will get an error: this test did not perform any assertions
+        $this->assertTrue(true);
     }
 
     /**
@@ -403,7 +407,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         \Phake::when($operationRunner)->run($this->anything(), $this->anything())->thenReturnCallback(function (OperationalInterface $operational, Workflow $workflow) use ($self) {
             static $calls = 0;
 
-            ++$calls;
+            $calls++;
             $self->assertThat($operational, $self->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\ServiceTask'));
             $self->assertThat($operational->getOperation(), $self->equalTo('phpmentors_workflower.service'.$calls));
         });
@@ -453,7 +457,7 @@ class WorkflowTest extends \PHPUnit_Framework_TestCase
         \Phake::when($operationRunner)->run($this->anything(), $this->anything())->thenReturnCallback(function (OperationalInterface $operational, Workflow $workflow) use ($self) {
             static $calls = 0;
 
-            ++$calls;
+            $calls++;
             $self->assertThat($operational, $self->isInstanceOf('PHPMentors\Workflower\Workflow\Activity\SendTask'));
             $self->assertThat($operational->getOperation(), $self->equalTo('phpmentors_workflower.service'.$calls));
             $self->assertThat($operational, $self->isInstanceOf('PHPMentors\Workflower\Workflow\Resource\MessageInterface'));

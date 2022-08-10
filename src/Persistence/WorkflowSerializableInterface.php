@@ -17,7 +17,7 @@ use PHPMentors\Workflower\Process\WorkflowAwareInterface;
 interface WorkflowSerializableInterface extends OperationInterface, WorkflowAwareInterface
 {
     /**
-     * @param string $serializedWorkflow
+     * @param  string  $serializedWorkflow
      */
     public function setSerializedWorkflow($serializedWorkflow);
 

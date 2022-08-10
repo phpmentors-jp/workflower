@@ -16,7 +16,7 @@ use PHPMentors\DomainKata\Entity\EntityInterface;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\Participant\Role;
 
-class Task implements ActivityInterface, \Serializable
+class Task implements ActivityInterface
 {
     /**
      * @var int|string
@@ -36,7 +36,7 @@ class Task implements ActivityInterface, \Serializable
     /**
      * @var WorkItemInterface[]
      */
-    private $workItems = array();
+    private $workItems = [];
 
     /**
      * @var int|string
@@ -44,9 +44,9 @@ class Task implements ActivityInterface, \Serializable
     private $defaultSequenceFlowId;
 
     /**
-     * @param int|string $id
-     * @param Role       $role
-     * @param string     $name
+     * @param  int|string  $id
+     * @param  Role  $role
+     * @param  string  $name
      */
     public function __construct($id, Role $role, $name = null)
     {
@@ -58,21 +58,21 @@ class Task implements ActivityInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function __serialize()
     {
-        return serialize(array(
+        return serialize([
             'id' => $this->id,
             'role' => $this->role,
             'name' => $this->name,
             'workItems' => $this->workItems,
             'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
-        ));
+        ]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    public function __unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if (property_exists($this, $name)) {
@@ -112,7 +112,7 @@ class Task implements ActivityInterface, \Serializable
      */
     public function equals(EntityInterface $target)
     {
-        if (!($target instanceof self)) {
+        if (! ($target instanceof self)) {
             return false;
         }
 
@@ -236,7 +236,7 @@ class Task implements ActivityInterface, \Serializable
      */
     public function createWorkItem()
     {
-        if (!(count($this->workItems) == 0 || $this->isEnded())) {
+        if (! (count($this->workItems) == 0 || $this->isEnded())) {
             throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not ended.', $this->getId()));
         }
 
@@ -248,7 +248,7 @@ class Task implements ActivityInterface, \Serializable
      */
     public function allocate(ParticipantInterface $participant)
     {
-        if (!$this->isAllocatable()) {
+        if (! $this->isAllocatable()) {
             throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not allocatable.', $this->getId()));
         }
 
@@ -260,7 +260,7 @@ class Task implements ActivityInterface, \Serializable
      */
     public function start()
     {
-        if (!$this->isStartable()) {
+        if (! $this->isStartable()) {
             throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not startable.', $this->getId()));
         }
 
@@ -272,7 +272,7 @@ class Task implements ActivityInterface, \Serializable
      */
     public function complete(ParticipantInterface $participant)
     {
-        if (!$this->isCompletable()) {
+        if (! $this->isCompletable()) {
             throw new UnexpectedActivityStateException(sprintf('The current work item of the activity "%s" is not completable.', $this->getId()));
         }
 
@@ -316,7 +316,7 @@ class Task implements ActivityInterface, \Serializable
      */
     public function getWorkItem($index)
     {
-        if (!array_key_exists($index, $this->workItems)) {
+        if (! array_key_exists($index, $this->workItems)) {
             throw new \OutOfBoundsException(sprintf('The index "%d" is not in the range [0, %d].', $index, count($this->workItems) - 1));
         }
 

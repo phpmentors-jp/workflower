@@ -15,8 +15,8 @@ namespace PHPMentors\Workflower\Workflow;
 class AccessDeniedException extends \RuntimeException
 {
     /**
-     * @param string     $message
-     * @param \Exception $previous
+     * @param  string  $message
+     * @param  \Exception  $previous
      */
     public function __construct($message = 'Access Denied', \Exception $previous = null)
     {
