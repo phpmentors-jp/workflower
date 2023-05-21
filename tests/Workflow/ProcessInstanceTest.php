@@ -153,7 +153,7 @@ class ProcessInstanceTest extends TestCase
     /**
      * @return array
      */
-    public function completeActivityOnConditionalSequenceFlowsData()
+    public static function completeActivityOnConditionalSequenceFlowsData()
     {
         return [
             [true, null],
@@ -196,7 +196,7 @@ class ProcessInstanceTest extends TestCase
     /**
      * @return array
      */
-    public function selectSequenceFlowOnExclusiveGatewayData()
+    public static function selectSequenceFlowOnExclusiveGatewayData()
     {
         return [
             [true, 'InformRejection'],
