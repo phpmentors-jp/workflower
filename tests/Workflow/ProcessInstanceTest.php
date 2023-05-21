@@ -30,7 +30,7 @@ class ProcessInstanceTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->workflowRepository = new WorkflowRepository();
     }
@@ -153,7 +153,7 @@ class ProcessInstanceTest extends TestCase
     /**
      * @return array
      */
-    public function completeActivityOnConditionalSequenceFlowsData()
+    public static function completeActivityOnConditionalSequenceFlowsData()
     {
         return [
             [true, null],
@@ -196,7 +196,7 @@ class ProcessInstanceTest extends TestCase
     /**
      * @return array
      */
-    public function selectSequenceFlowOnExclusiveGatewayData()
+    public static function selectSequenceFlowOnExclusiveGatewayData()
     {
         return [
             [true, 'InformRejection'],
@@ -400,9 +400,7 @@ class ProcessInstanceTest extends TestCase
     {
         $participant = $this->createMock(ParticipantInterface::class);
         $participant->method('hasRole')->willReturn(true);
-        $operationRunner = $this->getMockBuilder(OperationRunnerInterface::class)
-            ->setMethods(['provideParticipant', 'run'])
-            ->getMock();
+        $operationRunner = $this->createMock(OperationRunnerInterface::class);
         $operationRunner->method('provideParticipant')->willReturn($participant);
         $self = $this;
         $operationRunner->expects($this->exactly(2))->method('run')->willReturnCallback(function (WorkItemInterface $workItem) use ($self) {
@@ -428,9 +426,7 @@ class ProcessInstanceTest extends TestCase
      */
     public function provideDefaultRoleForWorkflowWithoutLanes()
     {
-        $participant = $this->getMockBuilder(ParticipantInterface::class)
-            ->setMethods(['hasRole', 'setResource', 'getResource', 'getName', 'getId'])
-            ->getMock();
+        $participant = $this->createMock(ParticipantInterface::class);
         $participant->expects($this->exactly(3))->method('hasRole')->with($this->equalTo(ProcessInstance::DEFAULT_ROLE_ID))->willReturn(true);
 
         $workflow = $this->workflowRepository->findById('NoLanesProcess');
@@ -453,9 +449,7 @@ class ProcessInstanceTest extends TestCase
     {
         $participant = $this->createMock(ParticipantInterface::class);
         $participant->method('hasRole')->willReturn(true);
-        $operationRunner = $this->getMockBuilder(OperationRunnerInterface::class)
-            ->setMethods(['provideParticipant', 'run'])
-            ->getMock();
+        $operationRunner = $this->createMock(OperationRunnerInterface::class);
         $operationRunner->method('provideParticipant')->willReturn($participant);
         $self = $this;
         $operationRunner->expects($this->exactly(2))->method('run')->willReturnCallback(function (WorkItemInterface $workItem) use ($self) {
@@ -495,7 +489,7 @@ class ProcessInstanceTest extends TestCase
         $this->assertThat(count($currentFlowObjects), $this->equalTo(count($concurrentFlowObjects)));
 
         foreach ($currentFlowObjects as $currentFlowObject) {
-            $this->assertThat($concurrentFlowObjects, $this->contains($currentFlowObject->getId()));
+            $this->assertThat($concurrentFlowObjects, $this->containsEqual($currentFlowObject->getId()));
             $this->assertThat(current($currentFlowObject->getToken())->getPreviousFlowObject()->getId(), $this->equalTo('ParallelGateway1'));
 
             unset($concurrentFlowObjects[array_search($currentFlowObject->getId(), $concurrentFlowObjects)]);
@@ -524,11 +518,11 @@ class ProcessInstanceTest extends TestCase
 
         $concurrentFlowObjects = ['ReceivePayment', 'ShipOrder'];
 
-        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(0)->getActivity()->getId()));
+        $this->assertThat($concurrentFlowObjects, $this->containsEqual($activityLog->get(0)->getActivity()->getId()));
 
         unset($concurrentFlowObjects[array_search($activityLog->get(0)->getActivity()->getId(), $concurrentFlowObjects)]);
 
-        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(1)->getActivity()->getId()));
+        $this->assertThat($concurrentFlowObjects, $this->containsEqual($activityLog->get(1)->getActivity()->getId()));
 
         $this->assertThat($activityLog->get(2)->getActivity()->getId(), $this->equalTo('ArchiveOrder'));
     }
@@ -723,9 +717,7 @@ class ProcessInstanceTest extends TestCase
             ['test' => 3],
             ['test' => 4],
         ];
-        $dataProvider = $this->getMockBuilder(DataProviderInterface::class)
-            ->setMethods(['getParallelInstancesData', 'getSequentialInstanceData', 'getSingleInstanceData', 'mergeInstancesData'])
-            ->getMock();
+        $dataProvider = $this->createMock(DataProviderInterface::class);
         $dataProvider->method('getParallelInstancesData')->willReturn($parallelData);
 
         $workflow = $this->workflowRepository->findById('ParallelUserTasks');
@@ -765,9 +757,7 @@ class ProcessInstanceTest extends TestCase
         $participant->method('hasRole')->willReturn(true);
 
         $counter = 0;
-        $dataProvider = $this->getMockBuilder(DataProviderInterface::class)
-            ->setMethods(['getParallelInstancesData', 'getSequentialInstanceData', 'getSingleInstanceData', 'mergeInstancesData'])
-            ->getMock();
+        $dataProvider = $this->createMock(DataProviderInterface::class);
         $dataProvider->method('getSequentialInstanceData')->willReturn(['test' => ++$counter]);
 
         $workflow = $this->workflowRepository->findById('SequentialUserTasks');
@@ -928,11 +918,11 @@ class ProcessInstanceTest extends TestCase
 
         $concurrentFlowObjects = ['ReceiveOrder', 'ShipOrder'];
 
-        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(0)->getActivity()->getId()));
+        $this->assertThat($concurrentFlowObjects, $this->containsEqual($activityLog->get(0)->getActivity()->getId()));
 
         unset($concurrentFlowObjects[array_search($activityLog->get(0)->getActivity()->getId(), $concurrentFlowObjects)]);
 
-        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(1)->getActivity()->getId()));
+        $this->assertThat($concurrentFlowObjects, $this->containsEqual($activityLog->get(1)->getActivity()->getId()));
 
         $this->assertThat($activityLog->get(2)->getActivity()->getId(), $this->equalTo('ArchiveOrder'));
     }
@@ -977,7 +967,7 @@ class ProcessInstanceTest extends TestCase
 
         $concurrentFlowObjects = ['ShipOrder'];
 
-        $this->assertThat($concurrentFlowObjects, $this->contains($activityLog->get(0)->getActivity()->getId()));
+        $this->assertThat($concurrentFlowObjects, $this->containsEqual($activityLog->get(0)->getActivity()->getId()));
 
         $this->assertThat($activityLog->get(1)->getActivity()->getId(), $this->equalTo('ArchiveOrder'));
     }

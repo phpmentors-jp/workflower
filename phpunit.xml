@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="phpunit.xsd"
-         bootstrap="tests/bootstrap.php"
-         backupGlobals="false"
-         verbose="true"
-         colors="true">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd" bootstrap="tests/bootstrap.php" backupGlobals="false" colors="true" cacheDirectory=".phpunit.cache">
+  <coverage/>
   <testsuites>
     <testsuite name="Test Suite">
       <directory suffix="Test.php">./tests</directory>
     </testsuite>
   </testsuites>
-
-  <filter>
-    <whitelist>
+  <source>
+    <include>
       <directory>./src</directory>
-    </whitelist>
-  </filter>
+    </include>
+  </source>
 </phpunit>
