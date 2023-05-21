@@ -400,9 +400,7 @@ class ProcessInstanceTest extends TestCase
     {
         $participant = $this->createMock(ParticipantInterface::class);
         $participant->method('hasRole')->willReturn(true);
-        $operationRunner = $this->getMockBuilder(OperationRunnerInterface::class)
-            ->setMethods(['provideParticipant', 'run'])
-            ->getMock();
+        $operationRunner = $this->createMock(OperationRunnerInterface::class);
         $operationRunner->method('provideParticipant')->willReturn($participant);
         $self = $this;
         $operationRunner->expects($this->exactly(2))->method('run')->willReturnCallback(function (WorkItemInterface $workItem) use ($self) {
@@ -428,9 +426,7 @@ class ProcessInstanceTest extends TestCase
      */
     public function provideDefaultRoleForWorkflowWithoutLanes()
     {
-        $participant = $this->getMockBuilder(ParticipantInterface::class)
-            ->setMethods(['hasRole', 'setResource', 'getResource', 'getName', 'getId'])
-            ->getMock();
+        $participant = $this->createMock(ParticipantInterface::class);
         $participant->expects($this->exactly(3))->method('hasRole')->with($this->equalTo(ProcessInstance::DEFAULT_ROLE_ID))->willReturn(true);
 
         $workflow = $this->workflowRepository->findById('NoLanesProcess');
@@ -453,9 +449,7 @@ class ProcessInstanceTest extends TestCase
     {
         $participant = $this->createMock(ParticipantInterface::class);
         $participant->method('hasRole')->willReturn(true);
-        $operationRunner = $this->getMockBuilder(OperationRunnerInterface::class)
-            ->setMethods(['provideParticipant', 'run'])
-            ->getMock();
+        $operationRunner = $this->createMock(OperationRunnerInterface::class);
         $operationRunner->method('provideParticipant')->willReturn($participant);
         $self = $this;
         $operationRunner->expects($this->exactly(2))->method('run')->willReturnCallback(function (WorkItemInterface $workItem) use ($self) {
@@ -723,9 +717,7 @@ class ProcessInstanceTest extends TestCase
             ['test' => 3],
             ['test' => 4],
         ];
-        $dataProvider = $this->getMockBuilder(DataProviderInterface::class)
-            ->setMethods(['getParallelInstancesData', 'getSequentialInstanceData', 'getSingleInstanceData', 'mergeInstancesData'])
-            ->getMock();
+        $dataProvider = $this->createMock(DataProviderInterface::class);
         $dataProvider->method('getParallelInstancesData')->willReturn($parallelData);
 
         $workflow = $this->workflowRepository->findById('ParallelUserTasks');
@@ -765,9 +757,7 @@ class ProcessInstanceTest extends TestCase
         $participant->method('hasRole')->willReturn(true);
 
         $counter = 0;
-        $dataProvider = $this->getMockBuilder(DataProviderInterface::class)
-            ->setMethods(['getParallelInstancesData', 'getSequentialInstanceData', 'getSingleInstanceData', 'mergeInstancesData'])
-            ->getMock();
+        $dataProvider = $this->createMock(DataProviderInterface::class);
         $dataProvider->method('getSequentialInstanceData')->willReturn(['test' => ++$counter]);
 
         $workflow = $this->workflowRepository->findById('SequentialUserTasks');
