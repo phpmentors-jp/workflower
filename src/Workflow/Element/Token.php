@@ -12,22 +12,22 @@
 
 namespace PHPMentors\Workflower\Workflow\Element;
 
-class Token
+class Token // implements \Serializable
 {
     /**
      * @var string
      */
-    private $id;
+    protected $id;
 
     /**
      * @var FlowObjectInterface
      */
-    private $currentFlowObject;
+    protected $currentFlowObject;
 
     /**
      * @var FlowObjectInterface
      */
-    private $previousFlowObject;
+    protected $previousFlowObject;
 
     /**
      * @param string              $id
@@ -78,4 +78,25 @@ class Token
 
         return $this;
     }
+
+    /*public function serialize()
+    {
+        return serialize([
+            'id',
+            'currentFlowObject',
+            'previousFlowObject',
+        ]);
+    }*/
+
+    /**
+     * {@inheritdoc}
+     */
+    /*public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
+    }*/
 }

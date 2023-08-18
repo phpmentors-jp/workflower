@@ -7,24 +7,24 @@ use PHPMentors\Workflower\Workflow\ProcessInstance;
 /**
  * @since Class available since Release 2.0.0
  */
-abstract class FlowObject implements FlowObjectInterface, TransitionalInterface, \Serializable
+abstract class FlowObject implements FlowObjectInterface, TransitionalInterface
 {
     /**
      * @var bool
      */
-    private $started = false;
+    protected $started = false;
 
     /**
      * @var Token[]
      *
      * @since Property available since Release 2.0.0
      */
-    private $token = [];
+    protected $token = [];
 
     /**
      * @var ProcessInstance
      */
-    private $processInstance;
+    protected $processInstance;
 
     public function __construct(array $config = [])
     {
@@ -38,25 +38,26 @@ abstract class FlowObject implements FlowObjectInterface, TransitionalInterface,
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    /*public function serialize()
     {
         return serialize([
             'token' => $this->token,
             'started' => $this->started,
+            'processInstance' => $this->processInstance,
         ]);
-    }
+    }*/
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    /*public function unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if (property_exists($this, $name)) {
                 $this->$name = $value;
             }
         }
-    }
+    }*/
 
     /**
      * {@inheritdoc}

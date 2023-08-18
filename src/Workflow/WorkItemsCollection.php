@@ -8,7 +8,7 @@ class WorkItemsCollection implements ItemsCollectionInterface
 {
     protected $items = [];
 
-    public function serialize()
+    /*public function serialize()
     {
         return serialize([
             'items' => $this->items,
@@ -22,7 +22,7 @@ class WorkItemsCollection implements ItemsCollectionInterface
                 $this->$name = $value;
             }
         }
-    }
+    }*/
 
     public function add(ItemInterface $item)
     {

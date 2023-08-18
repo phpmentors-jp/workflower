@@ -36,7 +36,7 @@ abstract class Gateway extends FlowObject implements GatewayInterface
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    /*public function serialize()
     {
         return serialize([
             get_parent_class($this) => parent::serialize(),
@@ -44,12 +44,12 @@ abstract class Gateway extends FlowObject implements GatewayInterface
             'name' => $this->name,
             'role' => $this->role,
         ]);
-    }
+    }*/
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    /*public function unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if ($name == get_parent_class($this)) {
@@ -61,7 +61,7 @@ abstract class Gateway extends FlowObject implements GatewayInterface
                 $this->$name = $value;
             }
         }
-    }
+    }*/
 
     /**
      * {@inheritdoc}

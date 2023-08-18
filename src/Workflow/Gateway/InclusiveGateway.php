@@ -30,18 +30,18 @@ class InclusiveGateway extends Gateway
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    /*public function serialize()
     {
         return serialize([
             get_parent_class($this) => parent::serialize(),
             'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
         ]);
-    }
+    }*/
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    /*public function unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if ($name == get_parent_class($this)) {
@@ -53,7 +53,7 @@ class InclusiveGateway extends Gateway
                 $this->$name = $value;
             }
         }
-    }
+    }*/
 
     /**
      * {@inheritdoc}

@@ -2,7 +2,7 @@
 
 namespace PHPMentors\Workflower\Workflow;
 
-interface ItemsCollectionInterface extends \Countable, \IteratorAggregate, \Serializable
+interface ItemsCollectionInterface extends \Countable, \IteratorAggregate//, \Serializable
 {
     /**
      * @param ItemInterface $item

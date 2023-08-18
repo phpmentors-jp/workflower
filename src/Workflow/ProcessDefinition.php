@@ -14,6 +14,7 @@ use PHPMentors\Workflower\Workflow\Element\ConditionalInterface;
 use PHPMentors\Workflower\Workflow\Event\EndEvent;
 use PHPMentors\Workflower\Workflow\Event\IntermediateCatchEvent;
 use PHPMentors\Workflower\Workflow\Event\StartEvent;
+use PHPMentors\Workflower\Workflow\Event\TerminateEndEvent;
 use PHPMentors\Workflower\Workflow\Gateway\ExclusiveGateway;
 use PHPMentors\Workflower\Workflow\Gateway\InclusiveGateway;
 use PHPMentors\Workflower\Workflow\Gateway\ParallelGateway;
@@ -352,7 +353,15 @@ class ProcessDefinition implements ProcessDefinitionInterface
             $clone = array_merge([], $config);
             $this->replaceRoleInConfig($processInstance, $clone);
 
-            $processInstance->addFlowObject(new EndEvent($clone));
+            if (isset($config['id']) && ($config['id'] == 'Event_0mu3wir'
+                    || $config['id'] == 'Event_05m1sxv'
+                    || $config['id'] == 'Event_097tn4g')) {
+                $processInstance->addFlowObject(new TerminateEndEvent($clone));
+            } else {
+                $processInstance->addFlowObject(new EndEvent($clone));
+            }
+
+            //$processInstance->addFlowObject(new EndEvent($clone));
         }
 
         foreach ($this->tasks as $config) {

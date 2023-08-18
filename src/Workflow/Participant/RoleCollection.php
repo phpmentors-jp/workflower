@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Participant;
 
-class RoleCollection implements \Countable, \IteratorAggregate, \Serializable
+class RoleCollection implements \Countable, \IteratorAggregate//, \Serializable
 {
     /**
      * @var array
@@ -22,24 +22,24 @@ class RoleCollection implements \Countable, \IteratorAggregate, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    /*public function serialize()
     {
         return serialize([
             'roles' => $this->roles,
         ]);
-    }
+    }*/
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    /*public function unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if (property_exists($this, $name)) {
                 $this->$name = $value;
             }
         }
-    }
+    }*/
 
     /**
      * {@inheritdoc}

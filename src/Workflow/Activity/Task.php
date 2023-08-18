@@ -16,7 +16,7 @@ use PHPMentors\Workflower\Workflow\Provider\DataNotFoundException;
 use PHPMentors\Workflower\Workflow\Provider\ProviderNotFoundException;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
-class Task extends AbstractTask
+class Task extends AbstractTask// implements \Serializable
 {
     /**
      * {@inheritdoc}
@@ -118,4 +118,40 @@ class Task extends AbstractTask
         // if no more instance needs to be created then end the activity
         $this->end();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    /*public function serialize()
+    {
+        return serialize([
+            'id' => $this->id,
+            'role' => $this->role,
+            'name' => $this->name,
+            'state' => $this->state,
+            'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
+            'multiInstance' => $this->multiInstance,
+            'sequential' => $this->sequential,
+            'completionCondition' => $this->completionCondition,
+            'workItems' => $this->workItems,
+            'processInstance' => $this->processInstance,
+        ]);
+    }*/
+
+    /**
+     * {@inheritdoc}
+     */
+    /*public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if ($name == get_parent_class($this)) {
+                parent::unserialize($value);
+                continue;
+            }
+
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
+    }*/
 }

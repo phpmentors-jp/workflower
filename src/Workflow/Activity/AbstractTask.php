@@ -15,56 +15,58 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 /**
  * @since Class available since Release 2.0.0
  */
-abstract class AbstractTask extends FlowObject implements ActivityInterface, \Serializable
+abstract class AbstractTask extends FlowObject implements ActivityInterface//, \Serializable
 {
     /**
      * @var int|string
      */
-    private $id;
+    protected $id;
 
     /**
      * @var Role
      */
-    private $role;
+    protected $role;
 
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @var int|string
      */
-    private $defaultSequenceFlowId;
+    protected $defaultSequenceFlowId;
 
     /**
      * @var bool
      *
      * @since Property available since Release 2.0.0
      */
-    private $multiInstance = false;
+    protected $multiInstance = false;
 
     /**
      * @var bool
      *
      * @since Property available since Release 2.0.0
      */
-    private $sequential = false;
+    protected $sequential = false;
 
     /**
      * @var Expression
      */
-    private $completionCondition;
+    protected $completionCondition;
 
     /**
      * @var string
      */
-    private $state = self::STATE_INACTIVE;
+    protected $state = self::STATE_INACTIVE;
 
     /**
      * @var ItemsCollectionInterface
      */
     protected $workItems;
+
+    protected array $properties = [];
 
     public function __construct(array $config = [])
     {
@@ -80,7 +82,7 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    /*public function serialize()
     {
         return serialize([
             get_parent_class($this) => parent::serialize(),
@@ -93,13 +95,14 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
             'sequential' => $this->sequential,
             'completionCondition' => $this->completionCondition,
             'workItems' => $this->workItems,
+            'processInstance' => $this->processInstance,
         ]);
-    }
+    }*/
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    /*public function unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if ($name == get_parent_class($this)) {
@@ -111,7 +114,7 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
                 $this->$name = $value;
             }
         }
-    }
+    }*/
 
     /**
      * {@inheritdoc}
@@ -359,5 +362,13 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface, \Se
         foreach ($this->getWorkItems()->getActiveInstances() as $workiItem) {
             $workiItem->cancel();
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getProperties(): array
+    {
+        return $this->properties;
     }
 }

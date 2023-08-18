@@ -6,7 +6,7 @@ use PHPMentors\Workflower\Workflow\Participant\LoggedParticipant;
 use PHPMentors\Workflower\Workflow\Participant\ParticipantInterface;
 use PHPMentors\Workflower\Workflow\ProcessInstanceInterface;
 
-class WorkItem implements WorkItemInterface, \Serializable
+class WorkItem implements WorkItemInterface//, \Serializable
 {
     /**
      * @var string
@@ -77,11 +77,11 @@ class WorkItem implements WorkItemInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    /*public function serialize()
     {
         return serialize([
             'id' => $this->id,
-            'parentProcessInstance' => $this->parentProcessInstance,
+            //'parentProcessInstance' => $this->parentProcessInstance,
             'parentActivity' => $this->parentActivity,
             'state' => $this->state,
             'participant' => $this->participant === null ? null : ($this->participant instanceof LoggedParticipant ? $this->participant : new LoggedParticipant($this->participant)),
@@ -91,20 +91,21 @@ class WorkItem implements WorkItemInterface, \Serializable
             'endDate' => $this->endDate,
             'endParticipant' => $this->endParticipant === null ? null : ($this->endParticipant instanceof LoggedParticipant ? $this->endParticipant : new LoggedParticipant($this->endParticipant)),
             'endResult' => $this->endResult,
+            'data' => $this->data,
         ]);
-    }
+    }*/
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    /*public function unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if (property_exists($this, $name)) {
                 $this->$name = $value;
             }
         }
-    }
+    }*/
 
     /**
      * {@inheritdoc}

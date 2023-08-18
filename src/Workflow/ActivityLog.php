@@ -15,7 +15,7 @@ namespace PHPMentors\Workflower\Workflow;
 use PHPMentors\Workflower\Workflow\Activity\ActivityInterface;
 use PHPMentors\Workflower\Workflow\Activity\WorkItemInterface;
 
-class ActivityLog
+class ActivityLog// implements \Serializable
 {
     /**
      * @var ActivityInterface
@@ -51,4 +51,42 @@ class ActivityLog
     {
         return $this->workItem;
     }
+
+    /*public function __serialize()
+    {
+        $fields = [
+            'activity',
+            'workItem',
+        ];
+
+        $data = [];
+        foreach($fields as $field)
+            $data[$field] = $this->{$field};
+
+        return $data;
+    }
+
+    public function __unserialize($serialized)
+    {
+        foreach ($serialized as $name => $value) {
+            $this->$name = $value;
+        }
+    }*/
+
+    /*public function serialize()
+    {
+        return serialize([
+            'activity',
+            'workItem',
+        ]);
+    }
+
+    public function unserialize($serialized)
+    {
+        foreach (unserialize($serialized) as $name => $value) {
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
+    }*/
 }

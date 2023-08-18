@@ -35,7 +35,7 @@ use PHPMentors\Workflower\Workflow\Participant\RoleCollection;
 use PHPMentors\Workflower\Workflow\Provider\DataProviderInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
-class ProcessInstance implements ProcessInstanceInterface, \Serializable
+class ProcessInstance implements ProcessInstanceInterface
 {
     const DEFAULT_ROLE_ID = '__ROLE__';
 
@@ -164,7 +164,7 @@ class ProcessInstance implements ProcessInstanceInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    /*public function serialize2()
     {
         return serialize([
             'id' => $this->id,
@@ -180,20 +180,22 @@ class ProcessInstance implements ProcessInstanceInterface, \Serializable
             'endEvents' => $this->endEvents,
             'tokens' => $this->tokens,
             'activityLogCollection' => $this->activityLogCollection,
+            'operationRunner' => $this->operationRunner,
+            //'processDefinition' => $this->processDefinition,
         ]);
-    }
+    }*/
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    /*public function unserialize2($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if (property_exists($this, $name)) {
                 $this->$name = $value;
             }
         }
-    }
+    }*/
 
     /**
      * {@inheritdoc}
@@ -382,7 +384,7 @@ class ProcessInstance implements ProcessInstanceInterface, \Serializable
             return null;
         }
 
-        return $flowObjects[0];
+        return current($flowObjects);
     }
 
     /**
@@ -754,4 +756,5 @@ class ProcessInstance implements ProcessInstanceInterface, \Serializable
 
         return null;
     }
+
 }

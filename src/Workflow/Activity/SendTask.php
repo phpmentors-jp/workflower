@@ -38,18 +38,29 @@ class SendTask extends OperationalTask implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    /*public function serialize()
     {
         return serialize([
-            get_parent_class($this) => parent::serialize(),
+            'id' => $this->id,
+            'role' => $this->role,
+            'name' => $this->name,
+            'state' => $this->state,
+            'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
+            'multiInstance' => $this->multiInstance,
+            'sequential' => $this->sequential,
+            'completionCondition' => $this->completionCondition,
+            'workItems' => $this->workItems,
+            'token' => $this->token ?? null,
+            'started' => $this->started ?? null,
+            'processInstance' => $this->processInstance,
             'message' => $this->message,
         ]);
-    }
+    }*/
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    /*public function unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if ($name == get_parent_class($this)) {
@@ -61,7 +72,7 @@ class SendTask extends OperationalTask implements MessageInterface
                 $this->$name = $value;
             }
         }
-    }
+    }*/
 
     /**
      * {@inheritdoc}

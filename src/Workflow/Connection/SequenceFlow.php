@@ -17,7 +17,7 @@ use PHPMentors\Workflower\Workflow\Element\FlowObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
 
-class SequenceFlow implements ConnectingObjectInterface, \Serializable
+class SequenceFlow implements ConnectingObjectInterface//, \Serializable
 {
     /**
      * @var int|string
@@ -56,8 +56,9 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    /*public function serialize()
     {
+        //file_put_contents('123', var_export($this->destination, 1)."\r\n\r\n", FILE_APPEND);
         return serialize([
             'id' => $this->id,
             'name' => $this->name,
@@ -65,19 +66,19 @@ class SequenceFlow implements ConnectingObjectInterface, \Serializable
             'destination' => $this->destination,
             'condition' => $this->condition,
         ]);
-    }
+    }*/
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    /*public function unserialize($serialized)
     {
         foreach (unserialize($serialized) as $name => $value) {
             if (property_exists($this, $name)) {
                 $this->$name = $value;
             }
         }
-    }
+    }*/
 
     /**
      * {@inheritdoc}

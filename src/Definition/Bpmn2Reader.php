@@ -226,6 +226,20 @@ class Bpmn2Reader
             }
         }
 
+
+        // camunda properties
+        $properties = [];
+        $extensions = $element->getElementsByTagNameNs('http://www.omg.org/spec/BPMN/20100524/MODEL',
+            'extensionElements');
+        foreach($extensions as $extension)
+            foreach($extension->getElementsByTagNameNs('http://camunda.org/schema/1.0/bpmn', 'properties') as $props)
+                foreach($props->getElementsByTagNameNs('http://camunda.org/schema/1.0/bpmn', 'property') as $property)
+                    if ($property->hasAttributes())
+                        $properties[$property->getAttribute('name')] = $property->getAttribute('value');
+
+        $config['properties'] = $properties;
+
+
         if ($multiInstance !== null) {
             $config['multiInstance'] = $multiInstance;
         }
