@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Participant;
 
-class Role// implements \Serializable
+class Role
 {
     /**
      * @var int|string
@@ -32,29 +32,6 @@ class Role// implements \Serializable
             }
         }
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function serialize()
-    {
-        return serialize([
-            'id' => $this->id,
-            'name' => $this->name,
-        ]);
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
 
     /**
      * {@inheritdoc}

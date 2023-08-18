@@ -48,37 +48,6 @@ abstract class Event extends FlowObject implements EventInterface
 
     /**
      * {@inheritdoc}
-     */
-    /*public function serialize()
-    {
-        return serialize([
-            get_parent_class($this) => parent::serialize(),
-            'id' => $this->id,
-            'name' => $this->name,
-            'role' => $this->role,
-            'processInstance' => $this->processInstance,
-        ]);
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if ($name == get_parent_class($this)) {
-                parent::unserialize($value);
-                continue;
-            }
-
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
-
-    /**
-     * {@inheritdoc}
      *
      * @return string
      */

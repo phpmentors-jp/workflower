@@ -12,34 +12,12 @@
 
 namespace PHPMentors\Workflower\Workflow\Element;
 
-class ConnectingObjectCollection implements \Countable, \IteratorAggregate//, \Serializable
+class ConnectingObjectCollection implements \Countable, \IteratorAggregate
 {
     /**
      * @var array
      */
     private $connectingObjects = [];
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function serialize()
-    {
-        return serialize([
-            'connectingObjects' => $this->connectingObjects,
-        ]);
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
 
     /**
      * {@inheritdoc}

@@ -17,7 +17,7 @@ use PHPMentors\Workflower\Workflow\Element\ConnectingObjectInterface;
 use PHPMentors\Workflower\Workflow\Element\TransitionalInterface;
 use PHPMentors\Workflower\Workflow\SequenceFlowNotSelectedException;
 
-class StartEvent extends Event implements TransitionalInterface//, \Serializable
+class StartEvent extends Event implements TransitionalInterface
 {
     /**
      * @var \DateTime
@@ -25,39 +25,6 @@ class StartEvent extends Event implements TransitionalInterface//, \Serializable
      * @since Property available since Release 2.0.0
      */
     private $startDate;
-
-    /**
-     * {@inheritdoc}
-     *
-     * @since Method available since Release 2.0.0
-     */
-    /*public function serialize()
-    {
-        return serialize([
-            //get_parent_class($this) => parent::serialize(),
-            'id' => $this->id,
-            'name' => $this->name,
-            'role' => $this->role,
-            'startDate' => $this->startDate,
-        ]);
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if ($name == get_parent_class($this)) {
-                parent::unserialize($value);
-                continue;
-            }
-
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
 
     /**
      * @return \DateTime|null

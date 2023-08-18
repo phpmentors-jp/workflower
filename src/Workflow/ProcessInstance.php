@@ -163,42 +163,6 @@ class ProcessInstance implements ProcessInstanceInterface
 
     /**
      * {@inheritdoc}
-     */
-    /*public function serialize2()
-    {
-        return serialize([
-            'id' => $this->id,
-            'parentProcessInstance' => $this->parentProcessInstance,
-            'parentActivity' => $this->parentActivity,
-            'state' => $this->state,
-            'name' => $this->name,
-            'endDate' => $this->endDate,
-            'connectingObjectCollection' => $this->connectingObjectCollection,
-            'flowObjectCollection' => $this->flowObjectCollection,
-            'roleCollection' => $this->roleCollection,
-            'startEvent' => $this->startEvent,
-            'endEvents' => $this->endEvents,
-            'tokens' => $this->tokens,
-            'activityLogCollection' => $this->activityLogCollection,
-            'operationRunner' => $this->operationRunner,
-            //'processDefinition' => $this->processDefinition,
-        ]);
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function unserialize2($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
-
-    /**
-     * {@inheritdoc}
      *
      * @return int|string
      */

@@ -15,7 +15,7 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 /**
  * @since Class available since Release 2.0.0
  */
-abstract class AbstractTask extends FlowObject implements ActivityInterface//, \Serializable
+abstract class AbstractTask extends FlowObject implements ActivityInterface
 {
     /**
      * @var int|string
@@ -78,43 +78,6 @@ abstract class AbstractTask extends FlowObject implements ActivityInterface//, \
             }
         }
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function serialize()
-    {
-        return serialize([
-            get_parent_class($this) => parent::serialize(),
-            'id' => $this->id,
-            'role' => $this->role,
-            'name' => $this->name,
-            'state' => $this->state,
-            'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
-            'multiInstance' => $this->multiInstance,
-            'sequential' => $this->sequential,
-            'completionCondition' => $this->completionCondition,
-            'workItems' => $this->workItems,
-            'processInstance' => $this->processInstance,
-        ]);
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if ($name == get_parent_class($this)) {
-                parent::unserialize($value);
-                continue;
-            }
-
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
 
     /**
      * {@inheritdoc}

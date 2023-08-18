@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow;
 
-class ActivityLogCollection implements \Countable, \IteratorAggregate//, \Serializable
+class ActivityLogCollection implements \Countable, \IteratorAggregate
 {
     /**
      * @var ActivityLog[]
@@ -69,42 +69,4 @@ class ActivityLogCollection implements \Countable, \IteratorAggregate//, \Serial
     {
         return $this->activityLogs;
     }
-
-    /*public function __serialize()
-    {
-        $fields = [
-            'activityLogs',
-            'lastWorkItemIndexByActivity',
-        ];
-
-        $data = [];
-        foreach($fields as $field)
-            $data[$field] = $this->{$field};
-
-        return $data;
-    }
-
-    public function __unserialize($serialized)
-    {
-        foreach ($serialized as $name => $value) {
-            $this->$name = $value;
-        }
-    }*/
-
-    /*public function serialize()
-    {
-        return serialize([
-            'activityLogs',
-            //'lastWorkItemIndexByActivity',
-        ]);
-    }*/
-
-    /*public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
 }

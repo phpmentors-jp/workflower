@@ -19,32 +19,4 @@ class SubProcessTask extends ProcessTask
             }
         }
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function serialize()
-    {
-        return serialize([
-            get_parent_class($this) => parent::serialize(),
-            'triggeredByEvent' => $this->triggeredByEvent,
-        ]);
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if ($name == get_parent_class($this)) {
-                parent::unserialize($value);
-                continue;
-            }
-
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
 }

@@ -38,43 +38,6 @@ abstract class OperationalTask extends Task implements OperationalInterface
     /**
      * {@inheritdoc}
      */
-    /*public function serialize()
-    {
-        return serialize([
-            'id' => $this->id,
-            'role' => $this->role,
-            'name' => $this->name,
-            'state' => $this->state,
-            'defaultSequenceFlowId' => $this->defaultSequenceFlowId,
-            'multiInstance' => $this->multiInstance,
-            'sequential' => $this->sequential,
-            'completionCondition' => $this->completionCondition,
-            'workItems' => $this->workItems,
-            'processInstance' => $this->processInstance,
-            'operation' => $this->operation,
-        ]);
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if ($name == get_parent_class($this)) {
-                parent::unserialize($value);
-                continue;
-            }
-
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
     public function getOperation()
     {
         return $this->operation;

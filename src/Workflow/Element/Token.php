@@ -12,7 +12,7 @@
 
 namespace PHPMentors\Workflower\Workflow\Element;
 
-class Token // implements \Serializable
+class Token
 {
     /**
      * @var string
@@ -78,25 +78,4 @@ class Token // implements \Serializable
 
         return $this;
     }
-
-    /*public function serialize()
-    {
-        return serialize([
-            'id',
-            'currentFlowObject',
-            'previousFlowObject',
-        ]);
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
 }

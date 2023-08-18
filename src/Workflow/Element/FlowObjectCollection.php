@@ -12,34 +12,12 @@
 
 namespace PHPMentors\Workflower\Workflow\Element;
 
-class FlowObjectCollection implements \Countable, \IteratorAggregate//, \Serializable
+class FlowObjectCollection implements \Countable, \IteratorAggregate
 {
     /**
      * @var array
      */
     private $flowObjects = [];
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function serialize()
-    {
-        return serialize([
-            'flowObjects' => $this->flowObjects,
-        ]);
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
 
     /**
      * {@inheritdoc}

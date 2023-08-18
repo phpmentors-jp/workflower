@@ -6,7 +6,7 @@ use DateTime;
 
 class IntermediateCatchEvent extends Event
 {
-    protected string $timerEventDuration = '100';
+    protected string $timerEventDuration;
 
     public function getEndDate(): DateTime
     {

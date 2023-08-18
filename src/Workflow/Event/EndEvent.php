@@ -22,40 +22,6 @@ class EndEvent extends Event
     private $endDate;
 
     /**
-     * {@inheritdoc}
-     *
-     * @since Method available since Release 2.0.0
-     */
-    /*public function serialize()
-    {
-        return serialize([
-            get_parent_class($this) => parent::serialize(),
-            'id' => $this->id,
-            'name' => $this->name,
-            'role' => $this->role,
-            'endDate' => $this->endDate,
-            'processInstance' => $this->processInstance,
-        ]);
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if ($name == get_parent_class($this)) {
-                parent::unserialize($value);
-                continue;
-            }
-
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
-
-    /**
      * @return \DateTime|null
      */
     public function getEndDate(): ?\DateTime

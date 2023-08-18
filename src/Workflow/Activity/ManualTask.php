@@ -7,5 +7,4 @@ namespace PHPMentors\Workflower\Workflow\Activity;
  */
 class ManualTask extends Task
 {
-
 }

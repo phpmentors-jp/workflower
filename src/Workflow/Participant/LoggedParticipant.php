@@ -14,7 +14,7 @@ namespace PHPMentors\Workflower\Workflow\Participant;
 
 use PHPMentors\Workflower\Workflow\Resource\ResourceInterface;
 
-class LoggedParticipant implements ParticipantInterface//, \Serializable
+class LoggedParticipant implements ParticipantInterface
 {
     /**
      * @var int|string
@@ -34,29 +34,6 @@ class LoggedParticipant implements ParticipantInterface//, \Serializable
         $this->id = $participant->getId();
         $this->name = $participant->getName();
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function serialize()
-    {
-        return serialize([
-            'id' => $this->id,
-            'name' => $this->name,
-        ]);
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
 
     /**
      * {@inheritdoc}

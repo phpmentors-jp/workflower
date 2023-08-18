@@ -8,22 +8,6 @@ class WorkItemsCollection implements ItemsCollectionInterface
 {
     protected $items = [];
 
-    /*public function serialize()
-    {
-        return serialize([
-            'items' => $this->items,
-        ]);
-    }
-
-    public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
-
     public function add(ItemInterface $item)
     {
         $this->items[] = $item;

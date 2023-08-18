@@ -38,30 +38,6 @@ abstract class FlowObject implements FlowObjectInterface, TransitionalInterface
     /**
      * {@inheritdoc}
      */
-    /*public function serialize()
-    {
-        return serialize([
-            'token' => $this->token,
-            'started' => $this->started,
-            'processInstance' => $this->processInstance,
-        ]);
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function unserialize($serialized)
-    {
-        foreach (unserialize($serialized) as $name => $value) {
-            if (property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
-    }*/
-
-    /**
-     * {@inheritdoc}
-     */
     public function getToken(): iterable
     {
         return $this->token;
