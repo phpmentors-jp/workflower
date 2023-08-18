@@ -70,4 +70,12 @@ abstract class Gateway extends FlowObject implements GatewayInterface
 
         return $this->id === $target->getId();
     }
+
+    public function cancel()
+    {
+        $processInstance = $this->getProcessInstance();
+        foreach ($this->getToken() as $token) {
+            $processInstance->removeToken($this, $token);
+        }
+    }
 }
